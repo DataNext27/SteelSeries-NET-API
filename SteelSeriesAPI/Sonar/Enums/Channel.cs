@@ -14,12 +14,12 @@ public static class ChannelExtensions
         { Channel.Stream, "streaming" }
     };
 
-    public static string ToJsonKey(this Channel channel)
+    public static string ToDictKey(this Channel channel)
     {
         return ChannelMap[channel];
     }
     
-    public static Channel? FromJsonKey(string jsonKey)
+    public static Channel? FromDictKey(string jsonKey)
     {
         foreach (var pair in ChannelMap)
         {

@@ -5,7 +5,7 @@ using SteelSeriesAPI.Sonar.Models;
 
 namespace SteelSeriesAPI.Sonar.Http;
 
-public class SonarHttpCommand
+public class SonarHttpCommand : ISonarCommandHandler
 {
     private readonly ISonarBridge _sonarBridge;
     
@@ -29,15 +29,15 @@ public class SonarHttpCommand
     public void SetVolume(double vol, Device device, Mode mode, Channel channel)
     {
         string _vol = vol.ToString("0.00", CultureInfo.InvariantCulture);
-        string target = mode.ToJsonKey() + "/";
+        string target = mode.ToDictKey() + "/";
         
         if (mode == Mode.Streamer)
         {
-            target += channel.ToJsonKey() + "/" + device.ToJsonKey(DeviceMapChoice.HttpDict) + "/volume/" + _vol;
+            target += channel.ToDictKey() + "/" + device.ToDictKey(DeviceMapChoice.HttpDict) + "/volume/" + _vol;
         }
         else
         {
-            target += device.ToJsonKey(DeviceMapChoice.HttpDict) + "/Volume/" + _vol;
+            target += device.ToDictKey(DeviceMapChoice.HttpDict) + "/Volume/" + _vol;
         }
         Console.WriteLine("volumeSettings/" + target);
         new HttpPut("volumeSettings/" + target);
@@ -45,16 +45,35 @@ public class SonarHttpCommand
     
     public void SetMute(bool mute, Device device, Mode mode, Channel channel)
     {
-        string target = mode.ToJsonKey() + "/";
+        string target = mode.ToDictKey() + "/";
         if (mode == Mode.Streamer)
         {
-            target += channel.ToJsonKey() + "/" + device.ToJsonKey(DeviceMapChoice.HttpDict) + "/isMuted/" + mute;
+            target += channel.ToDictKey() + "/" + device.ToDictKey(DeviceMapChoice.HttpDict) + "/isMuted/" + mute;
         }
         else
         {
-            target += device.ToJsonKey(DeviceMapChoice.HttpDict) + "/Mute/" + mute;
+            target += device.ToDictKey(DeviceMapChoice.HttpDict) + "/Mute/" + mute;
         }
 
         new HttpPut("volumeSettings/" + target);
+    }
+
+    public void SetConfig(string configId)
+    {
+        if (string.IsNullOrEmpty(configId)) throw new Exception("Couldn't retrieve config id");
+
+        new HttpPut("configs/" + configId + "/select");
+    }
+
+    public void SetConfig(Device device, string name)
+    {
+        var configs = _sonarBridge.GetAudioConfigurations(device).ToList();
+        foreach (var config in configs)
+        {
+            if (config.Name  == name)
+            {
+                SetConfig(config.Id);
+            }
+        }
     }
 }

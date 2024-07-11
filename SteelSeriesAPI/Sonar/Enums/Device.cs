@@ -38,7 +38,7 @@ public static class DeviceExtensions
         { Device.Mic, "chatCapture" } 
     };
 
-    public static string ToJsonKey(this Device device, DeviceMapChoice context = DeviceMapChoice.JsonDict)
+    public static string ToDictKey(this Device device, DeviceMapChoice context = DeviceMapChoice.JsonDict)
     {
         return context switch
         {
@@ -48,7 +48,7 @@ public static class DeviceExtensions
         };
     }
     
-    public static Device? FromJsonKey(string jsonKey, DeviceMapChoice context = DeviceMapChoice.JsonDict)
+    public static Device? FromDictKey(string jsonKey, DeviceMapChoice context = DeviceMapChoice.JsonDict)
     {
         var map = context switch
         {

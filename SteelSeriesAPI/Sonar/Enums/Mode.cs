@@ -26,7 +26,7 @@ public static class ModeExtensions
         { Mode.Streamer, "stream" }
     };
 
-    public static string ToJsonKey(this Mode mode, ModeMapChoice context = ModeMapChoice.StreamerDict)
+    public static string ToDictKey(this Mode mode, ModeMapChoice context = ModeMapChoice.StreamerDict)
     {
         return context switch
         {
@@ -36,7 +36,7 @@ public static class ModeExtensions
         };
     }
     
-    public static Mode? FromJsonKey(string jsonKey, ModeMapChoice context = ModeMapChoice.StreamerDict)
+    public static Mode? FromDictKey(string jsonKey, ModeMapChoice context = ModeMapChoice.StreamerDict)
     {
         var map = context switch
         {

@@ -11,8 +11,8 @@ namespace SteelSeriesAPI;
 public class SonarBridge : ISonarBridge
 {
     private readonly IAppRetriever _sonarRetriever;
-    private readonly SonarHttpCommand _sonarCommand;
-    private readonly SonarHttpProvider _sonarProvider;
+    private readonly ISonarCommandHandler _sonarCommand;
+    private readonly ISonarDataProvider _sonarProvider;
     private readonly ISonarSocket _sonarSocket;
 
     private string _sonarWebServerAddress;
@@ -88,6 +88,12 @@ public class SonarBridge : ISonarBridge
         return _sonarProvider.GetMode();
     }
 
+    public VolumeSettings GetVolumeSetting(Device device, Mode mode = Mode.Classic,
+        Channel channel = Channel.Monitoring)
+    {
+        return _sonarProvider.GetVolumeSetting(device, mode, channel);
+    }
+    
     // volume = 0,00000000 <-- 8 decimal max
     public double GetVolume(Device device, Mode mode = Mode.Classic, Channel channel = Channel.Monitoring)
     {
@@ -97,6 +103,26 @@ public class SonarBridge : ISonarBridge
     public bool GetMute(Device device, Mode mode = Mode.Classic, Channel channel = Channel.Monitoring)
     {
         return _sonarProvider.GetVolumeSetting(device, mode, channel).Mute;
+    }
+
+    public IEnumerable<SonarAudioConfiguration> GetAllAudioConfigurations()
+    {
+        return _sonarProvider.GetAllAudioConfigurations();
+    }
+
+    public IEnumerable<SonarAudioConfiguration> GetAudioConfigurations(Device device)
+    {
+        return _sonarProvider.GetAudioConfigurations(device);
+    }
+
+    public SonarAudioConfiguration GetSelectedAudioConfiguration(Device device)
+    {
+        return _sonarProvider.GetSelectedAudioConfiguration(device);
+    }
+
+    public Device GetDeviceFromAudioConfigurationId(string configId)
+    {
+        return _sonarProvider.GetDeviceFromAudioConfigurationId(configId);
     }
 
     #endregion
@@ -116,6 +142,16 @@ public class SonarBridge : ISonarBridge
     public void SetMute(bool mute, Device device, Mode mode = Mode.Classic, Channel channel = Channel.Monitoring)
     {
         _sonarCommand.SetMute(mute, device, mode, channel);
+    }
+
+    public void SetConfig(string configId)
+    {
+        _sonarCommand.SetConfig(configId);
+    }
+    
+    public void SetConfig(Device device, string name)
+    {
+        _sonarCommand.SetConfig(device, name);
     }
 
     #endregion
