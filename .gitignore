@@ -1,0 +1,9 @@
+SteelSeriesAPI/bin/
+SteelSeriesAPI/obj/
+SteelSeriesAPI/Class1.cs
+SteelSeriesAPI/Interfaces/IExample.cs
+SteelSeriesAPI.Tests/bin/
+SteelSeriesAPI.Tests/obj/
+SteelSeriesRestScanner/
+.idea/
+rests.txt
