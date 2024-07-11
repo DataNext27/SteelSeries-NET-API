@@ -1,5 +1,5 @@
 # SteelSeries-NET-API
-Unofficial .NET SteelSeries API
+This API is **NOT** affiliated in any way with **SteelSeries**
 
 ## Features
  - Sonar
