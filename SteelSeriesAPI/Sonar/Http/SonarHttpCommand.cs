@@ -1,7 +1,6 @@
 using System.Globalization;
 using SteelSeriesAPI.Interfaces;
 using SteelSeriesAPI.Sonar.Enums;
-using SteelSeriesAPI.Sonar.Models;
 
 namespace SteelSeriesAPI.Sonar.Http;
 
@@ -75,5 +74,20 @@ public class SonarHttpCommand : ISonarCommandHandler
                 SetConfig(config.Id);
             }
         }
+    }
+
+    public void SetChatMixBalance(double balance)
+    {
+        if (!_sonarBridge.GetChatMixState())
+        {
+            throw new Exception("Can't change the value of the balance of the ChatMix when it is not enabled");
+        }
+
+        if (balance > 1 || balance < -1)
+        {
+            throw new Exception("ChatMix balance can't be less than -1 and greater than 1");
+        }
+
+        new HttpPut("chatMix?balance=" + balance.ToString("0.00", CultureInfo.InvariantCulture));
     }
 }

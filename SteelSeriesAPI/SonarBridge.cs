@@ -124,6 +124,16 @@ public class SonarBridge : ISonarBridge
     {
         return _sonarProvider.GetDeviceFromAudioConfigurationId(configId);
     }
+    
+    public double GetChatMixBalance()
+    {
+        return _sonarProvider.GetChatMixBalance();
+    }
+
+    public bool GetChatMixState()
+    {
+        return _sonarProvider.GetChatMixState();
+    }
 
     #endregion
 
@@ -152,6 +162,11 @@ public class SonarBridge : ISonarBridge
     public void SetConfig(Device device, string name)
     {
         _sonarCommand.SetConfig(device, name);
+    }
+
+    public void SetChatMixBalance(double balance)
+    {
+        _sonarCommand.SetChatMixBalance(balance);
     }
 
     #endregion

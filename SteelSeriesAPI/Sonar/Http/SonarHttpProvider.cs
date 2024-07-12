@@ -42,6 +42,8 @@ public class SonarHttpProvider : ISonarDataProvider
         
         return new VolumeSettings(volume, mute);
     }
+
+    #region AudioConfigs
     
     public IEnumerable<SonarAudioConfiguration> GetAllAudioConfigurations()
     {
@@ -111,5 +113,51 @@ public class SonarHttpProvider : ISonarDataProvider
         }
 
         return sonarConfig.AssociatedDevice;
+    }
+    
+    #endregion
+
+    #region ChatMix
+
+    public double GetChatMixBalance()
+    {
+        JsonDocument chatMix = new HttpProvider("chatMix").Provide();
+
+        return chatMix.RootElement.GetProperty("balance").GetDouble();
+    }
+
+    public bool GetChatMixState()
+    {
+        JsonDocument chatMix = new HttpProvider("chatMix").Provide();
+        string cState = chatMix.RootElement.GetProperty("state").ToString();
+        if (cState == "enabled")
+        {
+            return true;
+        }
+        else if (cState == "differentDeviceSelected")
+        {
+            return false;
+        }
+
+        return false;
+    }
+    
+    #endregion
+
+    public IEnumerable<RedirectionDevice> GetRedirectionDevices(Direction direction)
+    {
+        JsonDocument audioDevices = new HttpProvider("audioDevices").Provide();
+
+        foreach (var element in audioDevices.RootElement.EnumerateArray())
+        {
+            string id = element.GetProperty("id").GetString();
+            string name = element.GetProperty("friendlyName").GetString();
+            string dataFlow = element.GetProperty("dataFlow").GetString();
+
+            if (dataFlow == direction.ToDictKey())
+            {
+                yield return new RedirectionDevice(id, name, (Direction)DirectionExtensions.FromDictKey(dataFlow));
+            }
+        }
     }
 }

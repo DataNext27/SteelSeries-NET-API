@@ -45,27 +45,29 @@ class Program
         // Console.WriteLine("----AudioConfigs----------");
         // Console.WriteLine(sonarManager.GetAllAudioConfigurations().ToList());
         // Console.WriteLine("----Mic-Configs----------");
-        // Console.WriteLine(sonarManager.GetAudioConfigurations(Device.Mic).ToList()); // Device     return List<SonarAudioConfiguration>
+        // Console.WriteLine(sonarManager.GetAudioConfigurations(Device.Mic).ToList());
         // Console.WriteLine("----Current Media Config----------");
-        // Console.WriteLine(sonarManager.GetSelectedAudioConfiguration(Device.Media).Name); // Device      return SonarAudioConfiguration
+        // Console.WriteLine(sonarManager.GetSelectedAudioConfiguration(Device.Media).Name);
         // Console.WriteLine("----Device from config ID----------");
-        // Console.WriteLine(sonarManager.GetDeviceFromAudioConfigurationId("29ae2c02-792b-4487-863c-dc3e11a7a469")); // configId      return Device
-        
-        
-        
+        // Console.WriteLine(sonarManager.GetDeviceFromAudioConfigurationId("29ae2c02-792b-4487-863c-dc3e11a7a469"));
+        // Console.WriteLine("--------ChatMix---------");
+        // Console.WriteLine(sonarManager.GetChatMixBalance());
+        // Console.WriteLine(sonarManager.GetChatMixState());
+
+
+
         // sonarManager.SetMode(Mode.Classic);
         // sonarManager.SetVolume(0.2, Device.Media);
         // sonarManager.SetMute(false, Device.Media);
         // sonarManager.SetConfig("e6400b4d-f682-4199-af90-8a778788a31c");
         // sonarManager.SetConfig(Device.Media, "Default");
+        // sonarManager.SetChatMixBalance(0.5);
 
 
         /*
         sonarManager.OnSteelSeriesSonarEvent += OnSteelSeriesEventHandler;
 
-        
-        GetChatMixBalance(); // return double -1<-0->1
-        GetChatMixState(); // return bool
+
         GetRedircetionDevices(); // Direction     return  List<RedirectionDevice>
         GetSelectedRedircetionDevice(); // Device   return RedirectionDevice
         GetSelectedRedircetionDevice(); // Channel  return RedirectionDevice
@@ -76,7 +78,6 @@ class Program
         GetAudienceMonitoringState(); // return bool
 
 
-        SetChatMixBalance(); // double -1<-0->1
         SetRedirectionDevice(); // deviceId, Device
         SetRedirectionDevice(); // deviceId, Channel
         SetProcessToDeviceRouting(); // PID, Device
