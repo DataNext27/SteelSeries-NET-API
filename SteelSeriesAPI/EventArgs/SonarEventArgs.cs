@@ -1,6 +1,8 @@
+using SteelSeriesAPI.Sonar.Enums;
+
 namespace SteelSeriesAPI.EventArgs;
 
-public class SonarEventArgs
+public class SonarEventArgs : System.EventArgs
 {
     
 }

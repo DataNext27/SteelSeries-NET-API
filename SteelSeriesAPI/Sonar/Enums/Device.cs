@@ -13,7 +13,8 @@ public enum Device
 public enum DeviceMapChoice
 {
     JsonDict,
-    HttpDict
+    HttpDict,
+    DeviceDict
 }
 
 public static class DeviceExtensions
@@ -38,12 +39,23 @@ public static class DeviceExtensions
         { Device.Mic, "chatCapture" } 
     };
 
+    private static readonly Dictionary<Device, string> DeviceMap = new Dictionary<Device, string>
+    {
+        { Device.Master, "master" },
+        { Device.Game, "game" },
+        { Device.Chat, "chat" }, 
+        { Device.Media, "media" },
+        { Device.Aux, "aux" },
+        { Device.Mic, "mic" } 
+    };
+    
     public static string ToDictKey(this Device device, DeviceMapChoice context = DeviceMapChoice.JsonDict)
     {
         return context switch
         {
             DeviceMapChoice.JsonDict => DeviceJsonMap.ContainsKey(device) ? DeviceJsonMap[device] : null,
             DeviceMapChoice.HttpDict => DeviceHttpMap.ContainsKey(device) ? DeviceHttpMap[device] : null,
+            DeviceMapChoice.DeviceDict => DeviceMap.ContainsKey(device) ? DeviceMap[device] : null,
             _ => null
         };
     }
@@ -54,6 +66,7 @@ public static class DeviceExtensions
         {
             DeviceMapChoice.JsonDict => DeviceJsonMap,
             DeviceMapChoice.HttpDict => DeviceHttpMap,
+            DeviceMapChoice.DeviceDict => DeviceMap,
             _ => null
         };
 

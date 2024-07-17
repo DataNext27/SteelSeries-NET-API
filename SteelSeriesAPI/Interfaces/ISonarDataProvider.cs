@@ -51,6 +51,16 @@ public interface ISonarDataProvider
     /// </summary>
     /// <returns>True if ChatMix is enabled <br/> False if ChatMix is disabled</returns>
     bool GetChatMixState();
-    
+
     IEnumerable<RedirectionDevice> GetRedirectionDevices(Direction direction);
+
+    RedirectionDevice GetClassicRedirectionDevice(Device device);
+
+    RedirectionDevice GetStreamRedirectionDevice(Channel channel);
+    
+    RedirectionDevice GetStreamRedirectionDevice(Device device);
+
+    bool GetRedirectionState(Device device, Channel channel);
+
+    bool GetAudienceMonitoringState();
 }

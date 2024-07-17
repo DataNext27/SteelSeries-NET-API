@@ -1,6 +1,8 @@
 using System.Globalization;
+using System.Threading.Channels;
 using SteelSeriesAPI.Interfaces;
 using SteelSeriesAPI.Sonar.Enums;
+using Channel = SteelSeriesAPI.Sonar.Enums.Channel;
 
 namespace SteelSeriesAPI.Sonar.Http;
 
@@ -89,5 +91,36 @@ public class SonarHttpCommand : ISonarCommandHandler
         }
 
         new HttpPut("chatMix?balance=" + balance.ToString("0.00", CultureInfo.InvariantCulture));
+    }
+
+    public void SetClassicRedirectionDevice(string deviceId, Device device)
+    {
+        new HttpPut("classicRedirections/" + device.ToDictKey(DeviceMapChoice.DeviceDict) +"/deviceId/" + deviceId);
+    }
+    
+    public void SetStreamRedirectionDevice(string deviceId, Channel channel)
+    {
+        new HttpPut("streamRedirections/" + channel.ToDictKey() +"/deviceId/" + deviceId);
+    }
+    
+    public void SetStreamRedirectionDevice(string deviceId, Device device)
+    {
+        if (device != Device.Mic)
+        {
+            throw new Exception("Can only get stream redirection device for Mic");
+        }
+        
+        new HttpPut("streamRedirections/" + device.ToDictKey(DeviceMapChoice.DeviceDict) +"/deviceId/" + deviceId);
+    }
+
+    public void SetRedirectionState(bool newState, Device device, Channel channel)
+    {
+        new HttpPut("streamRedirections/" + channel.ToDictKey() + "/redirections/" + device.ToDictKey() +
+                    "/isEnabled/" + newState);
+    }
+
+    public void SetAudienceMonitoringState(bool newState)
+    {
+        new HttpPut("streamRedirections/isStreamMonitoringEnabled/" + newState);
     }
 }

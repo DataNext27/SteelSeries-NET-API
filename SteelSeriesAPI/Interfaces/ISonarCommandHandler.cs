@@ -1,4 +1,6 @@
+using System.Threading.Channels;
 using SteelSeriesAPI.Sonar.Enums;
+using Channel = SteelSeriesAPI.Sonar.Enums.Channel;
 
 namespace SteelSeriesAPI.Interfaces;
 
@@ -16,7 +18,7 @@ public interface ISonarCommandHandler
     /// <param name="vol">The volume you want to set, between 1 and 0</param>
     /// <param name="device">The <see cref="Device"/> you want to change the volume</param>
     /// <param name="mode">The <see cref="Mode"/> in which you want to change the volume</param>
-    /// <param name="channel">The <see cref="Channel"/> you want to change the volume</param>
+    /// <param name="channel">The <see cref="Sonar.Enums.Channel"/> you want to change the volume</param>
     void SetVolume(double vol, Device device, Mode mode, Channel channel);
 
     /// <summary>
@@ -49,4 +51,14 @@ public interface ISonarCommandHandler
     /// <remarks>-1 to balance to Game device<br/>1 to balance to Chat device</remarks>
     /// <param name="balance">A <see cref="double"/> between -1 and 0</param>
     void SetChatMixBalance(double balance);
+
+    void SetClassicRedirectionDevice(string deviceId, Device device);
+
+    void SetStreamRedirectionDevice(string deviceId, Channel channel);
+
+    void SetStreamRedirectionDevice(string deviceId, Device device);
+
+    void SetRedirectionState(bool newState, Device device, Channel channel);
+
+    void SetAudienceMonitoringState(bool newState);
 }

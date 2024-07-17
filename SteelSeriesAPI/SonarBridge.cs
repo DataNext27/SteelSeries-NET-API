@@ -135,6 +135,36 @@ public class SonarBridge : ISonarBridge
         return _sonarProvider.GetChatMixState();
     }
 
+    public IEnumerable<RedirectionDevice> GetRedirectionDevices(Direction direction)
+    {
+        return _sonarProvider.GetRedirectionDevices(direction);
+    }
+
+    public RedirectionDevice GetClassicRedirectionDevice(Device device)
+    {
+        return _sonarProvider.GetClassicRedirectionDevice(device);
+    }
+
+    public RedirectionDevice GetStreamRedirectionDevice(Channel channel)
+    {
+        return _sonarProvider.GetStreamRedirectionDevice(channel);
+    }
+
+    public RedirectionDevice GetStreamRedirectionDevice(Device device = Device.Mic)
+    {
+        return _sonarProvider.GetStreamRedirectionDevice(device);
+    }
+
+    public bool GetRedirectionState(Device device, Channel channel)
+    {
+        return _sonarProvider.GetRedirectionState(device, channel);
+    }
+
+    public bool GetAudienceMonitoringState()
+    {
+        return _sonarProvider.GetAudienceMonitoringState();
+    }
+
     #endregion
 
     #region Commands
@@ -167,6 +197,31 @@ public class SonarBridge : ISonarBridge
     public void SetChatMixBalance(double balance)
     {
         _sonarCommand.SetChatMixBalance(balance);
+    }
+
+    public void SetClassicRedirectionDevice(string deviceId, Device device)
+    {
+        _sonarCommand.SetClassicRedirectionDevice(deviceId, device);
+    }
+
+    public void SetStreamRedirectionDevice(string deviceId, Channel channel)
+    {
+        _sonarCommand.SetStreamRedirectionDevice(deviceId, channel);
+    }
+
+    public void SetStreamRedirectionDevice(string deviceId, Device device = Device.Mic)
+    {
+        _sonarCommand.SetStreamRedirectionDevice(deviceId, device);
+    }
+    
+    public void SetRedirectionState(bool newState, Device device, Channel channel)
+    {
+        _sonarCommand.SetRedirectionState(newState, device, channel);
+    }
+
+    public void SetAudienceMonitoringState(bool newState)
+    {
+        _sonarCommand.SetAudienceMonitoringState(newState);
     }
 
     #endregion
