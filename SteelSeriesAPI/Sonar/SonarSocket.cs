@@ -11,14 +11,16 @@ public class SonarSocket : ISonarSocket
     
     private readonly Thread _listenerThread;
     private readonly Uri _sonarWebServerAddress;
+    private readonly SonarEventManager _sonarEventManager;
     private Socket _socket;
 
     private bool _isClosing;
 
-    public SonarSocket(string sonarWebServerAddress)
+    public SonarSocket(string sonarWebServerAddress, SonarEventManager sonarEventManager)
     {
         _sonarWebServerAddress = new Uri(sonarWebServerAddress);
         _listenerThread = new Thread(ListenerThreadSync) { IsBackground = false };
+        _sonarEventManager = sonarEventManager;
     }
 
     public bool Connect()
@@ -96,7 +98,12 @@ public class SonarSocket : ISonarSocket
                             break;
                         }
                     }
-                    Console.WriteLine(putData);
+                    if (!string.IsNullOrEmpty(putData))
+                    {
+                        string path = putData.Split("PUT ")[1].Split(" HTTP")[0];
+                        // Console.WriteLine(path); // For debugging
+                        _sonarEventManager.HandleEvent(path);  // Invoke events
+                    }
                 }
             }
         }

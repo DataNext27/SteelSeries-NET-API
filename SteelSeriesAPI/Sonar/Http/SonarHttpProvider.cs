@@ -172,30 +172,7 @@ public class SonarHttpProvider : ISonarDataProvider
             List<Device> associatedClassicDevices = new List<Device>();
             ArrayList associatedStreamDevices = new ArrayList();
             
-            foreach (var classicElement in classicRedirections.RootElement.EnumerateArray())
-            {
-                if (id == classicElement.GetProperty("deviceId").GetString())
-                {
-                    associatedClassicDevices.Add((Device)DeviceExtensions.FromDictKey(classicElement.GetProperty("id").GetString(), DeviceMapChoice.DeviceDict));
-                    
-                }
-            }
-            
-            foreach (var streamElement in streamRedirections.RootElement.EnumerateArray())
-            {
-                if (id == streamElement.GetProperty("deviceId").GetString())
-                {
-                    string streamRedirectionId = streamElement.GetProperty("streamRedirectionId").GetString();
-                    if (streamRedirectionId == "mic")
-                    {
-                        associatedStreamDevices.Add((Device)DeviceExtensions.FromDictKey(streamRedirectionId, DeviceMapChoice.DeviceDict));
-                    }
-                    else
-                    {
-                        associatedStreamDevices.Add((Channel)ChannelExtensions.FromDictKey(streamRedirectionId));
-                    }
-                }
-            }
+            GetAssociatedDevices(id, associatedClassicDevices, associatedStreamDevices);
     
             if (dataFlow == direction.ToDictKey())
             {
@@ -225,30 +202,9 @@ public class SonarHttpProvider : ISonarDataProvider
         
         string deviceId = cRedirections.GetProperty("deviceId").GetString();
         List<Device> associatedClassicDevices = new List<Device>();
-        foreach (var element in classicRedirections.RootElement.EnumerateArray())
-        {
-            if (element.GetProperty("deviceId").GetString() == deviceId)
-            {
-                associatedClassicDevices.Add((Device)DeviceExtensions.FromDictKey(element.GetProperty("id").GetString(), DeviceMapChoice.DeviceDict));
-            }
-        }
-        
         ArrayList associatedStreamDevices = new ArrayList();
-        JsonDocument streamRedirections = new HttpProvider("streamRedirections").Provide();
-        foreach (var element in streamRedirections.RootElement.EnumerateArray())
-        {
-            if (element.GetProperty("deviceId").GetString() == deviceId)
-            {
-                if (element.GetProperty("streamRedirectionId").GetString() == "mic")
-                {
-                    associatedStreamDevices.Add((Device)DeviceExtensions.FromDictKey(element.GetProperty("streamRedirectionId").GetString(), DeviceMapChoice.DeviceDict));
-                }
-                else
-                {
-                    associatedStreamDevices.Add((Channel)ChannelExtensions.FromDictKey(element.GetProperty("streamRedirectionId").GetString()));
-                }
-            }
-        }
+        
+        GetAssociatedDevices(deviceId, associatedClassicDevices, associatedStreamDevices);
     
         JsonDocument audioDevice = new HttpProvider("audioDevices/" + deviceId).Provide();
     
@@ -273,31 +229,9 @@ public class SonarHttpProvider : ISonarDataProvider
         }
         
         string deviceId = sRedirections.GetProperty("deviceId").GetString();
-        List<Device> associatedClassicDevices = new List<Device>();
-        JsonDocument classicRedirections = new HttpProvider("classicRedirections").Provide();
-        foreach (var element in classicRedirections.RootElement.EnumerateArray())
-        {
-            if (element.GetProperty("deviceId").GetString() == deviceId)
-            {
-                associatedClassicDevices.Add((Device)DeviceExtensions.FromDictKey(element.GetProperty("id").GetString(), DeviceMapChoice.DeviceDict));
-            }
-        }
-        
-        ArrayList associatedStreamDevices = new ArrayList();
-        foreach (var element in streamRedirections.RootElement.EnumerateArray())
-        {
-            if (element.GetProperty("deviceId").GetString() == deviceId)
-            {
-                if (element.GetProperty("streamRedirectionId").GetString() == "mic")
-                {
-                    associatedStreamDevices.Add((Device)DeviceExtensions.FromDictKey(element.GetProperty("streamRedirectionId").GetString(), DeviceMapChoice.DeviceDict));
-                }
-                else
-                {
-                    associatedStreamDevices.Add((Channel)ChannelExtensions.FromDictKey(element.GetProperty("streamRedirectionId").GetString()));
-                }
-            }
-        }
+        List<Device> associatedClassicDevices = new List<Device>();ArrayList associatedStreamDevices = new ArrayList();
+
+        GetAssociatedDevices(deviceId, associatedClassicDevices, associatedStreamDevices);
     
         JsonDocument audioDevice = new HttpProvider("audioDevices/" + deviceId).Provide();
     
@@ -328,7 +262,53 @@ public class SonarHttpProvider : ISonarDataProvider
         
         string deviceId = sRedirections.GetProperty("deviceId").GetString();
         List<Device> associatedClassicDevices = new List<Device>();
+        ArrayList associatedStreamDevices = new ArrayList();
+        
+        GetAssociatedDevices(deviceId, associatedClassicDevices, associatedStreamDevices);
+    
+        JsonDocument audioDevice = new HttpProvider("audioDevices/" + deviceId).Provide();
+    
+        string name = audioDevice.RootElement.GetProperty("friendlyName").GetString();
+        Direction dataFlow = (Direction)DirectionExtensions.FromDictKey(audioDevice.RootElement.GetProperty("dataFlow").GetString());
+    
+        return new RedirectionDevice(deviceId, name, dataFlow, associatedClassicDevices, associatedStreamDevices);
+    }
+
+    public RedirectionDevice GetRedirectionDeviceFromId(string deviceId)
+    {
+        JsonDocument audioDevices = new HttpProvider("audioDevices").Provide();
+        JsonElement aDevice = default;
+        
+        foreach (var element in audioDevices.RootElement.EnumerateArray())
+        {
+            if (element.GetProperty("role").GetString() != "none")
+            {
+                continue;
+            }
+
+            if (element.GetProperty("id").GetString() == deviceId)
+            {
+                aDevice = element;
+                break;
+            }
+        }
+        
+        string id = aDevice.GetProperty("id").GetString();
+        string name = aDevice.GetProperty("friendlyName").GetString();
+        string dataFlow = aDevice.GetProperty("dataFlow").GetString();
+        List<Device> associatedClassicDevices = new List<Device>();
+        ArrayList associatedStreamDevices = new ArrayList();
+        
+        GetAssociatedDevices(deviceId, associatedClassicDevices, associatedStreamDevices);
+        
+        return new RedirectionDevice(id, name, (Direction)DirectionExtensions.FromDictKey(dataFlow), associatedClassicDevices, associatedStreamDevices);
+    }
+
+    private void GetAssociatedDevices(string deviceId, List<Device> associatedClassicDevices, ArrayList associatedStreamDevices)
+    {
         JsonDocument classicRedirections = new HttpProvider("classicRedirections").Provide();
+        JsonDocument streamRedirections = new HttpProvider("streamRedirections").Provide();
+
         foreach (var element in classicRedirections.RootElement.EnumerateArray())
         {
             if (element.GetProperty("deviceId").GetString() == deviceId)
@@ -337,7 +317,6 @@ public class SonarHttpProvider : ISonarDataProvider
             }
         }
         
-        ArrayList associatedStreamDevices = new ArrayList();
         foreach (var element in streamRedirections.RootElement.EnumerateArray())
         {
             if (element.GetProperty("deviceId").GetString() == deviceId)
@@ -352,13 +331,6 @@ public class SonarHttpProvider : ISonarDataProvider
                 }
             }
         }
-    
-        JsonDocument audioDevice = new HttpProvider("audioDevices/" + deviceId).Provide();
-    
-        string name = audioDevice.RootElement.GetProperty("friendlyName").GetString();
-        Direction dataFlow = (Direction)DirectionExtensions.FromDictKey(audioDevice.RootElement.GetProperty("dataFlow").GetString());
-    
-        return new RedirectionDevice(deviceId, name, dataFlow, associatedClassicDevices, associatedStreamDevices);
     }
 
     public bool GetRedirectionState(Device device, Channel channel)

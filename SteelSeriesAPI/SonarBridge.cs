@@ -1,5 +1,4 @@
 using System.Security.Principal;
-using SteelSeriesAPI.EventArgs;
 using SteelSeriesAPI.Interfaces;
 using SteelSeriesAPI.Sonar;
 using SteelSeriesAPI.Sonar.Enums;
@@ -10,21 +9,23 @@ namespace SteelSeriesAPI;
 
 public class SonarBridge : ISonarBridge
 {
+    public bool IsRunning => _sonarRetriever is { IsEnabled: true, IsReady: true, IsRunning: true };
+    
     private readonly IAppRetriever _sonarRetriever;
     private readonly ISonarCommandHandler _sonarCommand;
     private readonly ISonarDataProvider _sonarProvider;
     private readonly ISonarSocket _sonarSocket;
+    public readonly SonarEventManager SonarEventManager;
 
     private string _sonarWebServerAddress;
-    
-    public event EventHandler<SonarEventArgs> OnSteelSeriesSonarEvent;
 
     public SonarBridge()
     {
         _sonarRetriever = new SonarRetriever();
         WaitUntilSonarStarted();
         _sonarWebServerAddress = _sonarRetriever.WebServerAddress();
-        _sonarSocket = new SonarSocket(_sonarWebServerAddress);
+        SonarEventManager = new SonarEventManager();
+        _sonarSocket = new SonarSocket(_sonarWebServerAddress, SonarEventManager);
         _sonarCommand = new SonarHttpCommand(this);
         _sonarProvider = new SonarHttpProvider(this);
     }
@@ -153,6 +154,11 @@ public class SonarBridge : ISonarBridge
     public RedirectionDevice GetStreamRedirectionDevice(Device device = Device.Mic)
     {
         return _sonarProvider.GetStreamRedirectionDevice(device);
+    }
+
+    public RedirectionDevice GetRedirectionDeviceFromId(string deviceId)
+    {
+        return _sonarProvider.GetRedirectionDeviceFromId(deviceId);
     }
 
     public bool GetRedirectionState(Device device, Channel channel)

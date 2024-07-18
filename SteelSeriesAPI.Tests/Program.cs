@@ -1,4 +1,4 @@
-﻿using SteelSeriesAPI.EventArgs;
+﻿using SteelSeriesAPI.Events;
 using SteelSeriesAPI.Sonar;
 using SteelSeriesAPI.Sonar.Enums;
 using SteelSeriesAPI.Sonar.Models;
@@ -12,15 +12,19 @@ class Program
         SonarBridge sonarManager = new SonarBridge();
         sonarManager.WaitUntilSonarStarted();
         Console.WriteLine(new SonarRetriever().WebServerAddress());
-
-        // sonarManager.StartListener();
         
-        // do
-        // {
-        //     continue;
-        // } while (Console.ReadKey(true).Key != ConsoleKey.Enter);
+        sonarManager.StartListener();
+        
         // sonarManager.StopListener();
-        // Console.WriteLine("End");
+
+        sonarManager.SonarEventManager.OnSonarModeChange += OnModeChangeHandler;
+        sonarManager.SonarEventManager.OnSonarVolumeChange += OnVolumeChangeHandler;
+        sonarManager.SonarEventManager.OnSonarMuteChange += OnMuteChangeHandler;
+        sonarManager.SonarEventManager.OnSonarConfigChange += OnConfigChangeHandler;
+        sonarManager.SonarEventManager.OnSonarChatMixChange += OnChatMixChangeHandler;
+        sonarManager.SonarEventManager.OnSonarRedirectionDeviceChange += OnRedirectionDeviceChangeHandler;
+        sonarManager.SonarEventManager.OnSonarRedirectionStateChange += OnRedirectionStateChangeHandler;
+        sonarManager.SonarEventManager.OnSonarAudienceMonitoringChange += OnAudienceMonitoringChangeHandler;
         
         Console.WriteLine(sonarManager.GetMode());
         Console.WriteLine("" + sonarManager.GetVolume(Device.Master) + "  " + sonarManager.GetMute(Device.Master));
@@ -103,7 +107,7 @@ class Program
             Console.WriteLine("...." + channel);
         }
         Console.WriteLine("-----Stream Redirection Devices------------");
-        RedirectionDevice reDeviceS = sonarManager.GetStreamRedirectionDevice(Channel.Monitoring);
+        RedirectionDevice reDeviceS = sonarManager.GetStreamRedirectionDevice(Device.Mic);
         Console.WriteLine(reDeviceS.Id + ", " + reDeviceS.Name);
         foreach (var device in reDeviceS.AssociatedClassicDevices)
         {
@@ -113,6 +117,18 @@ class Program
         foreach (var channel in reDeviceS.AssociatedStreamDevices)
         {
             Console.WriteLine("...." + channel);
+        }
+        Console.WriteLine("-----Redirection Device From Id");
+        RedirectionDevice someDevice = sonarManager.GetRedirectionDeviceFromId("{0.0.0.00000000}.{c87d3a51-f11c-4ebc-ae7e-1711688e3b20}");
+        Console.WriteLine(someDevice.Id + ", " + someDevice.Name + ", " + someDevice.DataFlow);
+        foreach (var associatedClassicDevice in someDevice.AssociatedClassicDevices)
+        {
+            Console.WriteLine("...." + associatedClassicDevice);
+        }
+        
+        foreach (var associatedStreamDevice in someDevice.AssociatedStreamDevices)
+        {
+            Console.WriteLine("...." + associatedStreamDevice);
         }
         
         Console.WriteLine("-----Redirection States---------");
@@ -131,27 +147,25 @@ class Program
 
 
 
-        sonarManager.SetMode(Mode.Classic);
-        sonarManager.SetVolume(0.2, Device.Media);
-        sonarManager.SetMute(false, Device.Media);
-        var configs = sonarManager.GetAudioConfigurations(Device.Game);
-        configs.GetEnumerator().MoveNext();
-        sonarManager.SetConfig(configs.GetEnumerator().Current.Id);
-        sonarManager.SetConfig(Device.Media, "Default");
-        sonarManager.SetChatMixBalance(0.5);
-        var redirectionDevices = sonarManager.GetRedirectionDevices(Direction.Input);
-        redirectionDevices.GetEnumerator().MoveNext();
-        sonarManager.SetClassicRedirectionDevice(redirectionDevices.GetEnumerator().Current.Id, Device.Mic);
-        sonarManager.SetStreamRedirectionDevice(redirectionDevices.GetEnumerator().Current.Id, Device.Mic);
-        
-        sonarManager.SetRedirectionState(true, Device.Media, Channel.Stream);
-        sonarManager.SetAudienceMonitoringState(false);
+        // sonarManager.SetMode(Mode.Classic);
+        // sonarManager.SetVolume(0.2, Device.Media);
+        // sonarManager.SetMute(false, Device.Media);
+        // var configs = sonarManager.GetAudioConfigurations(Device.Game);
+        // configs.GetEnumerator().MoveNext();
+        // sonarManager.SetConfig(configs.GetEnumerator().Current.Id);
+        // sonarManager.SetConfig(Device.Media, "Default");
+        // sonarManager.SetChatMixBalance(0.5);
+        // var redirectionDevices = sonarManager.GetRedirectionDevices(Direction.Input);
+        // redirectionDevices.GetEnumerator().MoveNext();
+        // sonarManager.SetClassicRedirectionDevice(redirectionDevices.GetEnumerator().Current.Id, Device.Mic);
+        // sonarManager.SetStreamRedirectionDevice(redirectionDevices.GetEnumerator().Current.Id, Device.Mic);
+        //
+        // sonarManager.SetRedirectionState(true, Device.Media, Channel.Stream);
+        // sonarManager.SetAudienceMonitoringState(false);
 
 
         /* TODO -
-        sonarManager.OnSteelSeriesSonarEvent += OnSteelSeriesEventHandler;
-
-        GetRedircetionDeviceFromId(); // deviceId   return RedirectionDevice
+        
         GetRoutedProcesses(); // Device     return List<RoutedProcess>
 
 
@@ -159,8 +173,48 @@ class Program
         */
     }
 
-    public static void OnSteelSeriesEventHandler(object sender, SonarEventArgs eventArgs)
+    static void OnModeChangeHandler(object sender, SonarModeEvent eventArgs)
     {
-        
+        Console.WriteLine("Received Mode Event : " + eventArgs.NewMode);
     }
+
+    static void OnVolumeChangeHandler(object? sender, SonarVolumeEvent eventArgs)
+    {
+        Console.WriteLine("Received Volume Event");
+        Console.WriteLine(eventArgs.Volume + ", " + eventArgs.Mode + ", " + eventArgs.Device + ", " + eventArgs.Channel);
+    }
+
+    static void OnMuteChangeHandler(object sender, SonarMuteEvent eventArgs)
+    {
+        Console.WriteLine("Received Mute Event");
+        Console.WriteLine(eventArgs.Muted + ", " + eventArgs.Mode + ", " + eventArgs.Device + ", " + eventArgs.Channel);
+    }
+
+    static void OnConfigChangeHandler(object sender, SonarConfigEvent eventArgs)
+    {
+        Console.WriteLine("Received Config Event : " + eventArgs.ConfigId);
+    }
+
+    static void OnChatMixChangeHandler(object sender, SonarChatMixEvent eventArgs)
+    {
+        Console.WriteLine("Received ChatMix Event : " + eventArgs.Balance);
+    }
+
+    static void OnRedirectionDeviceChangeHandler(object sender, SonarRedirectionDeviceEvent eventArgs)
+    {
+        Console.WriteLine("Received Redirection Device Event");
+        Console.WriteLine(eventArgs.RedirectionDeviceId + ", " + eventArgs.Mode + ", " + eventArgs.Device + ", " + eventArgs.Channel);
+    }
+
+    static void OnRedirectionStateChangeHandler(object sender, SonarRedirectionStateEvent eventArgs)
+    {
+        Console.WriteLine("Received Redirection State Event");
+        Console.WriteLine(eventArgs.State + ", " + eventArgs.Device + ", " + eventArgs.Channel);
+    }
+
+    static void OnAudienceMonitoringChangeHandler(object sender, SonarAudienceMonitoringEvent eventArgs)
+    {
+        Console.WriteLine("Received Audience Monitoring Event : " + eventArgs.AudienceMonitoringState);
+    }
+    
 }
