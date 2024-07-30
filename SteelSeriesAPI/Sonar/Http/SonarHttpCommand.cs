@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text.Json;
 using System.Threading.Channels;
 using SteelSeriesAPI.Interfaces;
 using SteelSeriesAPI.Sonar.Enums;
@@ -122,5 +123,32 @@ public class SonarHttpCommand : ISonarCommandHandler
     public void SetAudienceMonitoringState(bool newState)
     {
         new HttpPut("streamRedirections/isStreamMonitoringEnabled/" + newState);
+    }
+    
+    public void SetProcessToDeviceRouting(int pid, Device device)
+    {
+        if (device == Device.Master)
+        {
+            throw new Exception("Can't set process to master routing");
+        }
+        
+        JsonDocument audioDeviceRouting = new HttpProvider("AudioDeviceRouting").Provide();
+
+        foreach (var element in audioDeviceRouting.RootElement.EnumerateArray())
+        {
+            if (element.GetProperty("role").GetString() == device.ToDictKey())
+            {
+                if (device == Device.Mic)
+                {
+                    new HttpPut("AudioDeviceRouting/capture/" + element.GetProperty("deviceId").GetString() + "/" + pid);
+                    break;
+                }
+                else
+                {
+                    new HttpPut("AudioDeviceRouting/render/" + element.GetProperty("deviceId").GetString() + "/" + pid);
+                    break;
+                }
+            }
+        }
     }
 }

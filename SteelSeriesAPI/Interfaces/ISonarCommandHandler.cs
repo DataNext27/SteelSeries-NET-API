@@ -61,4 +61,6 @@ public interface ISonarCommandHandler
     void SetRedirectionState(bool newState, Device device, Channel channel);
 
     void SetAudienceMonitoringState(bool newState);
+
+    void SetProcessToDeviceRouting(int pid, Device device);
 }

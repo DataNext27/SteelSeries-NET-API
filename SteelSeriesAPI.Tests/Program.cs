@@ -15,6 +15,7 @@ class Program
         
         sonarManager.StartListener();
         
+        // Thread.Sleep(1000);
         // sonarManager.StopListener();
 
         sonarManager.SonarEventManager.OnSonarModeChange += OnModeChangeHandler;
@@ -162,14 +163,11 @@ class Program
         //
         // sonarManager.SetRedirectionState(true, Device.Media, Channel.Stream);
         // sonarManager.SetAudienceMonitoringState(false);
-
+        // sonarManager.SetProcessToDeviceRouting(19152, Device.Mic);
 
         /* TODO -
         
         GetRoutedProcesses(); // Device     return List<RoutedProcess>
-
-
-        SetProcessToDeviceRouting(); // PID, Device
         */
     }
 

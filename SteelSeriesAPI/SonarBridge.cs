@@ -230,5 +230,10 @@ public class SonarBridge : ISonarBridge
         _sonarCommand.SetAudienceMonitoringState(newState);
     }
 
+    public void SetProcessToDeviceRouting(int pid, Device device)
+    {
+        _sonarCommand.SetProcessToDeviceRouting(pid, device);
+    }
+
     #endregion
 }
