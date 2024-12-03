@@ -1,4 +1,4 @@
-using System.Security.Principal;
+﻿using System.Security.Principal;
 using SteelSeriesAPI.Interfaces;
 using SteelSeriesAPI.Sonar;
 using SteelSeriesAPI.Sonar.Enums;

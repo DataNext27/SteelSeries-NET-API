@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text.Json;
 using SteelSeriesAPI.Interfaces;
 
@@ -37,7 +37,7 @@ public class SteelSeriesRetriever : ISteelSeriesRetriever
         }
         catch (Exception e)
         {
-            throw new Exception("Could not find coreProps.json\nIs SteelSeries installed?");
+            throw new Exception("Could not find coreProps.json\nIs SteelSeries installed?", e);
         }
     }
 

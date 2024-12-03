@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Text.Json;
 using SteelSeriesAPI.Interfaces;
 using SteelSeriesAPI.Sonar.Enums;

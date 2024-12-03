@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using SteelSeriesAPI.Events;
 using SteelSeriesAPI.Sonar.Enums;
 

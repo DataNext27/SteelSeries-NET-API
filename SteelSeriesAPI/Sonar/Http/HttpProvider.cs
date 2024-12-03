@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using SteelSeriesAPI.Interfaces;
 
 namespace SteelSeriesAPI.Sonar.Http;
@@ -8,7 +8,7 @@ public class HttpProvider
     private readonly HttpClient _httpClient;
     private readonly IAppRetriever _sonarRetriever;
     
-    private string _targetHttp;
+    private readonly string _targetHttp;
     
     public HttpProvider(string targetHttp)
     {
@@ -16,7 +16,7 @@ public class HttpProvider
         _sonarRetriever = SonarRetriever.Instance;
         
         HttpClientHandler clientHandler = new HttpClientHandler();
-        clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+        clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
         _httpClient = new(clientHandler);
     }
 
