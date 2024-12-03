@@ -21,7 +21,7 @@ public class SonarBridge : ISonarBridge
 
     public SonarBridge()
     {
-        _sonarRetriever = new SonarRetriever();
+        _sonarRetriever = SonarRetriever.Instance;
         WaitUntilSonarStarted();
         _sonarWebServerAddress = _sonarRetriever.WebServerAddress();
         SonarEventManager = new SonarEventManager();

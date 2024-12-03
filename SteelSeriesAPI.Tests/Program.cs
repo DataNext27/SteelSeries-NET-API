@@ -108,7 +108,7 @@ class Program
             Console.WriteLine("...." + channel);
         }
         Console.WriteLine("-----Stream Redirection Devices------------");
-        RedirectionDevice reDeviceS = sonarManager.GetStreamRedirectionDevice(Device.Mic);
+        RedirectionDevice reDeviceS = sonarManager.GetStreamRedirectionDevice(Device.Mic); // sonarManager.GetStreamRedirectionDevice(Channel.Monitoring);
         Console.WriteLine(reDeviceS.Id + ", " + reDeviceS.Name);
         foreach (var device in reDeviceS.AssociatedClassicDevices)
         {
@@ -120,7 +120,7 @@ class Program
             Console.WriteLine("...." + channel);
         }
         Console.WriteLine("-----Redirection Device From Id");
-        RedirectionDevice someDevice = sonarManager.GetRedirectionDeviceFromId("{0.0.0.00000000}.{c87d3a51-f11c-4ebc-ae7e-1711688e3b20}");
+        RedirectionDevice someDevice = sonarManager.GetRedirectionDeviceFromId("{0.0.1.00000000}.{33015601-9e07-4aa6-b75c-887ba72b551f}");
         Console.WriteLine(someDevice.Id + ", " + someDevice.Name + ", " + someDevice.DataFlow);
         foreach (var associatedClassicDevice in someDevice.AssociatedClassicDevices)
         {
@@ -214,5 +214,4 @@ class Program
     {
         Console.WriteLine("Received Audience Monitoring Event : " + eventArgs.AudienceMonitoringState);
     }
-    
 }

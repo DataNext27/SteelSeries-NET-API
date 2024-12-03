@@ -6,6 +6,9 @@ namespace SteelSeriesAPI.Sonar;
 
 public class SonarRetriever : IAppRetriever
 {
+    private static readonly Lazy<SonarRetriever> _instance = new(() => new SonarRetriever());
+    public static SonarRetriever Instance => _instance.Value;
+    
     public string Name => "sonar";
     
     public bool IsEnabled => GetMetaDatas()[0];
@@ -22,7 +25,7 @@ public class SonarRetriever : IAppRetriever
     private readonly HttpClient _httpClient;
     public SonarRetriever()
     {
-        _ssRetriever = new SteelSeriesRetriever();
+        _ssRetriever = SteelSeriesRetriever.Instance;
         _ssRetriever.WaitUntilSteelSeriesStarted();
         _ggEncryptedAddress = _ssRetriever.GetggEncryptedAddress();
         

@@ -18,7 +18,7 @@ public class SonarHttpProvider : ISonarDataProvider
     public Mode GetMode()
     {
         string mode = new HttpProvider("mode").Provide().RootElement.ToString();
-
+        
         return (Mode)ModeExtensions.FromDictKey(mode, ModeMapChoice.StreamDict);
     }
     
@@ -292,6 +292,8 @@ public class SonarHttpProvider : ISonarDataProvider
                 break;
             }
         }
+        
+        // Check if aDevice is empty or not
         
         string id = aDevice.GetProperty("id").GetString();
         string name = aDevice.GetProperty("friendlyName").GetString();

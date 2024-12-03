@@ -13,7 +13,7 @@ public class HttpProvider
     public HttpProvider(string targetHttp)
     {
         _targetHttp = targetHttp;
-        _sonarRetriever = new SonarRetriever();
+        _sonarRetriever = SonarRetriever.Instance;
         
         HttpClientHandler clientHandler = new HttpClientHandler();
         clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };

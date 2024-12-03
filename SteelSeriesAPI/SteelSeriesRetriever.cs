@@ -6,10 +6,13 @@ namespace SteelSeriesAPI;
 
 public class SteelSeriesRetriever : ISteelSeriesRetriever
 {
+    private static readonly Lazy<SteelSeriesRetriever> _instance = new(() => new SteelSeriesRetriever());
+    
+    public static SteelSeriesRetriever Instance => _instance.Value;
+    
     public bool Running => _steelSeriesProcesses.Length > 0;
     
     private readonly Thread _checkerThread;
-    
     private Process[] _steelSeriesProcesses;
 
     public SteelSeriesRetriever()
