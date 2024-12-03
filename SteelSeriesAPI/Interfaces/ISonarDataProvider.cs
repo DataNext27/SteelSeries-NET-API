@@ -65,4 +65,6 @@ public interface ISonarDataProvider
     bool GetRedirectionState(Device device, Channel channel);
 
     bool GetAudienceMonitoringState();
+    
+    IEnumerable<RoutedProcess> GetRoutedProcess(Device device);
 }

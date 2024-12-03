@@ -145,6 +145,11 @@ class Program
         Console.WriteLine(sonarManager.GetRedirectionState(Device.Mic, Channel.Stream));
         Console.WriteLine("-----Audience Monitoring-------");
         Console.WriteLine(sonarManager.GetAudienceMonitoringState());
+        Console.WriteLine("-----Routed Processes-----------");
+        foreach (var routed in sonarManager.GetRoutedProcess(Device.Aux))
+        {
+            Console.WriteLine(routed.Id + ", " + routed.ProcessName + ", " + routed.PId + ", " + routed.State + ", " + routed.DisplayName);
+        }
 
 
 
@@ -164,11 +169,6 @@ class Program
         // sonarManager.SetRedirectionState(true, Device.Media, Channel.Stream);
         // sonarManager.SetAudienceMonitoringState(false);
         // sonarManager.SetProcessToDeviceRouting(19152, Device.Mic);
-
-        /* TODO -
-        
-        GetRoutedProcesses(); // Device     return List<RoutedProcess>
-        */
     }
 
     static void OnModeChangeHandler(object sender, SonarModeEvent eventArgs)

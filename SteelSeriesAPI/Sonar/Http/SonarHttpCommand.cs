@@ -124,7 +124,7 @@ public class SonarHttpCommand : ISonarCommandHandler
         new HttpPut("streamRedirections/isStreamMonitoringEnabled/" + newState);
     }
     
-    public void SetProcessToDeviceRouting(int pid, Device device)
+    public void SetProcessToDeviceRouting(int pId, Device device)
     {
         if (device == Device.Master)
         {
@@ -139,12 +139,12 @@ public class SonarHttpCommand : ISonarCommandHandler
             {
                 if (device == Device.Mic)
                 {
-                    new HttpPut("AudioDeviceRouting/capture/" + element.GetProperty("deviceId").GetString() + "/" + pid);
+                    new HttpPut("AudioDeviceRouting/capture/" + element.GetProperty("deviceId").GetString() + "/" + pId);
                     break;
                 }
                 else
                 {
-                    new HttpPut("AudioDeviceRouting/render/" + element.GetProperty("deviceId").GetString() + "/" + pid);
+                    new HttpPut("AudioDeviceRouting/render/" + element.GetProperty("deviceId").GetString() + "/" + pId);
                     break;
                 }
             }

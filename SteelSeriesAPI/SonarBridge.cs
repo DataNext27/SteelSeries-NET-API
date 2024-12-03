@@ -171,6 +171,11 @@ public class SonarBridge : ISonarBridge
         return _sonarProvider.GetAudienceMonitoringState();
     }
 
+    public IEnumerable<RoutedProcess> GetRoutedProcess(Device device)
+    {
+        return _sonarProvider.GetRoutedProcess(device);
+    }
+
     #endregion
 
     #region Commands
@@ -230,9 +235,9 @@ public class SonarBridge : ISonarBridge
         _sonarCommand.SetAudienceMonitoringState(newState);
     }
 
-    public void SetProcessToDeviceRouting(int pid, Device device)
+    public void SetProcessToDeviceRouting(int pId, Device device)
     {
-        _sonarCommand.SetProcessToDeviceRouting(pid, device);
+        _sonarCommand.SetProcessToDeviceRouting(pId, device);
     }
 
     #endregion

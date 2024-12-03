@@ -62,5 +62,5 @@ public interface ISonarCommandHandler
 
     void SetAudienceMonitoringState(bool newState);
 
-    void SetProcessToDeviceRouting(int pid, Device device);
+    void SetProcessToDeviceRouting(int pId, Device device);
 }
