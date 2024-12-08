@@ -274,7 +274,7 @@ public class SonarHttpProvider : ISonarDataProvider
         return new RedirectionDevice(deviceId, name, dataFlow, associatedClassicDevices, associatedStreamDevices);
     }
 
-    public RedirectionDevice? GetRedirectionDeviceFromId(string deviceId)
+    public RedirectionDevice GetRedirectionDeviceFromId(string deviceId)
     {
         try
         {
@@ -293,8 +293,7 @@ public class SonarHttpProvider : ISonarDataProvider
         catch (Exception e)
         {
             Console.WriteLine(e);
-            Console.WriteLine("--!! Maybe device doesn't exist !!--");
-            return null;
+            throw new Exception("Can't get any device from this Id, maybe the device doesn't exist or its Id changed.");
         }
     }
 
