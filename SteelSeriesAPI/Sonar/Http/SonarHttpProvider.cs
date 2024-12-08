@@ -274,36 +274,28 @@ public class SonarHttpProvider : ISonarDataProvider
         return new RedirectionDevice(deviceId, name, dataFlow, associatedClassicDevices, associatedStreamDevices);
     }
 
-    public RedirectionDevice GetRedirectionDeviceFromId(string deviceId)
+    public RedirectionDevice? GetRedirectionDeviceFromId(string deviceId)
     {
-        JsonDocument audioDevices = new HttpProvider("audioDevices").Provide();
-        JsonElement aDevice = default;
-        
-        foreach (var element in audioDevices.RootElement.EnumerateArray())
+        try
         {
-            if (element.GetProperty("role").GetString() != "none")
-            {
-                continue;
-            }
-
-            if (element.GetProperty("id").GetString() == deviceId)
-            {
-                aDevice = element;
-                break;
-            }
+            JsonElement device = new HttpProvider("audioDevices/" + deviceId).Provide().RootElement;
+            
+            string id = device.GetProperty("id").GetString();
+            string name = device.GetProperty("friendlyName").GetString();
+            string dataFlow = device.GetProperty("dataFlow").GetString();
+            List<Device> associatedClassicDevices = new List<Device>();
+            ArrayList associatedStreamDevices = new ArrayList();
+        
+            GetAssociatedDevices(deviceId, associatedClassicDevices, associatedStreamDevices);
+        
+            return new RedirectionDevice(id, name, (Direction)DirectionExtensions.FromDictKey(dataFlow), associatedClassicDevices, associatedStreamDevices);
         }
-        
-        // Check if aDevice is empty or not
-        
-        string id = aDevice.GetProperty("id").GetString();
-        string name = aDevice.GetProperty("friendlyName").GetString();
-        string dataFlow = aDevice.GetProperty("dataFlow").GetString();
-        List<Device> associatedClassicDevices = new List<Device>();
-        ArrayList associatedStreamDevices = new ArrayList();
-        
-        GetAssociatedDevices(deviceId, associatedClassicDevices, associatedStreamDevices);
-        
-        return new RedirectionDevice(id, name, (Direction)DirectionExtensions.FromDictKey(dataFlow), associatedClassicDevices, associatedStreamDevices);
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            Console.WriteLine("--!! Maybe device doesn't exist !!--");
+            return null;
+        }
     }
 
     private void GetAssociatedDevices(string deviceId, List<Device> associatedClassicDevices, ArrayList associatedStreamDevices)

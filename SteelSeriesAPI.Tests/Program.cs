@@ -120,18 +120,21 @@ class Program
             Console.WriteLine("...." + channel);
         }
         Console.WriteLine("-----Redirection Device From Id");
-        RedirectionDevice someDevice = sonarManager.GetRedirectionDeviceFromId("{0.0.0.00000000}.{453f6e2f-375e-4b36-97b2-2aa55691af3c}");
-        Console.WriteLine(someDevice.Id + ", " + someDevice.Name + ", " + someDevice.DataFlow);
-        foreach (var associatedClassicDevice in someDevice.AssociatedClassicDevices)
+        RedirectionDevice? someDevice = sonarManager.GetRedirectionDeviceFromId("{0.0.0.00000000}.{453f6e2f-375e-4b36-97b2-2aa55691ab3c}");
+        if (someDevice != null)
         {
-            Console.WriteLine("...." + associatedClassicDevice);
+            Console.WriteLine(someDevice.Id + ", " + someDevice.Name + ", " + someDevice.DataFlow);
+            foreach (var associatedClassicDevice in someDevice.AssociatedClassicDevices)
+            {
+                Console.WriteLine("...." + associatedClassicDevice);
+            }
+
+            foreach (var associatedStreamDevice in someDevice.AssociatedStreamDevices)
+            {
+                Console.WriteLine("...." + associatedStreamDevice);
+            }
         }
-        
-        foreach (var associatedStreamDevice in someDevice.AssociatedStreamDevices)
-        {
-            Console.WriteLine("...." + associatedStreamDevice);
-        }
-        
+
         Console.WriteLine("-----Redirection States---------");
         Console.WriteLine(sonarManager.GetRedirectionState(Device.Game, Channel.Monitoring));
         Console.WriteLine(sonarManager.GetRedirectionState(Device.Chat, Channel.Monitoring));

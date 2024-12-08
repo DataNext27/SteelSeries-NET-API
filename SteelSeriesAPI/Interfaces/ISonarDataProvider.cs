@@ -60,7 +60,7 @@ public interface ISonarDataProvider
     
     RedirectionDevice GetStreamRedirectionDevice(Device device);
 
-    RedirectionDevice GetRedirectionDeviceFromId(string deviceId);
+    RedirectionDevice? GetRedirectionDeviceFromId(string deviceId);
 
     bool GetRedirectionState(Device device, Channel channel);
 
