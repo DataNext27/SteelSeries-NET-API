@@ -3,7 +3,8 @@ namespace SteelSeriesAPI.Sonar.Enums;
 public enum RoutedProcessState
 {
     Active,
-    Inactive
+    Inactive,
+    Expired
 }
 
 public static class RoutedProcessStateExtensions
@@ -12,6 +13,7 @@ public static class RoutedProcessStateExtensions
     {
         { RoutedProcessState.Active, "active" },
         { RoutedProcessState.Inactive, "inactive" },
+        { RoutedProcessState.Expired, "expired" },
     };
 
     public static string ToDictKey(this RoutedProcessState state)
