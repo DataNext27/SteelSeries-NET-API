@@ -52,10 +52,26 @@ public interface ISonarCommandHandler
     /// <param name="balance">A <see cref="double"/> between -1 and 0</param>
     void SetChatMixBalance(double balance);
 
+    /// <summary>
+    /// Set the classic mode redirection device of a <see cref="Device"/> using its ID
+    /// </summary>
+    /// <param name="deviceId">The id of the new redirection device</param>
+    /// <param name="device">The <see cref="Device"/> you want to change the redirection device</param>
     void SetClassicRedirectionDevice(string deviceId, Device device);
 
+    /// <summary>
+    /// Set the streamer mode redirection device of a <see cref="Channel"/> using its ID
+    /// </summary>
+    /// <param name="deviceId">The id of the new redirection device</param>
+    /// <param name="channel">The <see cref="Channel"/> you want to change the redirection device</param>
     void SetStreamRedirectionDevice(string deviceId, Channel channel);
 
+    /// <summary>
+    /// Set the streamer mode redirection device of the mic using its ID
+    /// </summary>
+    /// <param name="deviceId">The id of the new redirection device</param>
+    /// <param name="device">The <see cref="Device"/> you want to change the redirection device</param>
+    /// <remarks><paramref name="device"/> should be set to <see cref="Device.Mic"/> for it to work properly</remarks>
     void SetStreamRedirectionDevice(string deviceId, Device device);
 
     void SetRedirectionState(bool newState, Device device, Channel channel);

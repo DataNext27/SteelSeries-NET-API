@@ -13,7 +13,7 @@ class Program
         sonarManager.WaitUntilSonarStarted();
         Console.WriteLine(new SonarRetriever().WebServerAddress());
         
-        // sonarManager.StartListener();
+        sonarManager.StartListener();
         
         // Thread.Sleep(1000);
         // sonarManager.StopListener();

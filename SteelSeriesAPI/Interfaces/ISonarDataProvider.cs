@@ -52,6 +52,11 @@ public interface ISonarDataProvider
     /// <returns>True if ChatMix is enabled <br/> False if ChatMix is disabled</returns>
     bool GetChatMixState();
 
+    /// <summary>
+    /// Get 
+    /// </summary>
+    /// <param name="direction">The DataFlow of the device (In/Output)</param>
+    /// <returns>A list of <see cref="RedirectionDevice"/></returns>
     IEnumerable<RedirectionDevice> GetRedirectionDevices(Direction direction);
 
     RedirectionDevice GetClassicRedirectionDevice(Device device);
