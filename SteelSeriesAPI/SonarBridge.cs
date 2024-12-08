@@ -156,7 +156,7 @@ public class SonarBridge : ISonarBridge
         return _sonarProvider.GetStreamRedirectionDevice(device);
     }
 
-    public RedirectionDevice? GetRedirectionDeviceFromId(string deviceId)
+    public RedirectionDevice GetRedirectionDeviceFromId(string deviceId)
     {
         return _sonarProvider.GetRedirectionDeviceFromId(deviceId);
     }
