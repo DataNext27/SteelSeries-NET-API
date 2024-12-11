@@ -17,7 +17,7 @@ class Program
         
         // Thread.Sleep(1000);
         // sonarManager.StopListener();
-
+        
         sonarManager.SonarEventManager.OnSonarModeChange += OnModeChangeHandler;
         sonarManager.SonarEventManager.OnSonarVolumeChange += OnVolumeChangeHandler;
         sonarManager.SonarEventManager.OnSonarMuteChange += OnMuteChangeHandler;
@@ -120,17 +120,17 @@ class Program
             Console.WriteLine("...." + channel);
         }
         Console.WriteLine("-----Redirection Device From Id");
-        RedirectionDevice someDevice = sonarManager.GetRedirectionDeviceFromId("{0.0.0.00000000}.{453f6e2f-375e-4b36-97b2-2aa55691ab3c}");
-        Console.WriteLine(someDevice.Id + ", " + someDevice.Name + ", " + someDevice.DataFlow);
-        foreach (var associatedClassicDevice in someDevice.AssociatedClassicDevices)
-        {
-            Console.WriteLine("...." + associatedClassicDevice);
-        }
-        
-        foreach (var associatedStreamDevice in someDevice.AssociatedStreamDevices)
-        {
-            Console.WriteLine("...." + associatedStreamDevice);
-        }
+        // RedirectionDevice someDevice = sonarManager.GetRedirectionDeviceFromId("{0.0.0.00000000}.{453f6e2f-375e-4b36-97b2-2aa55691ab3c}");
+        // Console.WriteLine(someDevice.Id + ", " + someDevice.Name + ", " + someDevice.DataFlow);
+        // foreach (var associatedClassicDevice in someDevice.AssociatedClassicDevices)
+        // {
+        //     Console.WriteLine("...." + associatedClassicDevice);
+        // }
+        //
+        // foreach (var associatedStreamDevice in someDevice.AssociatedStreamDevices)
+        // {
+        //     Console.WriteLine("...." + associatedStreamDevice);
+        // }
         
         Console.WriteLine("-----Redirection States---------");
         Console.WriteLine(sonarManager.GetRedirectionState(Device.Game, Channel.Monitoring));
@@ -146,10 +146,19 @@ class Program
         Console.WriteLine("-----Audience Monitoring-------");
         Console.WriteLine(sonarManager.GetAudienceMonitoringState());
         Console.WriteLine("-----Routed Processes-----------");
-        foreach (var routed in sonarManager.GetRoutedProcess(Device.Aux))
+        foreach (Device device in (Device[])Enum.GetValues(typeof(Device)))
         {
-            Console.WriteLine(routed.Id + ", " + routed.ProcessName + ", " + routed.PId + ", " + routed.State + ", " + routed.DisplayName);
+            if (device == Device.Master)
+            {
+                continue;
+            }
+            Console.WriteLine("-- " + device);
+            foreach (var routed in sonarManager.GetRoutedProcess(device))
+            {
+                Console.WriteLine(routed.Id + ", " + routed.ProcessName + ", " + routed.PId + ", " + routed.State + ", " + routed.DisplayName);
+            }
         }
+        
 
 
 

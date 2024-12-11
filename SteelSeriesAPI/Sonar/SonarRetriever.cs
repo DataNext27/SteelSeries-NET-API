@@ -23,6 +23,10 @@ public class SonarRetriever : IAppRetriever
     private readonly ISteelSeriesRetriever _ssRetriever;
     private readonly string _ggEncryptedAddress;
     private readonly HttpClient _httpClient;
+    
+    /// <summary>
+    /// Get information about Sonar such as meta datas
+    /// </summary>
     public SonarRetriever()
     {
         _ssRetriever = SteelSeriesRetriever.Instance;
@@ -65,6 +69,11 @@ public class SonarRetriever : IAppRetriever
         }
     }
     
+    /// <summary>
+    /// Get the ip address of the Soanr rest server
+    /// </summary>
+    /// <returns>The ip address op the Sonar rest server</returns>
+    /// <exception cref="Exception"></exception>
     public string WebServerAddress()
     {
         if (!IsEnabled || !IsReady || !IsRunning)

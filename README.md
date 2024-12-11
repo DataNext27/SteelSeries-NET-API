@@ -5,6 +5,7 @@ This API is **NOT** affiliated in any way with **SteelSeries**
  - Sonar
 
 ## Todo
+ - Handle when sonar/gg is closed to prevent crash
  - To determine
    
 Actually not possible, maybe one day i guess :/<br/>

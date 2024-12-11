@@ -6,13 +6,44 @@ namespace SteelSeriesAPI.Sonar;
 
 public class SonarEventManager
 {
+    /// <summary>
+    /// Notify when mode changed
+    /// </summary>
     public event EventHandler<SonarModeEvent> OnSonarModeChange = delegate{  };
+    
+    /// <summary>
+    /// Notify when a volume of a device changed
+    /// </summary>
     public event EventHandler<SonarVolumeEvent> OnSonarVolumeChange = delegate{  };
+    
+    /// <summary>
+    /// Notify when a device is un/muted
+    /// </summary>
     public event EventHandler<SonarMuteEvent> OnSonarMuteChange = delegate{  };
+    
+    /// <summary>
+    /// Notify when the config of a device is changed
+    /// </summary>
     public event EventHandler<SonarConfigEvent> OnSonarConfigChange = delegate{  };
+    
+    /// <summary>
+    /// Notify when ChatMix value was changed
+    /// </summary>
     public event EventHandler<SonarChatMixEvent> OnSonarChatMixChange = delegate{  };
+    
+    /// <summary>
+    /// Notify when a redirection device of a device is changed
+    /// </summary>
     public event EventHandler<SonarRedirectionDeviceEvent> OnSonarRedirectionDeviceChange = delegate{  };
+    
+    /// <summary>
+    /// Notify when a redirection state is changed
+    /// </summary>
     public event EventHandler<SonarRedirectionStateEvent> OnSonarRedirectionStateChange = delegate{  };
+    
+    /// <summary>
+    /// Notify when the audience monitoring state is changed
+    /// </summary>
     public event EventHandler<SonarAudienceMonitoringEvent> OnSonarAudienceMonitoringChange = delegate{  };
 
     public void HandleEvent(string path)

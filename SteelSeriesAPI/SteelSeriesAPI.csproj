@@ -4,10 +4,31 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <TargetFrameworks>net8.0;net9.0;net7.0</TargetFrameworks>
+        <Version>1.0.0</Version>
+        <PackageId>steelseries-net-api</PackageId>
+        <Title>SteelSeries .NET API</Title>
+        <Authors>DataNext</Authors>
+        <Description>Unofficial .NET SteelSeries Sonar API (Since it's acutally impossible for Moments)</Description>
+        <PackageProjectUrl>https://github.com/mpaperno/TouchPortal-CS-API</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/DataNext27/SteelSeries-NET-API.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Copyright>Copyright DataNext; all rights reserved</Copyright>
+        <PackageLicenseUrl>https://github.com/DataNext27/SteelSeries-NET-API/blob/main/LICENSE</PackageLicenseUrl>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageIcon>icon-24.ico</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
       <Folder Include="Events\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="icon-24.ico">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
     </ItemGroup>
 
 </Project>

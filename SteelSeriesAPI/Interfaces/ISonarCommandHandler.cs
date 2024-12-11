@@ -1,6 +1,4 @@
-using System.Threading.Channels;
 using SteelSeriesAPI.Sonar.Enums;
-using Channel = SteelSeriesAPI.Sonar.Enums.Channel;
 
 namespace SteelSeriesAPI.Interfaces;
 
@@ -71,12 +69,27 @@ public interface ISonarCommandHandler
     /// </summary>
     /// <param name="deviceId">The id of the new redirection device</param>
     /// <param name="device">The <see cref="Device"/> you want to change the redirection device</param>
-    /// <remarks><paramref name="device"/> should be set to <see cref="Device.Mic"/> for it to work properly</remarks>
-    void SetStreamRedirectionDevice(string deviceId, Device device);
+    /// <remarks><paramref name="device"/> should be set to <see cref="Device.Mic"/> for it to work</remarks>
+    void SetStreamRedirectionDevice(string deviceId, Device device = Device.Mic);
 
+    /// <summary>
+    /// Mute or unmute the redirection of the chosen <see cref="Channel"/> of the chosen <see cref="Device"/>
+    /// </summary>
+    /// <param name="newState">The new state of the redirection</param>
+    /// <param name="device">The <see cref="Device"/> you want to un/mute a redirection channel</param>
+    /// <param name="channel">The <see cref="Channel"/> you want to un/mute</param>
     void SetRedirectionState(bool newState, Device device, Channel channel);
 
+    /// <summary>
+    /// Listen to what your audience hear
+    /// </summary>
+    /// <param name="newState">The new state, un/muted</param>
     void SetAudienceMonitoringState(bool newState);
 
+    /// <summary>
+    /// Redirect the audio of an app to a <see cref="Device"/>
+    /// </summary>
+    /// <param name="pId">The process ID of the app</param>
+    /// <param name="device">The <see cref="Device"/> you want to set the app audio</param>
     void SetProcessToDeviceRouting(int pId, Device device);
 }
