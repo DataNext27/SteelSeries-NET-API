@@ -18,6 +18,7 @@
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageIcon>icon-24.ico</PackageIcon>
+        <PackageTags>steelseries; sonar; gg; api; lib; library</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>
