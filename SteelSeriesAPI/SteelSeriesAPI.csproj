@@ -25,9 +25,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="icon-24.ico">
+      <None Include="icon-24.png">
         <Pack>True</Pack>
-        <PackagePath></PackagePath>
+        <PackagePath>.</PackagePath>
       </None>
     </ItemGroup>
 
