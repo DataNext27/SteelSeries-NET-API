@@ -12,12 +12,11 @@
         <PackageProjectUrl>https://github.com/mpaperno/TouchPortal-CS-API</PackageProjectUrl>
         <RepositoryUrl>https://github.com/DataNext27/SteelSeries-NET-API.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <Copyright>Copyright DataNext; all rights reserved</Copyright>
         <PackageLicenseUrl>https://github.com/DataNext27/SteelSeries-NET-API/blob/main/LICENSE</PackageLicenseUrl>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageIcon>icon-24.ico</PackageIcon>
+        <PackageIcon>icon-24.png</PackageIcon>
         <PackageTags>steelseries; sonar; gg; api; lib; library</PackageTags>
     </PropertyGroup>
 
