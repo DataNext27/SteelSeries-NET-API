@@ -204,9 +204,14 @@ public class SonarBridge : ISonarBridge
         _sonarCommand.SetMode(mode);
     }
 
-    public void SetVolume(double vol, Device device, Mode mode = Mode.Classic, Channel channel = Channel.Monitoring)
+    public void SetVolume(double vol, Device device)
     {
-        _sonarCommand.SetVolume(vol, device, mode, channel);
+        _sonarCommand.SetVolume(vol, device);
+    }
+
+    public void SetVolume(double vol, Device device, Channel channel)
+    {
+        _sonarCommand.SetVolume(vol, device, channel);
     }
 
     public void SetMute(bool mute, Device device, Mode mode = Mode.Classic, Channel channel = Channel.Monitoring)

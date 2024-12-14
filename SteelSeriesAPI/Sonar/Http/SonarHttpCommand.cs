@@ -17,31 +17,20 @@ public class SonarHttpCommand : ISonarCommandHandler
     
     public void SetMode(Mode mode)
     {
-        if (mode == _sonarBridge.GetMode())
-        {
-            throw new Exception("Already using this mode");
-        }
-
-        if (mode == Mode.Classic) new HttpPut("mode/classic");
-        if (mode == Mode.Streamer) new HttpPut("mode/stream");
-        Thread.Sleep(100);
+        new HttpPut("mode/" + mode.ToDictKey(ModeMapChoice.StreamDict));
+        Thread.Sleep(100); // Prevent bugs/freezes/crashes
     }
-    
-    public void SetVolume(double vol, Device device, Mode mode, Channel channel)
+
+    public void SetVolume(double vol, Device device)
     {
         string _vol = vol.ToString("0.00", CultureInfo.InvariantCulture);
-        string target = mode.ToDictKey() + "/";
-        
-        if (mode == Mode.Streamer)
-        {
-            target += channel.ToDictKey() + "/" + device.ToDictKey(DeviceMapChoice.HttpDict) + "/volume/" + _vol;
-        }
-        else
-        {
-            target += device.ToDictKey(DeviceMapChoice.HttpDict) + "/Volume/" + _vol;
-        }
-        Console.WriteLine("volumeSettings/" + target);
-        new HttpPut("volumeSettings/" + target);
+        new HttpPut("volumeSettings/classic/" + device.ToDictKey(DeviceMapChoice.HttpDict) + "/Volume/" + _vol);
+    }
+
+    public void SetVolume(double vol, Device device, Channel channel)
+    {
+        string _vol = vol.ToString("0.00", CultureInfo.InvariantCulture);
+        new HttpPut("volumeSettings/streamer/" + channel.ToDictKey() + "/" + device.ToDictKey(DeviceMapChoice.HttpDict) + "/volume/" + _vol);
     }
     
     public void SetMute(bool mute, Device device, Mode mode, Channel channel)

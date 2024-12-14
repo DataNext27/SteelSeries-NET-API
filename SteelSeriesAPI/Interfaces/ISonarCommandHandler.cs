@@ -15,9 +15,15 @@ public interface ISonarCommandHandler
     /// </summary>
     /// <param name="vol">The volume you want to set, between 1 and 0</param>
     /// <param name="device">The <see cref="Device"/> you want to change the volume</param>
-    /// <param name="mode">The <see cref="Mode"/> in which you want to change the volume</param>
-    /// <param name="channel">The <see cref="Sonar.Enums.Channel"/> you want to change the volume</param>
-    void SetVolume(double vol, Device device, Mode mode, Channel channel);
+    void SetVolume(double vol, Device device);
+    
+    /// <summary>
+    /// Set the volume of a Streamer mode Sonar <see cref="Device"/>
+    /// </summary>
+    /// <param name="vol">The volume you want to set, between 1 and 0</param>
+    /// <param name="device">The <see cref="Device"/> you want to change the volume</param>
+    /// <param name="channel">The <see cref="Channel"/> you want to change the volume</param>
+    void SetVolume(double vol, Device device, Channel channel);
 
     /// <summary>
     /// Mute or unmute a Sonar <see cref="Device"/>

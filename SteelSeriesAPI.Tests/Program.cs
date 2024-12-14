@@ -158,12 +158,11 @@ class Program
                 Console.WriteLine(routed.Id + ", " + routed.ProcessName + ", " + routed.PId + ", " + routed.State + ", " + routed.DisplayName);
             }
         }
+
         
-
-
-
+        
         // sonarManager.SetMode(Mode.Classic);
-        // sonarManager.SetVolume(0.2, Device.Media);
+        sonarManager.SetVolume(0.2, Device.Media);
         // sonarManager.SetMute(false, Device.Media);
         // var configs = sonarManager.GetAudioConfigurations(Device.Game);
         // configs.GetEnumerator().MoveNext();
