@@ -75,7 +75,6 @@ public class SonarHttpProvider : ISonarDataProvider
             if (config.AssociatedDevice == device)
             {
                 deviceConfigs.Add(config);
-                break;
             }
         }
 
