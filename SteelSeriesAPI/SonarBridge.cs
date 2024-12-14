@@ -213,10 +213,15 @@ public class SonarBridge : ISonarBridge
     {
         _sonarCommand.SetVolume(vol, device, channel);
     }
-
-    public void SetMute(bool mute, Device device, Mode mode = Mode.Classic, Channel channel = Channel.Monitoring)
+    
+    public void SetMute(bool mute, Device device)
     {
-        _sonarCommand.SetMute(mute, device, mode, channel);
+        _sonarCommand.SetMute(mute, device);
+    }
+
+    public void SetMute(bool mute, Device device, Channel channel)
+    {
+        _sonarCommand.SetMute(mute, device, channel);
     }
 
     public void SetConfig(string configId)

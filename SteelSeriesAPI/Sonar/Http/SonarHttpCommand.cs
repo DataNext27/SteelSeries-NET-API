@@ -32,20 +32,15 @@ public class SonarHttpCommand : ISonarCommandHandler
         string _vol = vol.ToString("0.00", CultureInfo.InvariantCulture);
         new HttpPut("volumeSettings/streamer/" + channel.ToDictKey() + "/" + device.ToDictKey(DeviceMapChoice.HttpDict) + "/volume/" + _vol);
     }
-    
-    public void SetMute(bool mute, Device device, Mode mode, Channel channel)
-    {
-        string target = mode.ToDictKey() + "/";
-        if (mode == Mode.Streamer)
-        {
-            target += channel.ToDictKey() + "/" + device.ToDictKey(DeviceMapChoice.HttpDict) + "/isMuted/" + mute;
-        }
-        else
-        {
-            target += device.ToDictKey(DeviceMapChoice.HttpDict) + "/Mute/" + mute;
-        }
 
-        new HttpPut("volumeSettings/" + target);
+    public void SetMute(bool mute, Device device)
+    {
+        new HttpPut("volumeSettings/classic/" + device.ToDictKey(DeviceMapChoice.HttpDict) + "/Mute/" + mute);
+    }
+
+    public void SetMute(bool mute, Device device, Channel channel)
+    {
+        new HttpPut("volumeSettings/streamer/" + channel.ToDictKey() + "/" + device.ToDictKey(DeviceMapChoice.HttpDict) + "/isMuted/" + mute);
     }
 
     public void SetConfig(string configId)

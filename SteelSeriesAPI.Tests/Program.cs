@@ -161,9 +161,9 @@ class Program
 
         
         
-        // sonarManager.SetMode(Mode.Classic);
-        sonarManager.SetVolume(0.2, Device.Media);
-        // sonarManager.SetMute(false, Device.Media);
+        sonarManager.SetMode(Mode.Classic);
+        // sonarManager.SetVolume(0.4, Device.Media);
+        sonarManager.SetMute(false, Device.Media);
         // var configs = sonarManager.GetAudioConfigurations(Device.Game);
         // configs.GetEnumerator().MoveNext();
         // sonarManager.SetConfig(configs.GetEnumerator().Current.Id);

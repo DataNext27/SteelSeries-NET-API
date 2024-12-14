@@ -28,11 +28,17 @@ public interface ISonarCommandHandler
     /// <summary>
     /// Mute or unmute a Sonar <see cref="Device"/>
     /// </summary>
-    /// <param name="mute"></param>
+    /// <param name="mute">The new muted state</param>
     /// <param name="device">The <see cref="Device"/> you want to un/mute</param>
-    /// <param name="mode">The <see cref="Mode"/> in which you want to un/mute</param>
+    void SetMute(bool mute, Device device);
+
+    /// <summary>
+    /// Mute or unmute a Streamer mode Sonar <see cref="Device"/>
+    /// </summary>
+    /// <param name="mute">The new muted state</param>
+    /// <param name="device">The <see cref="Device"/> you want to un/mute</param>
     /// <param name="channel">The <see cref="Channel"/> you want to un/mute</param>
-    void SetMute(bool mute, Device device, Mode mode, Channel channel);
+    void SetMute(bool mute, Device device, Channel channel);
 
     /// <summary>
     /// Set the config of a Sonar <see cref="Device"/> by giving its id
