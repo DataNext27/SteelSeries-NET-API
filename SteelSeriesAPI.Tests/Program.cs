@@ -200,10 +200,9 @@ class Program
         // sonarManager.SetMode(Mode.Classic);
         // sonarManager.SetVolume(0.4, Device.Media);
         // sonarManager.SetMute(false, Device.Media);
-        // var configs = sonarManager.GetAudioConfigurations(Device.Game);
-        // configs.GetEnumerator().MoveNext();
-        // sonarManager.SetConfig(configs.GetEnumerator().Current.Id);
-        // sonarManager.SetConfig(Device.Media, "Default");
+        // string configId = sonarManager.GetAudioConfigurations(Device.Media).FirstOrDefault(config => config.Name == "Default")?.Id;
+        // sonarManager.SetConfig(configId);
+        sonarManager.SetConfig(Device.Media, "Default");
         // sonarManager.SetChatMixBalance(0.5);
         // var redirectionDevices = sonarManager.GetRedirectionDevices(Direction.Input);
         // redirectionDevices.GetEnumerator().MoveNext();

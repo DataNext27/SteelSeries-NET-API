@@ -55,9 +55,10 @@ public class SonarHttpCommand : ISonarCommandHandler
         var configs = _sonarBridge.GetAudioConfigurations(device).ToList();
         foreach (var config in configs)
         {
-            if (config.Name  == name)
+            if (config.Name == name)
             {
                 SetConfig(config.Id);
+                break;
             }
         }
     }
