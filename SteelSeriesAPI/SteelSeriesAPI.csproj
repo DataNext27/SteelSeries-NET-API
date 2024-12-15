@@ -5,7 +5,8 @@
         <Nullable>enable</Nullable>
         <TargetFrameworks>net8.0;net9.0;net7.0</TargetFrameworks>
         <Version>1.0.0</Version>
-        <PackageId>steelseries-net-api</PackageId>
+        <PackageId>Steelseries-NET-API</PackageId>
+        <Product>Steelseries-NET-API</Product>
         <Title>SteelSeries .NET API</Title>
         <Authors>DataNext</Authors>
         <Description>Unofficial .NET SteelSeries Sonar API (Since it's acutally impossible for Moments)</Description>
