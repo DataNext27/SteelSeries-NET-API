@@ -21,28 +21,6 @@ public class SonarHttpProvider : ISonarDataProvider
         
         return (Mode)ModeExtensions.FromDictKey(mode, ModeMapChoice.StreamDict);
     }
-    
-    public VolumeSettings GetVolumeSetting(Device device, Mode mode, Channel channel)
-    { 
-        JsonDocument volumeSettings = new HttpProvider($"volumeSettings/{mode.ToDictKey(ModeMapChoice.StreamerDict)}").Provide();
-        JsonElement vSetting;
-        
-        if (device == Device.Master)
-        {
-            vSetting = volumeSettings.RootElement.GetProperty("masters").GetProperty(mode.ToDictKey(ModeMapChoice.StreamDict));
-        }
-        else
-        {
-            vSetting = volumeSettings.RootElement.GetProperty("devices").GetProperty(device.ToDictKey()).GetProperty(mode.ToDictKey(ModeMapChoice.StreamDict));
-        }
-        
-        if (mode == Mode.Streamer) vSetting = vSetting.GetProperty(channel.ToDictKey());
-        
-        double volume = vSetting.GetProperty("volume").GetDouble();
-        bool mute = vSetting.GetProperty("muted").GetBoolean();
-        
-        return new VolumeSettings(volume, mute);
-    }
 
     public double GetVolume(Device device)
     {
