@@ -1,7 +1,12 @@
 # SteelSeries-NET-API
 
-![GitHub Downloads](https://img.shields.io/github/downloads/DataNext27/SteelSeries-NET-API/total?style=for-the-badge&color=6fca00&link=https%3A%2F%2Fgithub.com%2FDataNext27%2FSteelSeries-NET-API%2Freleases)
-![GitHub Version](https://img.shields.io/github/v/tag/DataNext27/SteelSeries-NET-API?style=for-the-badge&label=Version&link=https%3A%2F%2Fgithub.com%2FDataNext27%2FSteelSeries-NET-API%2Freleases%2Flatest)
+![GitHub Downloads](https://img.shields.io/github/downloads/DataNext27/SteelSeries-NET-API/total?style=for-the-badge&color=6fca00&link=https%3A%2F%2Fgithub.com%2FDataNext27%2FSteelSeries-NET-API%2Freleases%2F)
+![NuGet Downloads](https://img.shields.io/nuget/dt/Steelseries-NET-API?style=for-the-badge&label=Nuget%20Downloads&color=%23004880&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FSteelseries-NET-API)
+![GitHub Version](https://img.shields.io/github/v/tag/DataNext27/SteelSeries-NET-API?style=for-the-badge&label=Version&link=https%3A%2F%2Fgithub.com%2FDataNext27%2FSteelSeries-NET-API%2Freleases%2Flatest%2F)
+![GitHub License](https://img.shields.io/github/license/DataNext27/SteelSeries-NET-API?style=for-the-badge&color=red)
+![.NET Version](https://img.shields.io/badge/.NET-9.0-512cd4?style=for-the-badge&link=https%3A%2F%2Fdotnet.microsoft.com%2Ffr-fr%2Fdownload%2Fdotnet%2F9.0)
+![.NET Version](https://img.shields.io/badge/.NET-8.0-512cd4?style=for-the-badge&link=https%3A%2F%2Fdotnet.microsoft.com%2Ffr-fr%2Fdownload%2Fdotnet%2F8.0)
+![.NET Version](https://img.shields.io/badge/.NET-7.0-512cd4?style=for-the-badge&link=https%3A%2F%2Fdotnet.microsoft.com%2Ffr-fr%2Fdownload%2Fdotnet%2F7.0)
 <a href='https://ko-fi.com/M4M2VL6WW' target='_blank'><img height='29' style='border:0px;height:29px;' src='https://storage.ko-fi.com/cdn/brandasset/kofi_button_dark.png' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a> </br>
 > This library is **NOT** affiliated in any way with **SteelSeries**  
 > I've made it because it was interesting and funny to do, also I wanted to share this project for people to use it for their own projects
