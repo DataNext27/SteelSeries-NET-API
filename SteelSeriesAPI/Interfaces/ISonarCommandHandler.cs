@@ -63,33 +63,33 @@ public interface ISonarCommandHandler
     void SetChatMixBalance(double balance);
 
     /// <summary>
-    /// Set the classic mode redirection device of a <see cref="Device"/> using its ID
+    /// Set the Redirection Device of a Sonar <see cref="Device"/> using its ID
     /// </summary>
-    /// <param name="deviceId">The id of the new redirection device</param>
-    /// <param name="device">The <see cref="Device"/> you want to change the redirection device</param>
+    /// <param name="deviceId">The id of the new Redirection Device</param>
+    /// <param name="device">The Sonar <see cref="Device"/> you want to change the Redirection Device</param>
     void SetClassicRedirectionDevice(string deviceId, Device device);
 
     /// <summary>
-    /// Set the streamer mode redirection device of a <see cref="Channel"/> using its ID
+    /// Set the Redirection Device of a Streamer mode Sonar <see cref="Channel"/> using its ID
     /// </summary>
-    /// <param name="deviceId">The id of the new redirection device</param>
-    /// <param name="channel">The <see cref="Channel"/> you want to change the redirection device</param>
+    /// <param name="deviceId">The id of the new Redirection Device</param>
+    /// <param name="channel">The Sonar <see cref="Channel"/> you want to change the Redirection Device</param>
     void SetStreamRedirectionDevice(string deviceId, Channel channel);
 
     /// <summary>
-    /// Set the streamer mode redirection device of the mic using its ID
+    /// Set the Redirection Device of the Streamer mode Sonar <see cref="Device.Mic"/> using its ID
     /// </summary>
-    /// <param name="deviceId">The id of the new redirection device</param>
-    /// <param name="device">The <see cref="Device"/> you want to change the redirection device</param>
+    /// <param name="deviceId">The id of the new Redirection Device</param>
+    /// <param name="device">The Sonar <see cref="Device"/> you want to change the redirection device</param>
     /// <remarks><paramref name="device"/> should be set to <see cref="Device.Mic"/> for it to work</remarks>
     void SetStreamRedirectionDevice(string deviceId, Device device = Device.Mic);
 
     /// <summary>
-    /// Mute or unmute the redirection of the chosen <see cref="Channel"/> of the chosen <see cref="Device"/>
+    /// Mute or unmute the Redirection of the chosen Sonar <see cref="Channel"/> of the chosen Sonar <see cref="Device"/>
     /// </summary>
-    /// <param name="newState">The new state of the redirection</param>
-    /// <param name="device">The <see cref="Device"/> you want to un/mute a redirection channel</param>
-    /// <param name="channel">The <see cref="Channel"/> you want to un/mute</param>
+    /// <param name="newState">The new state of the Redirection</param>
+    /// <param name="device">The Sonar <see cref="Device"/> you want to un/mute a Sonar redirection channel</param>
+    /// <param name="channel">The Sonar <see cref="Channel"/> you want to un/mute</param>
     void SetRedirectionState(bool newState, Device device, Channel channel);
 
     /// <summary>
@@ -99,9 +99,9 @@ public interface ISonarCommandHandler
     void SetAudienceMonitoringState(bool newState);
 
     /// <summary>
-    /// Redirect the audio of an app to a <see cref="Device"/>
+    /// Redirect the audio of an app to a Sonar <see cref="Device"/>
     /// </summary>
     /// <param name="pId">The process ID of the app</param>
-    /// <param name="device">The <see cref="Device"/> you want to set the app audio</param>
+    /// <param name="device">The Sonar <see cref="Device"/> you want to set the app audio</param>
     void SetProcessToDeviceRouting(int pId, Device device);
 }

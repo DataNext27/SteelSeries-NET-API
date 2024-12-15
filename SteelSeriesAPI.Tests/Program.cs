@@ -126,9 +126,7 @@ class Program
         }
 
         Console.WriteLine("-----Stream Redirection Devices------------");
-        RedirectionDevice
-            reDeviceS = sonarManager
-                .GetStreamRedirectionDevice(Device.Mic); // sonarManager.GetStreamRedirectionDevice(Channel.Monitoring);
+        RedirectionDevice reDeviceS = sonarManager.GetStreamRedirectionDevice(Device.Mic); // sonarManager.GetStreamRedirectionDevice(Channel.Monitoring);
         Console.WriteLine(reDeviceS.Id + ", " + reDeviceS.Name);
         foreach (var device in reDeviceS.AssociatedClassicDevices)
         {
@@ -197,7 +195,7 @@ class Program
         // redirectionDevices.GetEnumerator().MoveNext();
         // sonarManager.SetClassicRedirectionDevice(redirectionDevices.GetEnumerator().Current.Id, Device.Mic);
         // sonarManager.SetStreamRedirectionDevice(redirectionDevices.GetEnumerator().Current.Id, Device.Mic);
-        //
+        
         // sonarManager.SetRedirectionState(true, Device.Media, Channel.Stream);
         // sonarManager.SetAudienceMonitoringState(false);
         // sonarManager.SetProcessToDeviceRouting(19152, Device.Mic);
