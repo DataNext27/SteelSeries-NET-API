@@ -8,7 +8,7 @@ using SteelSeriesAPI.Sonar.Models;
 namespace SteelSeriesAPI;
 
 /// <summary>
-/// The Sonar object, allow you to get or set volumes, muted states, ...
+/// The Sonar object, to control Sonar<br/>Allow you to listen for event, get or set volumes, muted states, ...
 /// </summary>
 public class SonarBridge : ISonarBridge
 {
