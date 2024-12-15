@@ -27,7 +27,7 @@ sonarManager.WaitUntilSonarStarted();
 sonarManager.StartListener();
 sonarManager.SonarEventManager.OnSonarModeChange += OnModeChangeHandler; // Register event
 
-sonarManager.GetMode(); // Returns the current mode
+Mode currentMode = sonarManager.GetMode(); // Returns the current mode
 sonarManager.SetVolume(0.5, Device.Game); // Set the Game Device volume
 `````
 For more example, you can check the [Tests](https://github.com/DataNext27/SteelSeries-NET-API/tree/main/SteelSeriesAPI.Tests) and the [Sample](https://github.com/DataNext27/SteelSeries-NET-API/tree/main/SteelSeriesAPI.Sample) folders.  
