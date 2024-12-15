@@ -22,13 +22,22 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Events\" />
+        <Content Include="..\README.md">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="..\CHANGELOG.md">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
-
+    
     <ItemGroup>
-      <None Include="icon-24.png">
+      <None Include="..\icon-24.png">
         <Pack>True</Pack>
-        <PackagePath>.</PackagePath>
+        <PackagePath>\</PackagePath>
       </None>
     </ItemGroup>
 
