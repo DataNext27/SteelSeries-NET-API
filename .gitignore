@@ -1,7 +1,6 @@
-SteelSeriesAPI/bin/
-SteelSeriesAPI/obj/
-SteelSeriesAPI.Tests/bin/
-SteelSeriesAPI.Tests/obj/
+*/bin/
+*/obj/
+
 SteelSeriesRestScanner/
 .idea/
 rests.txt

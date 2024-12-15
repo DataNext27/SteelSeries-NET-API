@@ -201,7 +201,7 @@ class Program
         // sonarManager.SetProcessToDeviceRouting(19152, Device.Mic);
     }
 
-    static void OnModeChangeHandler(object sender, SonarModeEvent eventArgs)
+    static void OnModeChangeHandler(object? sender, SonarModeEvent eventArgs)
     {
         Console.WriteLine("Received Mode Event : " + eventArgs.NewMode);
     }
@@ -211,32 +211,32 @@ class Program
         Console.WriteLine("Received Volume Event : " + eventArgs.Volume + ", " + eventArgs.Mode + ", " + eventArgs.Device + ", " + eventArgs.Channel);
     }
 
-    static void OnMuteChangeHandler(object sender, SonarMuteEvent eventArgs)
+    static void OnMuteChangeHandler(object? sender, SonarMuteEvent eventArgs)
     {
         Console.WriteLine("Received Mute Event : " + eventArgs.Muted + ", " + eventArgs.Mode + ", " + eventArgs.Device + ", " + eventArgs.Channel);
     }
 
-    static void OnConfigChangeHandler(object sender, SonarConfigEvent eventArgs)
+    static void OnConfigChangeHandler(object? sender, SonarConfigEvent eventArgs)
     {
         Console.WriteLine("Received Config Event : " + eventArgs.ConfigId);
     }
 
-    static void OnChatMixChangeHandler(object sender, SonarChatMixEvent eventArgs)
+    static void OnChatMixChangeHandler(object? sender, SonarChatMixEvent eventArgs)
     {
         Console.WriteLine("Received ChatMix Event : " + eventArgs.Balance);
     }
 
-    static void OnRedirectionDeviceChangeHandler(object sender, SonarRedirectionDeviceEvent eventArgs)
+    static void OnRedirectionDeviceChangeHandler(object? sender, SonarRedirectionDeviceEvent eventArgs)
     {
         Console.WriteLine("Received Redirection Device Event : " + eventArgs.RedirectionDeviceId + ", " + eventArgs.Mode + ", " + eventArgs.Device + ", " + eventArgs.Channel);
     }
 
-    static void OnRedirectionStateChangeHandler(object sender, SonarRedirectionStateEvent eventArgs)
+    static void OnRedirectionStateChangeHandler(object? sender, SonarRedirectionStateEvent eventArgs)
     {
         Console.WriteLine("Received Redirection State Event : " + eventArgs.State + ", " + eventArgs.Device + ", " + eventArgs.Channel);
     }
 
-    static void OnAudienceMonitoringChangeHandler(object sender, SonarAudienceMonitoringEvent eventArgs)
+    static void OnAudienceMonitoringChangeHandler(object? sender, SonarAudienceMonitoringEvent eventArgs)
     {
         Console.WriteLine("Received Audience Monitoring Event : " + eventArgs.AudienceMonitoringState);
     }
