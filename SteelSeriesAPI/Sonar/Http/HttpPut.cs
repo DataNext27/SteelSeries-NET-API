@@ -20,8 +20,24 @@ public class HttpPut
 
     private void Put(string targetHttp)
     {
-        HttpResponseMessage httpResponseMessage = _httpClient.PutAsync(_sonarRetriever.WebServerAddress() + targetHttp, null)
-            .GetAwaiter().GetResult();
-        httpResponseMessage.EnsureSuccessStatusCode();
+        if (_sonarRetriever is { IsEnabled: false, IsReady: false, IsRunning: false })
+        {
+            Console.WriteLine("Sonar is not running.");
+            return;
+        }
+
+        try
+        {
+            HttpResponseMessage httpResponseMessage = _httpClient
+                .PutAsync(_sonarRetriever.WebServerAddress() + targetHttp, null)
+                .GetAwaiter().GetResult();
+            httpResponseMessage.EnsureSuccessStatusCode();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            Console.WriteLine("Sonar may not be running.");
+            throw;
+        }
     }
 }

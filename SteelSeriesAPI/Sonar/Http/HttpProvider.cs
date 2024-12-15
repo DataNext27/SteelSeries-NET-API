@@ -22,7 +22,22 @@ public class HttpProvider
 
     public JsonDocument Provide()
     {
-        JsonDocument response = JsonDocument.Parse(_httpClient.GetStringAsync(_sonarRetriever.WebServerAddress() + _targetHttp).Result);
-        return response;
+        if (_sonarRetriever is { IsEnabled: false, IsReady: false, IsRunning: false })
+        {
+            Console.WriteLine("Sonar is not running.");
+            return null;
+        }
+
+        try
+        {
+            JsonDocument response = JsonDocument.Parse(_httpClient.GetStringAsync(_sonarRetriever.WebServerAddress() + _targetHttp).Result);
+            return response;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            Console.WriteLine("Sonar may not be running.");
+            throw;
+        }
     }
 }
