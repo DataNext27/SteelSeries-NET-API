@@ -18,7 +18,7 @@ public interface ISonarCommandHandler
     void SetVolume(double vol, Device device);
     
     /// <summary>
-    /// Set the volume of a Streamer mode Sonar <see cref="Device"/>
+    /// Set the volume of a Streamer mode Sonar <see cref="Channel"/>
     /// </summary>
     /// <param name="vol">The volume you want to set, between 1 and 0</param>
     /// <param name="device">The <see cref="Device"/> you want to change the volume</param>
@@ -33,7 +33,7 @@ public interface ISonarCommandHandler
     void SetMute(bool mute, Device device);
 
     /// <summary>
-    /// Mute or unmute a Streamer mode Sonar <see cref="Device"/>
+    /// Mute or unmute a Streamer mode Sonar <see cref="Channel"/>
     /// </summary>
     /// <param name="mute">The new muted state</param>
     /// <param name="device">The <see cref="Device"/> you want to un/mute</param>
@@ -59,7 +59,7 @@ public interface ISonarCommandHandler
     /// Set the balance of the ChatMix
     /// </summary>
     /// <remarks>-1 to balance to Game device<br/>1 to balance to Chat device</remarks>
-    /// <param name="balance">A <see cref="double"/> between -1 and 0</param>
+    /// <param name="balance">A <see cref="double"/> between -1 and 1</param>
     void SetChatMixBalance(double balance);
 
     /// <summary>

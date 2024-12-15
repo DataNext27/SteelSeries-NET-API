@@ -12,16 +12,35 @@ public interface ISonarDataProvider
     Mode GetMode();
 
     /// <summary>
-    /// Get the volume settings of a device/channel
+    /// Get the volume of a  Sonar <see cref="Device"/>
     /// </summary>
-    /// <param name="device">The <see cref="Device"/> you want the audio settings</param>
-    /// <param name="mode">The <see cref="Mode"/> you want the audio settings</param>
-    /// <param name="channel">The <see cref="Channel"/> you want the audio settings</param>
-    /// <returns><see cref="VolumeSettings"/></returns>
-    /// <remarks>Prefer using <see cref="SonarBridge.GetVolume"/> or <see cref="SonarBridge.GetMute"/> instead <br/>
-    /// To use <paramref name="channel"/>, you should put <paramref name="mode"/> to <see cref="Mode.Streamer"/></remarks>
-    VolumeSettings GetVolumeSetting(Device device, Mode mode, Channel channel);
-
+    /// <param name="device">The Sonar <see cref="Device"/> you want the volume</param>
+    /// <returns>The volume of the channel in double, value between 0 and 1</returns>
+    double GetVolume(Device device);
+    
+    /// <summary>
+    /// Get the volume of a Steamer mode Sonar <see cref="Channel"/>
+    /// </summary>
+    /// <param name="device">The Sonar <see cref="Device"/> you want the volume</param>
+    /// <param name="channel">The Sonar <see cref="Channel"/> you want the volume</param>
+    /// <returns>The volume of the channel in double, value between 0 and 1</returns>
+    double GetVolume(Device device, Channel channel);
+    
+    /// <summary>
+    /// Get the mute state of a Sonar <see cref="Device"/>
+    /// </summary>
+    /// <param name="device">The Sonar <see cref="Device"/> you want the mute state</param>
+    /// <returns>The mute state, a boolean</returns>
+    bool GetMute(Device device);
+    
+    /// <summary>
+    /// Get the mute state of a Streamer mode Sonar <see cref="Channel"/>
+    /// </summary>
+    /// <param name="device">The Sonar <see cref="Device"/> you want the mute state</param>
+    /// <param name="channel">The Sonar <see cref="Channel"/> you want the mute state</param>
+    /// <returns>The mute state, a boolean</returns>
+    bool GetMute(Device device, Channel channel);
+    
     /// <summary>
     /// Get all audio configurations from Sonar
     /// </summary>

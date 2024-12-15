@@ -44,6 +44,42 @@ public class SonarHttpProvider : ISonarDataProvider
         return new VolumeSettings(volume, mute);
     }
 
+    public double GetVolume(Device device)
+    {
+        JsonDocument volumeSettings = new HttpProvider("volumeSettings/classic/").Provide();
+
+        if (device == Device.Master)
+            return volumeSettings.RootElement.GetProperty("masters").GetProperty("classic").GetProperty("volume").GetDouble();
+        return volumeSettings.RootElement.GetProperty("devices").GetProperty(device.ToDictKey()).GetProperty("classic").GetProperty("volume").GetDouble();
+    }
+
+    public double GetVolume(Device device, Channel channel)
+    {
+        JsonDocument volumeSettings = new HttpProvider("volumeSettings/streamer/").Provide();
+
+        if (device == Device.Master)
+            return volumeSettings.RootElement.GetProperty("masters").GetProperty("stream").GetProperty(channel.ToDictKey()).GetProperty("volume").GetDouble();
+        return volumeSettings.RootElement.GetProperty("devices").GetProperty(device.ToDictKey()).GetProperty("stream").GetProperty(channel.ToDictKey()).GetProperty("volume").GetDouble();
+    }
+
+    public bool GetMute(Device device)
+    {
+        JsonDocument volumeSettings = new HttpProvider("volumeSettings/classic/").Provide();
+
+        if (device == Device.Master)
+            return volumeSettings.RootElement.GetProperty("masters").GetProperty("classic").GetProperty("muted").GetBoolean();
+        return volumeSettings.RootElement.GetProperty("devices").GetProperty(device.ToDictKey()).GetProperty("classic").GetProperty("muted").GetBoolean();
+    }
+
+    public bool GetMute(Device device, Channel channel)
+    {
+        JsonDocument volumeSettings = new HttpProvider("volumeSettings/streamer/").Provide();
+
+        if (device == Device.Master)
+            return volumeSettings.RootElement.GetProperty("masters").GetProperty("stream").GetProperty(channel.ToDictKey()).GetProperty("muted").GetBoolean();
+        return volumeSettings.RootElement.GetProperty("devices").GetProperty(device.ToDictKey()).GetProperty("stream").GetProperty(channel.ToDictKey()).GetProperty("muted").GetBoolean();
+    }
+
     #region AudioConfigs
     
     public IEnumerable<SonarAudioConfiguration> GetAllAudioConfigurations()

@@ -91,38 +91,26 @@ public class SonarBridge : ISonarBridge
     {
         return _sonarProvider.GetMode();
     }
-
-    public VolumeSettings GetVolumeSetting(Device device, Mode mode = Mode.Classic,
-        Channel channel = Channel.Monitoring)
-    {
-        return _sonarProvider.GetVolumeSetting(device, mode, channel);
-    }
     
     // volume = 0,00000000 <-- 8 decimal max
-    /// <summary>
-    /// Get the volume of a device or of a channel
-    /// </summary>
-    /// <param name="device">The <see cref="Device"/> you want the volume</param>
-    /// <param name="mode">The <see cref="Mode"/> you want the volume</param>
-    /// <param name="channel">The <see cref="Channel"/> you want the volume</param>
-    /// <returns>The volume level between 0 and 1</returns>
-    /// <remarks>To use <paramref name="channel"/>, you should put <paramref name="mode"/> to <see cref="Mode.Streamer"/></remarks>
-    public double GetVolume(Device device, Mode mode = Mode.Classic, Channel channel = Channel.Monitoring)
+    public double GetVolume(Device device)
     {
-        return _sonarProvider.GetVolumeSetting(device, mode, channel).Volume;
+        return _sonarProvider.GetVolume(device);
     }
-    
-    /// <summary>
-    /// Get the muted state of a device or of a channel
-    /// </summary>
-    /// <param name="device">The <see cref="Device"/> you want the muted state</param>
-    /// <param name="mode">The <see cref="Mode"/> you want the muted state</param>
-    /// <param name="channel">The <see cref="Channel"/> you want the muted state</param>
-    /// <returns>The muted state, un/muted</returns>
-    /// <remarks>To use <paramref name="channel"/>, you should put <paramref name="mode"/> to <see cref="Mode.Streamer"/></remarks>
-    public bool GetMute(Device device, Mode mode = Mode.Classic, Channel channel = Channel.Monitoring)
+
+    public double GetVolume(Device device, Channel channel)
     {
-        return _sonarProvider.GetVolumeSetting(device, mode, channel).Mute;
+        return _sonarProvider.GetVolume(device, channel);
+    }
+
+    public bool GetMute(Device device)
+    {
+        return _sonarProvider.GetMute(device);
+    }
+
+    public bool GetMute(Device device, Channel channel)
+    {
+        return _sonarProvider.GetMute(device, channel);
     }
 
     public IEnumerable<SonarAudioConfiguration> GetAllAudioConfigurations()
