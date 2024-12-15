@@ -10,7 +10,7 @@
         <Title>SteelSeries .NET API Client</Title>
         <Authors>DataNext</Authors>
         <Description>Unofficial .NET SteelSeries Sonar API (Since it's acutally impossible for Moments)</Description>
-        <PackageProjectUrl>https://github.com/mpaperno/TouchPortal-CS-API</PackageProjectUrl>
+        <PackageProjectUrl>https://github.com/DataNext27/SteelSeries-NET-API</PackageProjectUrl>
         <RepositoryUrl>https://github.com/DataNext27/SteelSeries-NET-API.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <Copyright>Copyright DataNext; all rights reserved</Copyright>
