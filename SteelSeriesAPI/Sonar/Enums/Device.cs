@@ -74,7 +74,7 @@ public static class DeviceExtensions
         {
             foreach (var pair in map)
             {
-                if (pair.Value == jsonKey)
+                if (pair.Value.ToLower() == jsonKey.ToLower())
                 {
                     return pair.Key;
                 }
