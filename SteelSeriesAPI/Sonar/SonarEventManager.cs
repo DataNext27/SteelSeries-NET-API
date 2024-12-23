@@ -90,35 +90,6 @@ public class SonarEventManager
                     { NewMode = (Mode)ModeExtensions.FromDictKey(subs[2], ModeMapChoice.StreamDict) };
                 break;
             case "volumeSettings":
-                // int isStream = 0;
-                // if (subs[2] == "streamer")
-                // {
-                //     isStream = 1;
-                // }
-                //
-                // if (subs[4 + isStream] == "Volume" || subs[4 + isStream] == "volume")
-                // {
-                //     Console.WriteLine((Channel)ChannelExtensions.FromDictKey(subs[3]));
-                //     eventArgs = new SonarVolumeEvent()
-                //     {
-                //         Volume = double.Parse(subs[5+isStream], CultureInfo.InvariantCulture.NumberFormat),
-                //         Mode = (Mode)ModeExtensions.FromDictKey(subs[2], ModeMapChoice.StreamerDict),
-                //         Device = (Device)DeviceExtensions.FromDictKey(subs[3+isStream], DeviceMapChoice.HttpDict),
-                //         Channel = (Channel)ChannelExtensions.FromDictKey(subs[3])
-                //     };
-                // }
-                // else
-                // {
-                //     eventArgs = new SonarMuteEvent()
-                //     {
-                //         Muted = Convert.ToBoolean(subs[5+isStream]),
-                //         Mode = (Mode)ModeExtensions.FromDictKey(subs[2], ModeMapChoice.StreamerDict),
-                //         Device = (Device)DeviceExtensions.FromDictKey(subs[3], DeviceMapChoice.HttpDict),
-                //         //Channel = (Channel)ChannelExtensions.FromDictKey(subs[3])
-                //         Channel = null
-                //     };
-                // }
-                
                 switch (subs[2])
                 {
                     case "classic":

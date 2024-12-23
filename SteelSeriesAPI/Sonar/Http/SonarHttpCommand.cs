@@ -92,7 +92,7 @@ public class SonarHttpCommand : ISonarCommandHandler
     {
         if (device != Device.Mic)
         {
-            throw new Exception("Can only get stream redirection device for Mic");
+            throw new Exception("Can only change stream redirection device for Mic");
         }
         
         new HttpPut("streamRedirections/" + device.ToDictKey(DeviceMapChoice.DeviceDict) +"/deviceId/" + deviceId);
