@@ -38,9 +38,9 @@ class Program
         // Classic
         sonarManager.SetMode(Mode.Classic);
         Console.WriteLine("------ Classic Master Test ------");
-        sonarManager.GetVolume(Device.Master);
-        sonarManager.GetMute(Device.Master);
-        sonarManager.SetVolume(0.99f, Device.Master);
+        Console.WriteLine(sonarManager.GetVolume(Device.Master));
+        Console.WriteLine(sonarManager.GetMute(Device.Master));
+        sonarManager.SetVolume(0.25f, Device.Master);
         sonarManager.SetVolume(1, Device.Master);
         sonarManager.SetMute(true, Device.Master);
         sonarManager.SetMute(false, Device.Master);
@@ -48,12 +48,12 @@ class Program
         // Streamer
         sonarManager.SetMode(Mode.Streamer);
         Console.WriteLine("------ Streamer Master Test ------");
-        sonarManager.GetVolume(Device.Master, Channel.Monitoring);
-        sonarManager.GetVolume(Device.Master, Channel.Stream);
-        sonarManager.GetMute(Device.Master, Channel.Monitoring);
-        sonarManager.GetMute(Device.Master, Channel.Stream);
-        sonarManager.SetVolume(0.99f, Device.Master, Channel.Monitoring);
-        sonarManager.SetVolume(0.99f, Device.Master, Channel.Stream);
+        Console.WriteLine(sonarManager.GetVolume(Device.Master, Channel.Monitoring));
+        Console.WriteLine(sonarManager.GetVolume(Device.Master, Channel.Stream));
+        Console.WriteLine(sonarManager.GetMute(Device.Master, Channel.Monitoring));
+        Console.WriteLine(sonarManager.GetMute(Device.Master, Channel.Stream));
+        sonarManager.SetVolume(0.25f, Device.Master, Channel.Monitoring);
+        sonarManager.SetVolume(0.25f, Device.Master, Channel.Stream);
         sonarManager.SetVolume(1, Device.Master, Channel.Monitoring);
         sonarManager.SetVolume(1, Device.Master, Channel.Stream);
         sonarManager.SetMute(true, Device.Master, Channel.Monitoring);
