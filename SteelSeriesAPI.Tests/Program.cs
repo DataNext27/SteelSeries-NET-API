@@ -27,8 +27,41 @@ class Program
         sonarManager.SonarEventManager.OnSonarRedirectionStateChange += OnRedirectionStateChangeHandler;
         sonarManager.SonarEventManager.OnSonarAudienceMonitoringChange += OnAudienceMonitoringChangeHandler;
 
-        new Program().GetTest(sonarManager);
-        new Program().SetTest(sonarManager);
+        // new Program().GetTest(sonarManager);
+        // new Program().SetTest(sonarManager);
+        new Program().TestMaster(sonarManager);
+    }
+
+    void TestMaster(SonarBridge sonarManager)
+    {
+        
+        // Classic
+        sonarManager.SetMode(Mode.Classic);
+        Console.WriteLine("------ Classic Master Test ------");
+        sonarManager.GetVolume(Device.Master);
+        sonarManager.GetMute(Device.Master);
+        sonarManager.SetVolume(0.99f, Device.Master);
+        sonarManager.SetVolume(1, Device.Master);
+        sonarManager.SetMute(true, Device.Master);
+        sonarManager.SetMute(false, Device.Master);
+
+        // Streamer
+        sonarManager.SetMode(Mode.Streamer);
+        Console.WriteLine("------ Streamer Master Test ------");
+        sonarManager.GetVolume(Device.Master, Channel.Monitoring);
+        sonarManager.GetVolume(Device.Master, Channel.Stream);
+        sonarManager.GetMute(Device.Master, Channel.Monitoring);
+        sonarManager.GetMute(Device.Master, Channel.Stream);
+        sonarManager.SetVolume(0.99f, Device.Master, Channel.Monitoring);
+        sonarManager.SetVolume(0.99f, Device.Master, Channel.Stream);
+        sonarManager.SetVolume(1, Device.Master, Channel.Monitoring);
+        sonarManager.SetVolume(1, Device.Master, Channel.Stream);
+        sonarManager.SetMute(true, Device.Master, Channel.Monitoring);
+        sonarManager.SetMute(true, Device.Master, Channel.Stream);
+        sonarManager.SetMute(false, Device.Master, Channel.Monitoring);
+        sonarManager.SetMute(false, Device.Master, Channel.Stream);
+        
+        sonarManager.SetMode(Mode.Classic);
     }
 
     void GetTest(SonarBridge sonarManager)
@@ -183,22 +216,22 @@ class Program
 
     void SetTest(SonarBridge sonarManager){
 
-        // sonarManager.SetMode(Mode.Classic);
-        // sonarManager.SetVolume(0.4, Device.Media);
-        // sonarManager.SetMute(false, Device.Media);
-        // string configId = sonarManager.GetAudioConfigurations(Device.Media).FirstOrDefault(config => config.Name == "Default")?.Id;
-        // sonarManager.SetConfig(configId);
-        // sonarManager.SetConfig(Device.Media, "Default");
-        // sonarManager.SetChatMixBalance(0.5);
+        sonarManager.SetMode(Mode.Classic);
+        sonarManager.SetVolume(0.4, Device.Media);
+        sonarManager.SetMute(false, Device.Media);
+        string configId = sonarManager.GetAudioConfigurations(Device.Media).FirstOrDefault(config => config.Name == "Default")?.Id;
+        sonarManager.SetConfig(configId);
+        sonarManager.SetConfig(Device.Media, "Default");
+        sonarManager.SetChatMixBalance(0.5);
         
-        // var redirectionDevices = sonarManager.GetRedirectionDevices(Direction.Input);
-        // redirectionDevices.GetEnumerator().MoveNext();
-        // sonarManager.SetClassicRedirectionDevice(redirectionDevices.GetEnumerator().Current.Id, Device.Mic);
-        // sonarManager.SetStreamRedirectionDevice(redirectionDevices.GetEnumerator().Current.Id, Device.Mic);
+        var redirectionDevices = sonarManager.GetRedirectionDevices(Direction.Input);
+        redirectionDevices.GetEnumerator().MoveNext();
+        sonarManager.SetClassicRedirectionDevice(redirectionDevices.GetEnumerator().Current.Id, Device.Mic);
+        sonarManager.SetStreamRedirectionDevice(redirectionDevices.GetEnumerator().Current.Id, Device.Mic);
         
-        // sonarManager.SetRedirectionState(true, Device.Media, Channel.Stream);
-        // sonarManager.SetAudienceMonitoringState(false);
-        // sonarManager.SetProcessToDeviceRouting(19152, Device.Mic);
+        sonarManager.SetRedirectionState(true, Device.Media, Channel.Stream);
+        sonarManager.SetAudienceMonitoringState(false);
+        sonarManager.SetProcessToDeviceRouting(19152, Device.Mic);
     }
 
     static void OnModeChangeHandler(object? sender, SonarModeEvent eventArgs)
