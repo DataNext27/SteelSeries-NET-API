@@ -29,7 +29,7 @@ class Program
 
         // new Program().GetTest(sonarManager);
         // new Program().SetTest(sonarManager);
-        new Program().TestMaster(sonarManager);
+        // new Program().TestMaster(sonarManager);
     }
 
     void TestMaster(SonarBridge sonarManager)

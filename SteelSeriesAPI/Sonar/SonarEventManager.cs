@@ -193,7 +193,7 @@ public class SonarEventManager
             default:
                 if (subs[1].StartsWith("chatMix"))
                 {
-                    eventArgs = new SonarChatMixEvent() { Balance = Convert.ToDouble(subs[1].Split("=")[1]) };
+                    eventArgs = new SonarChatMixEvent() { Balance = Convert.ToDouble(subs[1].Split("=")[1], CultureInfo.InvariantCulture) };
                 }
                 break;
         }
