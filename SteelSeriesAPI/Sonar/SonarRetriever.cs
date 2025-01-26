@@ -42,7 +42,7 @@ public class SonarRetriever : IAppRetriever
     {
         if (!_ssRetriever.Running)
         {
-            throw new Exception("SteelSeries not running");
+            throw new Exception("SteelSeries Sonar is not running.");
         }
 
         try

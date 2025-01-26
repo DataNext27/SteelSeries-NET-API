@@ -85,7 +85,7 @@ public interface ISonarCommandHandler
     void SetStreamRedirectionDevice(string deviceId, Device device = Device.Mic);
 
     /// <summary>
-    /// Mute or unmute the Redirection of the chosen Sonar <see cref="Channel"/> of the chosen Sonar <see cref="Device"/>
+    /// Enable or disable the Redirection of the chosen Sonar <see cref="Channel"/> of the chosen Sonar <see cref="Device"/>
     /// </summary>
     /// <param name="newState">The new state of the Redirection</param>
     /// <param name="device">The Sonar <see cref="Device"/> you want to un/mute a Sonar redirection channel</param>

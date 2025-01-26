@@ -138,7 +138,7 @@ public class SonarEventManager
                         break;
                 }
                 break;
-            case "config":
+            case "configs":
                 if (!(subs.Length < 3))
                 {
                     eventArgs = new SonarConfigEvent() { ConfigId = subs[2] };
