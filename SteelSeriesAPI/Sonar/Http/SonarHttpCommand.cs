@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 using System.Text.Json;
-using SteelSeriesAPI.Interfaces;
+using SteelSeriesAPI.Sonar.Interfaces;
 using SteelSeriesAPI.Sonar.Enums;
 using Channel = SteelSeriesAPI.Sonar.Enums.Channel;
 

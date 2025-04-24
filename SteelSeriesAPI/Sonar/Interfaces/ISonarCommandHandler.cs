@@ -1,6 +1,6 @@
 using SteelSeriesAPI.Sonar.Enums;
 
-namespace SteelSeriesAPI.Interfaces;
+namespace SteelSeriesAPI.Sonar.Interfaces;
 
 public interface ISonarCommandHandler
 {

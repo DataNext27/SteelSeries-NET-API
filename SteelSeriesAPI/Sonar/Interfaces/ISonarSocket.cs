@@ -1,4 +1,4 @@
-namespace SteelSeriesAPI.Interfaces;
+namespace SteelSeriesAPI.Sonar.Interfaces;
 
 public interface ISonarSocket
 {

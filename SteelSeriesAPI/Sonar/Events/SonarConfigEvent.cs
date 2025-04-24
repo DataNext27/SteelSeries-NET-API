@@ -1,4 +1,4 @@
-namespace SteelSeriesAPI.Events;
+namespace SteelSeriesAPI.Sonar.Events;
 
 public class SonarConfigEvent : EventArgs
 {

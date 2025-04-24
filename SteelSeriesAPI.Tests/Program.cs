@@ -1,5 +1,5 @@
-﻿using SteelSeriesAPI.Events;
-using SteelSeriesAPI.Sonar;
+﻿using SteelSeriesAPI.Sonar;
+using SteelSeriesAPI.Sonar.Events;
 using SteelSeriesAPI.Sonar.Enums;
 using SteelSeriesAPI.Sonar.Models;
 

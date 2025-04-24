@@ -1,6 +1,6 @@
 using SteelSeriesAPI.Sonar.Enums;
 
-namespace SteelSeriesAPI.Events;
+namespace SteelSeriesAPI.Sonar.Events;
 
 public class SonarRedirectionStateEvent : EventArgs
 {

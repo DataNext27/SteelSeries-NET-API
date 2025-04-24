@@ -1,7 +1,7 @@
 using SteelSeriesAPI.Sonar.Enums;
 using SteelSeriesAPI.Sonar.Models;
 
-namespace SteelSeriesAPI.Interfaces;
+namespace SteelSeriesAPI.Sonar.Interfaces;
 
 public interface ISonarDataProvider
 {

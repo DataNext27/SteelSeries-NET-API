@@ -1,7 +1,8 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using SteelSeriesAPI.Interfaces;
+using SteelSeriesAPI.Sonar.Interfaces;
+using SteelSeriesAPI.Sonar.Managers;
 
 namespace SteelSeriesAPI.Sonar;
 

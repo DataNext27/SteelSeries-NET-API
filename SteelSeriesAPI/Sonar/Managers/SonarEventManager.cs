@@ -1,8 +1,8 @@
 ﻿using System.Globalization;
-using SteelSeriesAPI.Events;
+using SteelSeriesAPI.Sonar.Events;
 using SteelSeriesAPI.Sonar.Enums;
 
-namespace SteelSeriesAPI.Sonar;
+namespace SteelSeriesAPI.Sonar.Managers;
 
 public class SonarEventManager
 {
