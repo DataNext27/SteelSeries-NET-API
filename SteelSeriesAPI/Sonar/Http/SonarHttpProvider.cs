@@ -73,6 +73,23 @@ public class SonarHttpProvider : ISonarDataProvider
             yield return new SonarAudioConfiguration(id, name, (Device)DeviceExtensions.FromDictKey(vDevice));
         }
     }
+
+    public SonarAudioConfiguration GetAudioConfiguration(string configId)
+    {
+        IEnumerable<SonarAudioConfiguration> configs = GetAllAudioConfigurations();
+        SonarAudioConfiguration sonarConfig = null;
+        
+        foreach (var config in configs)
+        {
+            if (config.Id == configId)
+            {
+                sonarConfig = config;
+                break;
+            }
+        }
+
+        return sonarConfig;
+    }
     
     public IEnumerable<SonarAudioConfiguration> GetAudioConfigurations(Device device)
     {
@@ -119,22 +136,6 @@ public class SonarHttpProvider : ISonarDataProvider
         string vDevice = sConfig.GetProperty("virtualAudioDevice").GetString();
 
         return new SonarAudioConfiguration(id, name, (Device)DeviceExtensions.FromDictKey(vDevice));
-    }
-    
-    public Device GetDeviceFromAudioConfigurationId(string configId)
-    {
-        var configs = GetAllAudioConfigurations();
-        SonarAudioConfiguration sonarConfig = null;
-        foreach (var config in configs)
-        {
-            if (config.Id == configId)
-            {
-                sonarConfig = config;
-                break;
-            }
-        }
-
-        return sonarConfig.AssociatedDevice;
     }
     
     #endregion

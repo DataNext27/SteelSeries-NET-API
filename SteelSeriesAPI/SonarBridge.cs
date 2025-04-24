@@ -118,6 +118,11 @@ public class SonarBridge : ISonarBridge
         return _sonarProvider.GetAllAudioConfigurations();
     }
 
+    public SonarAudioConfiguration GetAudioConfiguration(string configId)
+    {
+        return _sonarProvider.GetAudioConfiguration(configId);
+    }
+
     public IEnumerable<SonarAudioConfiguration> GetAudioConfigurations(Device device)
     {
         return _sonarProvider.GetAudioConfigurations(device);
@@ -126,11 +131,6 @@ public class SonarBridge : ISonarBridge
     public SonarAudioConfiguration GetSelectedAudioConfiguration(Device device)
     {
         return _sonarProvider.GetSelectedAudioConfiguration(device);
-    }
-
-    public Device GetDeviceFromAudioConfigurationId(string configId)
-    {
-        return _sonarProvider.GetDeviceFromAudioConfigurationId(configId);
     }
     
     public double GetChatMixBalance()

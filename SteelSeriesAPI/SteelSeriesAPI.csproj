@@ -4,7 +4,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <TargetFrameworks>net8.0;net9.0;net7.0</TargetFrameworks>
-        <Version>1.0.4</Version>
+        <Version>1.0.5</Version>
         <PackageId>Steelseries-NET-API</PackageId>
         <Product>Steelseries-NET-API</Product>
         <Title>SteelSeries .NET API Client</Title>

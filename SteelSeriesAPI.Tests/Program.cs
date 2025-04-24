@@ -109,7 +109,7 @@ class Program
         Console.WriteLine("----Current Media Config----------");
         Console.WriteLine(sonarManager.GetSelectedAudioConfiguration(Device.Media).Name);
         Console.WriteLine("----Device from config ID----------");
-        Console.WriteLine(sonarManager.GetDeviceFromAudioConfigurationId("29ae2c02-792b-4487-863c-dc3e11a7a469"));
+        Console.WriteLine(sonarManager.GetAudioConfiguration("29ae2c02-792b-4487-863c-dc3e11a7a469").AssociatedDevice);
         Console.WriteLine("--------ChatMix---------");
         Console.WriteLine(sonarManager.GetChatMixBalance());
         Console.WriteLine(sonarManager.GetChatMixState());
