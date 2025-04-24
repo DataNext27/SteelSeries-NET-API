@@ -10,36 +10,6 @@ public interface ISonarDataProvider
     /// </summary>
     /// <returns>A <see cref="Mode"/>, either Classic or Streamer</returns>
     Mode GetMode();
-
-    /// <summary>
-    /// Get the volume of a  Sonar <see cref="Channel"/>
-    /// </summary>
-    /// <param name="channel">The Sonar <see cref="Channel"/> you want the volume</param>
-    /// <returns>The volume of the mix in double, value between 0 and 1</returns>
-    double GetVolume(Channel channel);
-    
-    /// <summary>
-    /// Get the volume of a Steamer mode Sonar <see cref="Mix"/>
-    /// </summary>
-    /// <param name="channel">The Sonar <see cref="Channel"/> you want the volume</param>
-    /// <param name="mix">The Sonar <see cref="Mix"/> you want the volume</param>
-    /// <returns>The volume of the mix in double, value between 0 and 1</returns>
-    double GetVolume(Channel channel, Mix mix);
-    
-    /// <summary>
-    /// Get the mute state of a Sonar <see cref="Channel"/>
-    /// </summary>
-    /// <param name="channel">The Sonar <see cref="Channel"/> you want the mute state</param>
-    /// <returns>The mute state, a boolean</returns>
-    bool GetMute(Channel channel);
-    
-    /// <summary>
-    /// Get the mute state of a Streamer mode Sonar <see cref="Mix"/>
-    /// </summary>
-    /// <param name="channel">The Sonar <see cref="Channel"/> you want the mute state</param>
-    /// <param name="mix">The Sonar <see cref="Mix"/> you want the mute state</param>
-    /// <returns>The mute state, a boolean</returns>
-    bool GetMute(Channel channel, Mix mix);
     
     /// <summary>
     /// Get all audio configurations from Sonar

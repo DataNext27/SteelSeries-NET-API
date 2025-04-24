@@ -22,42 +22,6 @@ public class SonarHttpProvider : ISonarDataProvider
         return (Mode)ModeExtensions.FromDictKey(mode, ModeMapChoice.StreamDict);
     }
 
-    public double GetVolume(Channel channel)
-    {
-        JsonDocument volumeSettings = new HttpProvider("volumeSettings/classic/").Provide();
-
-        if (channel == Channel.MASTER)
-            return volumeSettings.RootElement.GetProperty("masters").GetProperty("classic").GetProperty("volume").GetDouble();
-        return volumeSettings.RootElement.GetProperty("devices").GetProperty(channel.ToDictKey()).GetProperty("classic").GetProperty("volume").GetDouble();
-    }
-
-    public double GetVolume(Channel channel, Mix mix)
-    {
-        JsonDocument volumeSettings = new HttpProvider("volumeSettings/streamer/").Provide();
-
-        if (channel == Channel.MASTER)
-            return volumeSettings.RootElement.GetProperty("masters").GetProperty("stream").GetProperty(mix.ToDictKey()).GetProperty("volume").GetDouble();
-        return volumeSettings.RootElement.GetProperty("devices").GetProperty(channel.ToDictKey()).GetProperty("stream").GetProperty(mix.ToDictKey()).GetProperty("volume").GetDouble();
-    }
-
-    public bool GetMute(Channel channel)
-    {
-        JsonDocument volumeSettings = new HttpProvider("volumeSettings/classic/").Provide();
-
-        if (channel == Channel.MASTER)
-            return volumeSettings.RootElement.GetProperty("masters").GetProperty("classic").GetProperty("muted").GetBoolean();
-        return volumeSettings.RootElement.GetProperty("devices").GetProperty(channel.ToDictKey()).GetProperty("classic").GetProperty("muted").GetBoolean();
-    }
-
-    public bool GetMute(Channel channel, Mix mix)
-    {
-        JsonDocument volumeSettings = new HttpProvider("volumeSettings/streamer/").Provide();
-
-        if (channel == Channel.MASTER)
-            return volumeSettings.RootElement.GetProperty("masters").GetProperty("stream").GetProperty(mix.ToDictKey()).GetProperty("muted").GetBoolean();
-        return volumeSettings.RootElement.GetProperty("devices").GetProperty(channel.ToDictKey()).GetProperty("stream").GetProperty(mix.ToDictKey()).GetProperty("muted").GetBoolean();
-    }
-
     #region AudioConfigs
     
     public IEnumerable<SonarAudioConfiguration> GetAllAudioConfigurations()

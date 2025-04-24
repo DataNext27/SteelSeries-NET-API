@@ -11,36 +11,6 @@ public interface ISonarCommandHandler
     void SetMode(Mode mode);
 
     /// <summary>
-    /// Set the volume of a Sonar <see cref="Channel"/>
-    /// </summary>
-    /// <param name="vol">The volume you want to set, between 1 and 0</param>
-    /// <param name="channel">The <see cref="Channel"/> you want to change the volume</param>
-    void SetVolume(double vol, Channel channel);
-    
-    /// <summary>
-    /// Set the volume of a Streamer mode Sonar <see cref="Mix"/>
-    /// </summary>
-    /// <param name="vol">The volume you want to set, between 1 and 0</param>
-    /// <param name="channel">The <see cref="Channel"/> you want to change the volume</param>
-    /// <param name="mix">The <see cref="Mix"/> you want to change the volume</param>
-    void SetVolume(double vol, Channel channel, Mix mix);
-
-    /// <summary>
-    /// Mute or unmute a Sonar <see cref="Channel"/>
-    /// </summary>
-    /// <param name="mute">The new muted state</param>
-    /// <param name="channel">The <see cref="Channel"/> you want to un/mute</param>
-    void SetMute(bool mute, Channel channel);
-
-    /// <summary>
-    /// Mute or unmute a Streamer mode Sonar <see cref="Mix"/>
-    /// </summary>
-    /// <param name="mute">The new muted state</param>
-    /// <param name="channel">The <see cref="Channel"/> you want to un/mute</param>
-    /// <param name="mix">The <see cref="Mix"/> you want to un/mute</param>
-    void SetMute(bool mute, Channel channel, Mix mix);
-
-    /// <summary>
     /// Set the config of a Sonar <see cref="Channel"/> by giving its id
     /// </summary>
     /// <remarks>For more explanation, go on the GitHub wiki</remarks>

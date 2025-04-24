@@ -19,7 +19,9 @@ public class SonarBridge : ISonarBridge
     private readonly ISonarCommandHandler _sonarCommand;
     private readonly ISonarDataProvider _sonarProvider;
     private readonly ISonarSocket _sonarSocket;
-    public readonly EventManager EventManager;
+
+    public readonly VolumeSettingsManager VolumeSettings;
+    public readonly EventManager Event;
 
     private string _sonarWebServerAddress;
 
@@ -28,10 +30,11 @@ public class SonarBridge : ISonarBridge
         _sonarRetriever = SonarRetriever.Instance;
         WaitUntilSonarStarted();
         _sonarWebServerAddress = _sonarRetriever.WebServerAddress();
-        EventManager = new EventManager();
-        _sonarSocket = new SonarSocket(_sonarWebServerAddress, EventManager);
+        Event = new EventManager();
+        _sonarSocket = new SonarSocket(_sonarWebServerAddress, Event);
         _sonarCommand = new SonarHttpCommand(this);
         _sonarProvider = new SonarHttpProvider(this);
+        VolumeSettings = new VolumeSettingsManager();
     }
 
     #region Listener
@@ -91,27 +94,6 @@ public class SonarBridge : ISonarBridge
     public Mode GetMode()
     {
         return _sonarProvider.GetMode();
-    }
-    
-    // volume = 0,00000000 <-- 8 decimal max
-    public double GetVolume(Channel channel)
-    {
-        return _sonarProvider.GetVolume(channel);
-    }
-
-    public double GetVolume(Channel channel, Mix mix)
-    {
-        return _sonarProvider.GetVolume(channel, mix);
-    }
-
-    public bool GetMute(Channel channel)
-    {
-        return _sonarProvider.GetMute(channel);
-    }
-
-    public bool GetMute(Channel channel, Mix mix)
-    {
-        return _sonarProvider.GetMute(channel, mix);
     }
 
     public IEnumerable<SonarAudioConfiguration> GetAllAudioConfigurations()
@@ -191,26 +173,6 @@ public class SonarBridge : ISonarBridge
     public void SetMode(Mode mode)
     {
         _sonarCommand.SetMode(mode);
-    }
-
-    public void SetVolume(double vol, Channel channel)
-    {
-        _sonarCommand.SetVolume(vol, channel);
-    }
-
-    public void SetVolume(double vol, Channel channel, Mix mix)
-    {
-        _sonarCommand.SetVolume(vol, channel, mix);
-    }
-    
-    public void SetMute(bool mute, Channel channel)
-    {
-        _sonarCommand.SetMute(mute, channel);
-    }
-
-    public void SetMute(bool mute, Channel channel, Mix mix)
-    {
-        _sonarCommand.SetMute(mute, channel, mix);
     }
 
     public void SetConfig(string configId)

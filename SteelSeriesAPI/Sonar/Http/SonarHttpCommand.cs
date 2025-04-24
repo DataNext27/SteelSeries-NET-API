@@ -20,28 +20,6 @@ public class SonarHttpCommand : ISonarCommandHandler
         Thread.Sleep(100); // Prevent bugs/freezes/crashes
     }
 
-    public void SetVolume(double vol, Channel channel)
-    {
-        string _vol = vol.ToString("0.00", CultureInfo.InvariantCulture);
-        new HttpPut("volumeSettings/classic/" + channel.ToDictKey(ChannelMapChoice.HttpDict) + "/Volume/" + _vol);
-    }
-
-    public void SetVolume(double vol, Channel channel, Mix mix)
-    {
-        string _vol = vol.ToString("0.00", CultureInfo.InvariantCulture);
-        new HttpPut("volumeSettings/streamer/" + mix.ToDictKey() + "/" + channel.ToDictKey(ChannelMapChoice.HttpDict) + "/volume/" + _vol);
-    }
-
-    public void SetMute(bool mute, Channel channel)
-    {
-        new HttpPut("volumeSettings/classic/" + channel.ToDictKey(ChannelMapChoice.HttpDict) + "/Mute/" + mute);
-    }
-
-    public void SetMute(bool mute, Channel channel, Mix mix)
-    {
-        new HttpPut("volumeSettings/streamer/" + mix.ToDictKey() + "/" + channel.ToDictKey(ChannelMapChoice.HttpDict) + "/isMuted/" + mute);
-    }
-
     public void SetConfig(string configId)
     {
         if (string.IsNullOrEmpty(configId)) throw new Exception("Couldn't retrieve config id");
