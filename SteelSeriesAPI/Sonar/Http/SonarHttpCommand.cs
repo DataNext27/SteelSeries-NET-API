@@ -2,7 +2,6 @@
 using System.Text.Json;
 using SteelSeriesAPI.Sonar.Interfaces;
 using SteelSeriesAPI.Sonar.Enums;
-using Channel = SteelSeriesAPI.Sonar.Enums.Channel;
 
 namespace SteelSeriesAPI.Sonar.Http;
 
@@ -21,26 +20,26 @@ public class SonarHttpCommand : ISonarCommandHandler
         Thread.Sleep(100); // Prevent bugs/freezes/crashes
     }
 
-    public void SetVolume(double vol, Device device)
+    public void SetVolume(double vol, Channel channel)
     {
         string _vol = vol.ToString("0.00", CultureInfo.InvariantCulture);
-        new HttpPut("volumeSettings/classic/" + device.ToDictKey(DeviceMapChoice.HttpDict) + "/Volume/" + _vol);
+        new HttpPut("volumeSettings/classic/" + channel.ToDictKey(ChannelMapChoice.HttpDict) + "/Volume/" + _vol);
     }
 
-    public void SetVolume(double vol, Device device, Channel channel)
+    public void SetVolume(double vol, Channel channel, Mix mix)
     {
         string _vol = vol.ToString("0.00", CultureInfo.InvariantCulture);
-        new HttpPut("volumeSettings/streamer/" + channel.ToDictKey() + "/" + device.ToDictKey(DeviceMapChoice.HttpDict) + "/volume/" + _vol);
+        new HttpPut("volumeSettings/streamer/" + mix.ToDictKey() + "/" + channel.ToDictKey(ChannelMapChoice.HttpDict) + "/volume/" + _vol);
     }
 
-    public void SetMute(bool mute, Device device)
+    public void SetMute(bool mute, Channel channel)
     {
-        new HttpPut("volumeSettings/classic/" + device.ToDictKey(DeviceMapChoice.HttpDict) + "/Mute/" + mute);
+        new HttpPut("volumeSettings/classic/" + channel.ToDictKey(ChannelMapChoice.HttpDict) + "/Mute/" + mute);
     }
 
-    public void SetMute(bool mute, Device device, Channel channel)
+    public void SetMute(bool mute, Channel channel, Mix mix)
     {
-        new HttpPut("volumeSettings/streamer/" + channel.ToDictKey() + "/" + device.ToDictKey(DeviceMapChoice.HttpDict) + "/isMuted/" + mute);
+        new HttpPut("volumeSettings/streamer/" + mix.ToDictKey() + "/" + channel.ToDictKey(ChannelMapChoice.HttpDict) + "/isMuted/" + mute);
     }
 
     public void SetConfig(string configId)
@@ -50,9 +49,9 @@ public class SonarHttpCommand : ISonarCommandHandler
         new HttpPut("configs/" + configId + "/select");
     }
 
-    public void SetConfig(Device device, string name)
+    public void SetConfig(Channel channel, string name)
     {
-        var configs = _sonarBridge.GetAudioConfigurations(device).ToList();
+        var configs = _sonarBridge.GetAudioConfigurations(channel).ToList();
         foreach (var config in configs)
         {
             if (config.Name == name)
@@ -78,29 +77,29 @@ public class SonarHttpCommand : ISonarCommandHandler
         new HttpPut("chatMix?balance=" + balance.ToString("0.00", CultureInfo.InvariantCulture));
     }
 
-    public void SetClassicRedirectionDevice(string deviceId, Device device)
+    public void SetClassicPlaybackDevice(string deviceId, Channel channel)
     {
-        new HttpPut("classicRedirections/" + device.ToDictKey(DeviceMapChoice.DeviceDict) +"/deviceId/" + deviceId);
+        new HttpPut("classicRedirections/" + channel.ToDictKey(ChannelMapChoice.ChannelDict) +"/deviceId/" + deviceId);
     }
     
-    public void SetStreamRedirectionDevice(string deviceId, Channel channel)
+    public void SetStreamPlaybackDevice(string deviceId, Mix mix)
     {
-        new HttpPut("streamRedirections/" + channel.ToDictKey() +"/deviceId/" + deviceId);
+        new HttpPut("streamRedirections/" + mix.ToDictKey() +"/deviceId/" + deviceId);
     }
     
-    public void SetStreamRedirectionDevice(string deviceId, Device device)
+    public void SetStreamPlaybackDevice(string deviceId, Channel channel)
     {
-        if (device != Device.Mic)
+        if (channel != Channel.MIC)
         {
-            throw new Exception("Can only change stream redirection device for Mic");
+            throw new Exception("Can only change stream redirection channel for Mic");
         }
         
-        new HttpPut("streamRedirections/" + device.ToDictKey(DeviceMapChoice.DeviceDict) +"/deviceId/" + deviceId);
+        new HttpPut("streamRedirections/" + channel.ToDictKey(ChannelMapChoice.ChannelDict) +"/deviceId/" + deviceId);
     }
 
-    public void SetRedirectionState(bool newState, Device device, Channel channel)
+    public void SetRedirectionState(bool newState, Channel channel, Mix mix)
     {
-        new HttpPut("streamRedirections/" + channel.ToDictKey() + "/redirections/" + device.ToDictKey() +
+        new HttpPut("streamRedirections/" + mix.ToDictKey() + "/redirections/" + channel.ToDictKey() +
                     "/isEnabled/" + newState);
     }
 
@@ -109,9 +108,9 @@ public class SonarHttpCommand : ISonarCommandHandler
         new HttpPut("streamRedirections/isStreamMonitoringEnabled/" + newState);
     }
     
-    public void SetProcessToDeviceRouting(int pId, Device device)
+    public void SetProcessToDeviceRouting(int pId, Channel channel)
     {
-        if (device == Device.Master)
+        if (channel == Channel.MASTER)
         {
             throw new Exception("Can't set process to master routing");
         }
@@ -120,9 +119,9 @@ public class SonarHttpCommand : ISonarCommandHandler
 
         foreach (var element in audioDeviceRouting.RootElement.EnumerateArray())
         {
-            if (element.GetProperty("role").GetString() == device.ToDictKey())
+            if (element.GetProperty("role").GetString() == channel.ToDictKey())
             {
-                if (device == Device.Mic)
+                if (channel == Channel.MIC)
                 {
                     new HttpPut("AudioDeviceRouting/capture/" + element.GetProperty("deviceId").GetString() + "/" + pId);
                     break;

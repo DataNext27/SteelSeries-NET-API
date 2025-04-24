@@ -4,7 +4,7 @@ using SteelSeriesAPI.Sonar.Enums;
 
 namespace SteelSeriesAPI.Sonar.Managers;
 
-public class SonarEventManager
+public class EventManager
 {
     /// <summary>
     /// Notify when mode changed
@@ -12,17 +12,17 @@ public class SonarEventManager
     public event EventHandler<SonarModeEvent> OnSonarModeChange = delegate{  };
     
     /// <summary>
-    /// Notify when a volume of a device changed
+    /// Notify when a volume of a channel changed
     /// </summary>
     public event EventHandler<SonarVolumeEvent> OnSonarVolumeChange = delegate{  };
     
     /// <summary>
-    /// Notify when a device is un/muted
+    /// Notify when a channel is un/muted
     /// </summary>
     public event EventHandler<SonarMuteEvent> OnSonarMuteChange = delegate{  };
     
     /// <summary>
-    /// Notify when the config of a device is changed
+    /// Notify when the config of a channel is changed
     /// </summary>
     public event EventHandler<SonarConfigEvent> OnSonarConfigChange = delegate{  };
     
@@ -32,9 +32,9 @@ public class SonarEventManager
     public event EventHandler<SonarChatMixEvent> OnSonarChatMixChange = delegate{  };
     
     /// <summary>
-    /// Notify when a redirection device of a device is changed
+    /// Notify when a redirection channel of a channel is changed
     /// </summary>
-    public event EventHandler<SonarRedirectionDeviceEvent> OnSonarRedirectionDeviceChange = delegate{  };
+    public event EventHandler<SonarPlaybackDeviceEvent> OnSonarRedirectionDeviceChange = delegate{  };
     
     /// <summary>
     /// Notify when a redirection state is changed
@@ -66,7 +66,7 @@ public class SonarEventManager
             case SonarChatMixEvent sonarChatMixEvent:
                 OnSonarChatMixChange(this, sonarChatMixEvent);
                 break;
-            case SonarRedirectionDeviceEvent sonarRedirectionDeviceEvent:
+            case SonarPlaybackDeviceEvent sonarRedirectionDeviceEvent:
                 OnSonarRedirectionDeviceChange(this, sonarRedirectionDeviceEvent);
                 break;
             case SonarRedirectionStateEvent sonarRedirectionStateEvent:
@@ -99,16 +99,16 @@ public class SonarEventManager
                                 eventArgs = new SonarVolumeEvent()
                                 {
                                     Volume = double.Parse(subs[5], CultureInfo.InvariantCulture.NumberFormat), 
-                                    Mode = Mode.Classic,
-                                    Device = (Device)DeviceExtensions.FromDictKey(subs[3], DeviceMapChoice.HttpDict)
+                                    Mode = Mode.CLASSIC,
+                                    Channel = (Channel)ChannelExtensions.FromDictKey(subs[3], ChannelMapChoice.HttpDict)
                                 };
                                 break;
                             case"Mute":
                                 eventArgs = new SonarMuteEvent()
                                 {
                                     Muted = Convert.ToBoolean(subs[5]),
-                                    Mode = Mode.Classic,
-                                    Device = (Device)DeviceExtensions.FromDictKey(subs[3], DeviceMapChoice.HttpDict)
+                                    Mode = Mode.CLASSIC,
+                                    Channel = (Channel)ChannelExtensions.FromDictKey(subs[3], ChannelMapChoice.HttpDict)
                                 };
                                 break;
                         }
@@ -120,18 +120,18 @@ public class SonarEventManager
                                 eventArgs = new SonarVolumeEvent()
                                 {
                                     Volume = double.Parse(subs[6], CultureInfo.InvariantCulture.NumberFormat),
-                                    Mode = Mode.Streamer,
-                                    Device = (Device)DeviceExtensions.FromDictKey(subs[4], DeviceMapChoice.HttpDict),
-                                    Channel = (Channel)ChannelExtensions.FromDictKey(subs[3])
+                                    Mode = Mode.STREAMER,
+                                    Channel = (Channel)ChannelExtensions.FromDictKey(subs[4], ChannelMapChoice.HttpDict),
+                                    Mix = (Mix)MixExtensions.FromDictKey(subs[3])
                                 };
                                 break;
                             case "isMuted":
                                 eventArgs = new SonarMuteEvent()
                                 {
                                     Muted = Convert.ToBoolean(subs[6]),
-                                    Mode = Mode.Streamer,
-                                    Device = (Device)DeviceExtensions.FromDictKey(subs[4], DeviceMapChoice.HttpDict),
-                                    Channel = (Channel)ChannelExtensions.FromDictKey(subs[3])
+                                    Mode = Mode.STREAMER,
+                                    Channel = (Channel)ChannelExtensions.FromDictKey(subs[4], ChannelMapChoice.HttpDict),
+                                    Mix = (Mix)MixExtensions.FromDictKey(subs[3])
                                 };
                                 break;
                         }
@@ -145,11 +145,11 @@ public class SonarEventManager
                 }
                 break;
             case "classicRedirections":
-                eventArgs = new SonarRedirectionDeviceEvent()
+                eventArgs = new SonarPlaybackDeviceEvent()
                 {
                     RedirectionDeviceId = subs[4].Replace("%7B", "{").Replace("%7D", "}"),
-                    Mode = Mode.Classic,
-                    Device = (Device)DeviceExtensions.FromDictKey(subs[2], DeviceMapChoice.DeviceDict)
+                    Mode = Mode.CLASSIC,
+                    Device = (Channel)ChannelExtensions.FromDictKey(subs[2], ChannelMapChoice.ChannelDict)
                 };
                 break;
             case "streamRedirections":
@@ -164,28 +164,28 @@ public class SonarEventManager
                     case "deviceId":
                         if (subs[2] == "mic")
                         {
-                            eventArgs = new SonarRedirectionDeviceEvent()
+                            eventArgs = new SonarPlaybackDeviceEvent()
                             {
                                 RedirectionDeviceId = subs[4].Replace("%7B", "{").Replace("%7D", "}"),
-                                Mode = Mode.Streamer,
-                                Device = Device.Mic
+                                Mode = Mode.STREAMER,
+                                Device = Channel.MIC
                             };
                             break;
                         }
                         
-                        eventArgs = new SonarRedirectionDeviceEvent()
+                        eventArgs = new SonarPlaybackDeviceEvent()
                         {
                             RedirectionDeviceId = subs[4].Replace("%7B", "{").Replace("%7D", "}"),
-                            Mode = Mode.Streamer,
-                            Channel = (Channel)ChannelExtensions.FromDictKey(subs[2])
+                            Mode = Mode.STREAMER,
+                            Channel = (Mix)MixExtensions.FromDictKey(subs[2])
                         };
                         break;
                     case "redirections":
                         eventArgs = new SonarRedirectionStateEvent()
                         {
                             State = Convert.ToBoolean(subs[6]),
-                            Device = (Device)DeviceExtensions.FromDictKey(subs[4]),
-                            Channel = (Channel)ChannelExtensions.FromDictKey(subs[2])
+                            Channel = (Channel)ChannelExtensions.FromDictKey(subs[4]),
+                            Mix = (Mix)MixExtensions.FromDictKey(subs[2])
                         };
                         break;
                 }

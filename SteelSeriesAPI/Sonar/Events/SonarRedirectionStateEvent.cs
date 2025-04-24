@@ -8,6 +8,6 @@ public class SonarRedirectionStateEvent : EventArgs
     
     public bool State { get; set; }
     
-    public Device Device { get; set; }
     public Channel Channel { get; set; }
+    public Mix Mix { get; set; }
 }

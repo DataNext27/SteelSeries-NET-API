@@ -19,7 +19,7 @@ public class SonarBridge : ISonarBridge
     private readonly ISonarCommandHandler _sonarCommand;
     private readonly ISonarDataProvider _sonarProvider;
     private readonly ISonarSocket _sonarSocket;
-    public readonly SonarEventManager SonarEventManager;
+    public readonly EventManager EventManager;
 
     private string _sonarWebServerAddress;
 
@@ -28,8 +28,8 @@ public class SonarBridge : ISonarBridge
         _sonarRetriever = SonarRetriever.Instance;
         WaitUntilSonarStarted();
         _sonarWebServerAddress = _sonarRetriever.WebServerAddress();
-        SonarEventManager = new SonarEventManager();
-        _sonarSocket = new SonarSocket(_sonarWebServerAddress, SonarEventManager);
+        EventManager = new EventManager();
+        _sonarSocket = new SonarSocket(_sonarWebServerAddress, EventManager);
         _sonarCommand = new SonarHttpCommand(this);
         _sonarProvider = new SonarHttpProvider(this);
     }
@@ -94,24 +94,24 @@ public class SonarBridge : ISonarBridge
     }
     
     // volume = 0,00000000 <-- 8 decimal max
-    public double GetVolume(Device device)
+    public double GetVolume(Channel channel)
     {
-        return _sonarProvider.GetVolume(device);
+        return _sonarProvider.GetVolume(channel);
     }
 
-    public double GetVolume(Device device, Channel channel)
+    public double GetVolume(Channel channel, Mix mix)
     {
-        return _sonarProvider.GetVolume(device, channel);
+        return _sonarProvider.GetVolume(channel, mix);
     }
 
-    public bool GetMute(Device device)
+    public bool GetMute(Channel channel)
     {
-        return _sonarProvider.GetMute(device);
+        return _sonarProvider.GetMute(channel);
     }
 
-    public bool GetMute(Device device, Channel channel)
+    public bool GetMute(Channel channel, Mix mix)
     {
-        return _sonarProvider.GetMute(device, channel);
+        return _sonarProvider.GetMute(channel, mix);
     }
 
     public IEnumerable<SonarAudioConfiguration> GetAllAudioConfigurations()
@@ -124,14 +124,14 @@ public class SonarBridge : ISonarBridge
         return _sonarProvider.GetAudioConfiguration(configId);
     }
 
-    public IEnumerable<SonarAudioConfiguration> GetAudioConfigurations(Device device)
+    public IEnumerable<SonarAudioConfiguration> GetAudioConfigurations(Channel channel)
     {
-        return _sonarProvider.GetAudioConfigurations(device);
+        return _sonarProvider.GetAudioConfigurations(channel);
     }
 
-    public SonarAudioConfiguration GetSelectedAudioConfiguration(Device device)
+    public SonarAudioConfiguration GetSelectedAudioConfiguration(Channel channel)
     {
-        return _sonarProvider.GetSelectedAudioConfiguration(device);
+        return _sonarProvider.GetSelectedAudioConfiguration(channel);
     }
     
     public double GetChatMixBalance()
@@ -144,34 +144,34 @@ public class SonarBridge : ISonarBridge
         return _sonarProvider.GetChatMixState();
     }
 
-    public IEnumerable<RedirectionDevice> GetRedirectionDevices(Direction direction)
+    public IEnumerable<PlaybackDevice> GetPlaybackDevices(DataFlow dataFlow)
     {
-        return _sonarProvider.GetRedirectionDevices(direction);
+        return _sonarProvider.GetPlaybackDevices(dataFlow);
     }
 
-    public RedirectionDevice GetClassicRedirectionDevice(Device device)
+    public PlaybackDevice GetClassicPlaybackDevice(Channel channel)
     {
-        return _sonarProvider.GetClassicRedirectionDevice(device);
+        return _sonarProvider.GetClassicPlaybackDevice(channel);
     }
 
-    public RedirectionDevice GetStreamRedirectionDevice(Channel channel)
+    public PlaybackDevice GetStreamPlaybackDevice(Mix mix)
     {
-        return _sonarProvider.GetStreamRedirectionDevice(channel);
+        return _sonarProvider.GetStreamPlaybackDevice(mix);
     }
 
-    public RedirectionDevice GetStreamRedirectionDevice(Device device = Device.Mic)
+    public PlaybackDevice GetStreamPlaybackDevice(Channel channel = Channel.MIC)
     {
-        return _sonarProvider.GetStreamRedirectionDevice(device);
+        return _sonarProvider.GetStreamPlaybackDevice(channel);
     }
 
-    public RedirectionDevice GetRedirectionDeviceFromId(string deviceId)
+    public PlaybackDevice GetPlaybackDeviceFromId(string deviceId)
     {
-        return _sonarProvider.GetRedirectionDeviceFromId(deviceId);
+        return _sonarProvider.GetPlaybackDeviceFromId(deviceId);
     }
 
-    public bool GetRedirectionState(Device device, Channel channel)
+    public bool GetRedirectionState(Channel channel, Mix mix)
     {
-        return _sonarProvider.GetRedirectionState(device, channel);
+        return _sonarProvider.GetRedirectionState(channel, mix);
     }
 
     public bool GetAudienceMonitoringState()
@@ -179,9 +179,9 @@ public class SonarBridge : ISonarBridge
         return _sonarProvider.GetAudienceMonitoringState();
     }
 
-    public IEnumerable<RoutedProcess> GetRoutedProcess(Device device)
+    public IEnumerable<RoutedProcess> GetRoutedProcess(Channel channel)
     {
-        return _sonarProvider.GetRoutedProcess(device);
+        return _sonarProvider.GetRoutedProcess(channel);
     }
 
     #endregion
@@ -193,24 +193,24 @@ public class SonarBridge : ISonarBridge
         _sonarCommand.SetMode(mode);
     }
 
-    public void SetVolume(double vol, Device device)
+    public void SetVolume(double vol, Channel channel)
     {
-        _sonarCommand.SetVolume(vol, device);
+        _sonarCommand.SetVolume(vol, channel);
     }
 
-    public void SetVolume(double vol, Device device, Channel channel)
+    public void SetVolume(double vol, Channel channel, Mix mix)
     {
-        _sonarCommand.SetVolume(vol, device, channel);
+        _sonarCommand.SetVolume(vol, channel, mix);
     }
     
-    public void SetMute(bool mute, Device device)
+    public void SetMute(bool mute, Channel channel)
     {
-        _sonarCommand.SetMute(mute, device);
+        _sonarCommand.SetMute(mute, channel);
     }
 
-    public void SetMute(bool mute, Device device, Channel channel)
+    public void SetMute(bool mute, Channel channel, Mix mix)
     {
-        _sonarCommand.SetMute(mute, device, channel);
+        _sonarCommand.SetMute(mute, channel, mix);
     }
 
     public void SetConfig(string configId)
@@ -218,9 +218,9 @@ public class SonarBridge : ISonarBridge
         _sonarCommand.SetConfig(configId);
     }
     
-    public void SetConfig(Device device, string name)
+    public void SetConfig(Channel channel, string name)
     {
-        _sonarCommand.SetConfig(device, name);
+        _sonarCommand.SetConfig(channel, name);
     }
 
     public void SetChatMixBalance(double balance)
@@ -228,24 +228,24 @@ public class SonarBridge : ISonarBridge
         _sonarCommand.SetChatMixBalance(balance);
     }
 
-    public void SetClassicRedirectionDevice(string deviceId, Device device)
+    public void SetClassicPlaybackDevice(string deviceId, Channel channel)
     {
-        _sonarCommand.SetClassicRedirectionDevice(deviceId, device);
+        _sonarCommand.SetClassicPlaybackDevice(deviceId, channel);
     }
 
-    public void SetStreamRedirectionDevice(string deviceId, Channel channel)
+    public void SetStreamPlaybackDevice(string deviceId, Mix mix)
     {
-        _sonarCommand.SetStreamRedirectionDevice(deviceId, channel);
+        _sonarCommand.SetStreamPlaybackDevice(deviceId, mix);
     }
 
-    public void SetStreamRedirectionDevice(string deviceId, Device device = Device.Mic)
+    public void SetStreamPlaybackDevice(string deviceId, Channel channel = Channel.MIC)
     {
-        _sonarCommand.SetStreamRedirectionDevice(deviceId, device);
+        _sonarCommand.SetStreamPlaybackDevice(deviceId, channel);
     }
     
-    public void SetRedirectionState(bool newState, Device device, Channel channel)
+    public void SetRedirectionState(bool newState, Channel channel, Mix mix)
     {
-        _sonarCommand.SetRedirectionState(newState, device, channel);
+        _sonarCommand.SetRedirectionState(newState, channel, mix);
     }
 
     public void SetAudienceMonitoringState(bool newState)
@@ -253,9 +253,9 @@ public class SonarBridge : ISonarBridge
         _sonarCommand.SetAudienceMonitoringState(newState);
     }
 
-    public void SetProcessToDeviceRouting(int pId, Device device)
+    public void SetProcessToDeviceRouting(int pId, Channel channel)
     {
-        _sonarCommand.SetProcessToDeviceRouting(pId, device);
+        _sonarCommand.SetProcessToDeviceRouting(pId, channel);
     }
 
     #endregion

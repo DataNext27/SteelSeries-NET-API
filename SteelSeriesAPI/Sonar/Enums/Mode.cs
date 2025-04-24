@@ -2,8 +2,8 @@ namespace SteelSeriesAPI.Sonar.Enums;
 
 public enum Mode
 {
-    Classic,
-    Streamer
+    CLASSIC,
+    STREAMER
 }
 
 public enum ModeMapChoice
@@ -16,14 +16,14 @@ public static class ModeExtensions
 {
     private static readonly Dictionary<Mode, string> PrimaryModeMap = new Dictionary<Mode, string>
     {
-        { Mode.Classic, "classic" },
-        { Mode.Streamer, "streamer" }
+        { Mode.CLASSIC, "classic" },
+        { Mode.STREAMER, "streamer" }
     };
     
     private static readonly Dictionary<Mode, string> SecondaryModeMap = new Dictionary<Mode, string>
     {
-        { Mode.Classic, "classic" },
-        { Mode.Streamer, "stream" }
+        { Mode.CLASSIC, "classic" },
+        { Mode.STREAMER, "stream" }
     };
 
     public static string ToDictKey(this Mode mode, ModeMapChoice context = ModeMapChoice.StreamerDict)

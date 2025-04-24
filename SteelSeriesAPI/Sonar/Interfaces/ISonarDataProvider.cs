@@ -12,34 +12,34 @@ public interface ISonarDataProvider
     Mode GetMode();
 
     /// <summary>
-    /// Get the volume of a  Sonar <see cref="Device"/>
+    /// Get the volume of a  Sonar <see cref="Channel"/>
     /// </summary>
-    /// <param name="device">The Sonar <see cref="Device"/> you want the volume</param>
-    /// <returns>The volume of the channel in double, value between 0 and 1</returns>
-    double GetVolume(Device device);
-    
-    /// <summary>
-    /// Get the volume of a Steamer mode Sonar <see cref="Channel"/>
-    /// </summary>
-    /// <param name="device">The Sonar <see cref="Device"/> you want the volume</param>
     /// <param name="channel">The Sonar <see cref="Channel"/> you want the volume</param>
-    /// <returns>The volume of the channel in double, value between 0 and 1</returns>
-    double GetVolume(Device device, Channel channel);
+    /// <returns>The volume of the mix in double, value between 0 and 1</returns>
+    double GetVolume(Channel channel);
     
     /// <summary>
-    /// Get the mute state of a Sonar <see cref="Device"/>
+    /// Get the volume of a Steamer mode Sonar <see cref="Mix"/>
     /// </summary>
-    /// <param name="device">The Sonar <see cref="Device"/> you want the mute state</param>
-    /// <returns>The mute state, a boolean</returns>
-    bool GetMute(Device device);
+    /// <param name="channel">The Sonar <see cref="Channel"/> you want the volume</param>
+    /// <param name="mix">The Sonar <see cref="Mix"/> you want the volume</param>
+    /// <returns>The volume of the mix in double, value between 0 and 1</returns>
+    double GetVolume(Channel channel, Mix mix);
     
     /// <summary>
-    /// Get the mute state of a Streamer mode Sonar <see cref="Channel"/>
+    /// Get the mute state of a Sonar <see cref="Channel"/>
     /// </summary>
-    /// <param name="device">The Sonar <see cref="Device"/> you want the mute state</param>
     /// <param name="channel">The Sonar <see cref="Channel"/> you want the mute state</param>
     /// <returns>The mute state, a boolean</returns>
-    bool GetMute(Device device, Channel channel);
+    bool GetMute(Channel channel);
+    
+    /// <summary>
+    /// Get the mute state of a Streamer mode Sonar <see cref="Mix"/>
+    /// </summary>
+    /// <param name="channel">The Sonar <see cref="Channel"/> you want the mute state</param>
+    /// <param name="mix">The Sonar <see cref="Mix"/> you want the mute state</param>
+    /// <returns>The mute state, a boolean</returns>
+    bool GetMute(Channel channel, Mix mix);
     
     /// <summary>
     /// Get all audio configurations from Sonar
@@ -55,18 +55,18 @@ public interface ISonarDataProvider
     SonarAudioConfiguration GetAudioConfiguration(string configId);
 
     /// <summary>
-    /// Get all audio configurations of a <see cref="Device"/> from Sonar
+    /// Get all audio configurations of a <see cref="Channel"/> from Sonar
     /// </summary>
-    /// <param name="device">The device you want the configs</param>
+    /// <param name="channel">The channel you want the configs</param>
     /// <returns>An IEnumerable of <see cref="SonarAudioConfiguration"/> ordered alphabetically</returns>
-    IEnumerable<SonarAudioConfiguration> GetAudioConfigurations(Device device);
+    IEnumerable<SonarAudioConfiguration> GetAudioConfigurations(Channel channel);
 
     /// <summary>
-    /// Get the current audio configuration of a chosen <see cref="Device"/>
+    /// Get the current audio configuration of a chosen <see cref="Channel"/>
     /// </summary>
-    /// <param name="device">The device you want the current config</param>
+    /// <param name="channel">The channel you want the current config</param>
     /// <returns>A <see cref="SonarAudioConfiguration"/></returns>
-    SonarAudioConfiguration GetSelectedAudioConfiguration(Device device);
+    SonarAudioConfiguration GetSelectedAudioConfiguration(Channel channel);
 
     /// <summary>
     /// Get the actual ChatMix balance value
@@ -83,46 +83,46 @@ public interface ISonarDataProvider
     /// <summary>
     /// Get all the in/output Redirection Devices (Windows devices)
     /// </summary>
-    /// <param name="direction">The DataFlow of the device (In/Output)</param>
-    /// <returns>A list of <see cref="RedirectionDevice"/></returns>
-    IEnumerable<RedirectionDevice> GetRedirectionDevices(Direction direction);
+    /// <param name="dataFlow">The DataFlow of the channel (In/Output)</param>
+    /// <returns>A list of <see cref="PlaybackDevice"/></returns>
+    IEnumerable<PlaybackDevice> GetPlaybackDevices(DataFlow dataFlow);
 
     /// <summary>
-    /// Get the current Redirection Device of a Sonar <see cref="Device"/>
+    /// Get the current Redirection Channel of a Sonar <see cref="Channel"/>
     /// </summary>
-    /// <param name="device">The Sonar <see cref="Device"/> you want the redirection device</param>
-    /// <returns><see cref="RedirectionDevice"/></returns>
-    RedirectionDevice GetClassicRedirectionDevice(Device device);
+    /// <param name="channel">The Sonar <see cref="Channel"/> you want the redirection channel</param>
+    /// <returns><see cref="PlaybackDevice"/></returns>
+    PlaybackDevice GetClassicPlaybackDevice(Channel channel);
 
     /// <summary>
-    /// Get the current Redirection Device of a Streamer mode Sonar <see cref="Channel"/>
+    /// Get the current Redirection Channel of a Streamer mode Sonar <see cref="Mix"/>
     /// </summary>
-    /// <param name="channel">The Sonar <see cref="Channel"/> you want the redirection device</param>
-    /// <returns>A <see cref="RedirectionDevice"/></returns>
-    RedirectionDevice GetStreamRedirectionDevice(Channel channel);
+    /// <param name="mix">The Sonar <see cref="Mix"/> you want the redirection channel</param>
+    /// <returns>A <see cref="PlaybackDevice"/></returns>
+    PlaybackDevice GetStreamPlaybackDevice(Mix mix);
     
     /// <summary>
-    /// Get the current Redirection Device of the Streamer mode Sonar <see cref="Device.Mic"/>
+    /// Get the current Redirection Channel of the Streamer mode Sonar <see cref="Channel.MIC"/>
     /// </summary>
-    /// <param name="device">The Sonar <see cref="Device"/> you want to change the redirection device</param>
-    /// <returns><see cref="RedirectionDevice"/></returns>
-    /// <remarks><paramref name="device"/> should be set to <see cref="Device.Mic"/> for it to work</remarks>
-    RedirectionDevice GetStreamRedirectionDevice(Device device = Device.Mic);
+    /// <param name="channel">The Sonar <see cref="Channel"/> you want to change the redirection channel</param>
+    /// <returns><see cref="PlaybackDevice"/></returns>
+    /// <remarks><paramref name="channel"/> should be set to <see cref="Channel.MIC"/> for it to work</remarks>
+    PlaybackDevice GetStreamPlaybackDevice(Channel channel = Channel.MIC);
 
     /// <summary>
-    /// Get a Redirection Device using its ID
+    /// Get a Redirection Channel using its ID
     /// </summary>
-    /// <param name="deviceId">The ID of the Redirection Device</param>
-    /// <returns><see cref="RedirectionDevice"/></returns>
-    RedirectionDevice GetRedirectionDeviceFromId(string deviceId);
+    /// <param name="deviceId">The ID of the Redirection Channel</param>
+    /// <returns><see cref="PlaybackDevice"/></returns>
+    PlaybackDevice GetPlaybackDeviceFromId(string deviceId);
 
     /// <summary>
-    /// Get the mute state of the Redirection of the chosen Sonar <see cref="Channel"/> of the chosen Sonar <see cref="Device"/>
+    /// Get the mute state of the Redirection of the chosen Sonar <see cref="Mix"/> of the chosen Sonar <see cref="Channel"/>
     /// </summary>
-    /// <param name="device">The Sonar <see cref="Device"/> you want the mute state of a Redirection channel</param>
-    /// <param name="channel">The Sonar <see cref="Channel"/> you want to get the mute state</param>
+    /// <param name="channel">The Sonar <see cref="Channel"/> you want the mute state of a Redirection mix</param>
+    /// <param name="mix">The Sonar <see cref="Mix"/> you want to get the mute state</param>
     /// <returns>The current state, un/muted</returns>
-    bool GetRedirectionState(Device device, Channel channel);
+    bool GetRedirectionState(Channel channel, Mix mix);
 
     /// <summary>
     /// Get the current state of the Audience Monitoring
@@ -131,9 +131,9 @@ public interface ISonarDataProvider
     bool GetAudienceMonitoringState();
     
     /// <summary>
-    /// Get the apps which their audio is redirected to a Sonar <see cref="Device"/>
+    /// Get the apps which their audio is redirected to a Sonar <see cref="Channel"/>
     /// </summary>
-    /// <param name="device">The Sonar <see cref="Device"/> you want the associated processes</param>
+    /// <param name="channel">The Sonar <see cref="Channel"/> you want the associated processes</param>
     /// <returns>A list of <see cref="RoutedProcess"/></returns>
-    IEnumerable<RoutedProcess> GetRoutedProcess(Device device);
+    IEnumerable<RoutedProcess> GetRoutedProcess(Channel channel);
 }
