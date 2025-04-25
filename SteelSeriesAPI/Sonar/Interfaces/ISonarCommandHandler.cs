@@ -18,28 +18,6 @@ public interface ISonarCommandHandler
     void SetChatMixBalance(double balance);
 
     /// <summary>
-    /// Set the Redirection Channel of a Sonar <see cref="Channel"/> using its ID
-    /// </summary>
-    /// <param name="deviceId">The id of the new Redirection Channel</param>
-    /// <param name="channel">The Sonar <see cref="Channel"/> you want to change the Redirection Channel</param>
-    void SetClassicPlaybackDevice(string deviceId, Channel channel);
-
-    /// <summary>
-    /// Set the Redirection Channel of a Streamer mode Sonar <see cref="Mix"/> using its ID
-    /// </summary>
-    /// <param name="deviceId">The id of the new Redirection Channel</param>
-    /// <param name="mix">The Sonar <see cref="Mix"/> you want to change the Redirection Channel</param>
-    void SetStreamPlaybackDevice(string deviceId, Mix mix);
-
-    /// <summary>
-    /// Set the Redirection Channel of the Streamer mode Sonar <see cref="Channel.MIC"/> using its ID
-    /// </summary>
-    /// <param name="deviceId">The id of the new Redirection Channel</param>
-    /// <param name="channel">The Sonar <see cref="Channel"/> you want to change the redirection channel</param>
-    /// <remarks><paramref name="channel"/> should be set to <see cref="Channel.MIC"/> for it to work</remarks>
-    void SetStreamPlaybackDevice(string deviceId, Channel channel = Channel.MIC);
-
-    /// <summary>
     /// Enable or disable the Redirection of the chosen Sonar <see cref="Mix"/> of the chosen Sonar <see cref="Channel"/>
     /// </summary>
     /// <param name="newState">The new state of the Redirection</param>

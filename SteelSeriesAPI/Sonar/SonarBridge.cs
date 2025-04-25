@@ -22,6 +22,7 @@ public class SonarBridge : ISonarBridge
 
     public readonly VolumeSettingsManager VolumeSettings;
     public readonly ConfigurationManager Configurations;
+    public readonly PlaybackDeviceManager PlaybackDevices;
     public readonly EventManager Event;
 
     private string _sonarWebServerAddress;
@@ -37,6 +38,7 @@ public class SonarBridge : ISonarBridge
         _sonarProvider = new SonarHttpProvider(this);
         VolumeSettings = new VolumeSettingsManager();
         Configurations = new ConfigurationManager();
+        PlaybackDevices = new PlaybackDeviceManager();
     }
 
     #region Listener
@@ -108,31 +110,6 @@ public class SonarBridge : ISonarBridge
         return _sonarProvider.GetChatMixState();
     }
 
-    public IEnumerable<PlaybackDevice> GetPlaybackDevices(DataFlow dataFlow)
-    {
-        return _sonarProvider.GetPlaybackDevices(dataFlow);
-    }
-
-    public PlaybackDevice GetClassicPlaybackDevice(Channel channel)
-    {
-        return _sonarProvider.GetClassicPlaybackDevice(channel);
-    }
-
-    public PlaybackDevice GetStreamPlaybackDevice(Mix mix)
-    {
-        return _sonarProvider.GetStreamPlaybackDevice(mix);
-    }
-
-    public PlaybackDevice GetStreamPlaybackDevice(Channel channel = Channel.MIC)
-    {
-        return _sonarProvider.GetStreamPlaybackDevice(channel);
-    }
-
-    public PlaybackDevice GetPlaybackDeviceFromId(string deviceId)
-    {
-        return _sonarProvider.GetPlaybackDeviceFromId(deviceId);
-    }
-
     public bool GetRedirectionState(Channel channel, Mix mix)
     {
         return _sonarProvider.GetRedirectionState(channel, mix);
@@ -160,21 +137,6 @@ public class SonarBridge : ISonarBridge
     public void SetChatMixBalance(double balance)
     {
         _sonarCommand.SetChatMixBalance(balance);
-    }
-
-    public void SetClassicPlaybackDevice(string deviceId, Channel channel)
-    {
-        _sonarCommand.SetClassicPlaybackDevice(deviceId, channel);
-    }
-
-    public void SetStreamPlaybackDevice(string deviceId, Mix mix)
-    {
-        _sonarCommand.SetStreamPlaybackDevice(deviceId, mix);
-    }
-
-    public void SetStreamPlaybackDevice(string deviceId, Channel channel = Channel.MIC)
-    {
-        _sonarCommand.SetStreamPlaybackDevice(deviceId, channel);
     }
     
     public void SetRedirectionState(bool newState, Channel channel, Mix mix)

@@ -24,42 +24,6 @@ public interface ISonarDataProvider
     bool GetChatMixState();
 
     /// <summary>
-    /// Get all the in/output Redirection Devices (Windows devices)
-    /// </summary>
-    /// <param name="dataFlow">The DataFlow of the channel (In/Output)</param>
-    /// <returns>A list of <see cref="PlaybackDevice"/></returns>
-    IEnumerable<PlaybackDevice> GetPlaybackDevices(DataFlow dataFlow);
-
-    /// <summary>
-    /// Get the current Redirection Channel of a Sonar <see cref="Channel"/>
-    /// </summary>
-    /// <param name="channel">The Sonar <see cref="Channel"/> you want the redirection channel</param>
-    /// <returns><see cref="PlaybackDevice"/></returns>
-    PlaybackDevice GetClassicPlaybackDevice(Channel channel);
-
-    /// <summary>
-    /// Get the current Redirection Channel of a Streamer mode Sonar <see cref="Mix"/>
-    /// </summary>
-    /// <param name="mix">The Sonar <see cref="Mix"/> you want the redirection channel</param>
-    /// <returns>A <see cref="PlaybackDevice"/></returns>
-    PlaybackDevice GetStreamPlaybackDevice(Mix mix);
-    
-    /// <summary>
-    /// Get the current Redirection Channel of the Streamer mode Sonar <see cref="Channel.MIC"/>
-    /// </summary>
-    /// <param name="channel">The Sonar <see cref="Channel"/> you want to change the redirection channel</param>
-    /// <returns><see cref="PlaybackDevice"/></returns>
-    /// <remarks><paramref name="channel"/> should be set to <see cref="Channel.MIC"/> for it to work</remarks>
-    PlaybackDevice GetStreamPlaybackDevice(Channel channel = Channel.MIC);
-
-    /// <summary>
-    /// Get a Redirection Channel using its ID
-    /// </summary>
-    /// <param name="deviceId">The ID of the Redirection Channel</param>
-    /// <returns><see cref="PlaybackDevice"/></returns>
-    PlaybackDevice GetPlaybackDeviceFromId(string deviceId);
-
-    /// <summary>
     /// Get the mute state of the Redirection of the chosen Sonar <see cref="Mix"/> of the chosen Sonar <see cref="Channel"/>
     /// </summary>
     /// <param name="channel">The Sonar <see cref="Channel"/> you want the mute state of a Redirection mix</param>

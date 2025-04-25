@@ -35,26 +35,6 @@ public class SonarHttpCommand : ISonarCommandHandler
         new HttpPut("chatMix?balance=" + balance.ToString("0.00", CultureInfo.InvariantCulture));
     }
 
-    public void SetClassicPlaybackDevice(string deviceId, Channel channel)
-    {
-        new HttpPut("classicRedirections/" + channel.ToDictKey(ChannelMapChoice.ChannelDict) +"/deviceId/" + deviceId);
-    }
-    
-    public void SetStreamPlaybackDevice(string deviceId, Mix mix)
-    {
-        new HttpPut("streamRedirections/" + mix.ToDictKey() +"/deviceId/" + deviceId);
-    }
-    
-    public void SetStreamPlaybackDevice(string deviceId, Channel channel)
-    {
-        if (channel != Channel.MIC)
-        {
-            throw new Exception("Can only change stream redirection channel for Mic");
-        }
-        
-        new HttpPut("streamRedirections/" + channel.ToDictKey(ChannelMapChoice.ChannelDict) +"/deviceId/" + deviceId);
-    }
-
     public void SetRedirectionState(bool newState, Channel channel, Mix mix)
     {
         new HttpPut("streamRedirections/" + mix.ToDictKey() + "/redirections/" + channel.ToDictKey() +

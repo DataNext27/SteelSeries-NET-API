@@ -116,57 +116,57 @@ class Program
 
         Console.WriteLine("-----Redirection Devices-----------");
         Console.WriteLine("---Output---");
-        foreach (var rDevice in sonarManager.GetPlaybackDevices(DataFlow.OUTPUT))
+        foreach (var rDevice in sonarManager.PlaybackDevices.GetPlaybackDevices(DataFlow.OUTPUT))
         {
             Console.WriteLine(rDevice.Id + ", " + rDevice.Name);
-            foreach (var device in rDevice.AssociatedClassicDevices)
+            foreach (var device in rDevice.AssociatedClassicChannels)
             {
                 Console.WriteLine("...." + device);
             }
 
-            foreach (var channel in rDevice.AssociatedStreamDevices)
+            foreach (var channel in rDevice.AssociatedStreamChannels)
             {
                 Console.WriteLine("...." + channel);
             }
         }
 
         Console.WriteLine("---Input---");
-        foreach (var rDevice in sonarManager.GetPlaybackDevices(DataFlow.INPUT))
+        foreach (var rDevice in sonarManager.PlaybackDevices.GetPlaybackDevices(DataFlow.INPUT))
         {
             Console.WriteLine(rDevice.Id + ", " + rDevice.Name);
-            foreach (var device in rDevice.AssociatedClassicDevices)
+            foreach (var device in rDevice.AssociatedClassicChannels)
             {
                 Console.WriteLine("...." + device);
             }
 
-            foreach (var channel in rDevice.AssociatedStreamDevices)
+            foreach (var channel in rDevice.AssociatedStreamChannels)
             {
                 Console.WriteLine("...." + channel);
             }
         }
 
-        Console.WriteLine("-----Classic Redirection Devices------------");
-        PlaybackDevice reDevice = sonarManager.GetClassicPlaybackDevice(Channel.GAME);
+        Console.WriteLine("-----Classic Playback Devices------------");
+        PlaybackDevice reDevice = sonarManager.PlaybackDevices.GetClassicPlaybackDevice(Channel.GAME);
         Console.WriteLine(reDevice.Id + ", " + reDevice.Name);
-        foreach (var device in reDevice.AssociatedClassicDevices)
+        foreach (var device in reDevice.AssociatedClassicChannels)
         {
             Console.WriteLine("...." + device);
         }
 
-        foreach (var channel in reDevice.AssociatedStreamDevices)
+        foreach (var channel in reDevice.AssociatedStreamChannels)
         {
             Console.WriteLine("...." + channel);
         }
 
-        Console.WriteLine("-----Stream Redirection Devices------------");
-        PlaybackDevice reDeviceS = sonarManager.GetStreamPlaybackDevice(Channel.MIC); // sonarManager.GetStreamPlaybackDevice(Mix.MONITORING);
+        Console.WriteLine("-----Stream Playback Devices------------");
+        PlaybackDevice reDeviceS = sonarManager.PlaybackDevices.GetStreamerPlaybackDevice(Channel.MIC); // sonarManager.GetStreamPlaybackDevice(Mix.MONITORING);
         Console.WriteLine(reDeviceS.Id + ", " + reDeviceS.Name);
-        foreach (var device in reDeviceS.AssociatedClassicDevices)
+        foreach (var device in reDeviceS.AssociatedClassicChannels)
         {
             Console.WriteLine("...." + device);
         }
 
-        foreach (var channel in reDeviceS.AssociatedStreamDevices)
+        foreach (var channel in reDeviceS.AssociatedStreamChannels)
         {
             Console.WriteLine("...." + channel);
         }
@@ -174,12 +174,12 @@ class Program
         Console.WriteLine("-----Redirection Channel From Id");
         // PlaybackDevice someDevice = sonarManager.GetPlaybackDeviceFromId("{0.0.0.00000000}.{453f6e2f-375e-4b36-97b2-2aa55691ab3c}");
         // Console.WriteLine(someDevice.Id + ", " + someDevice.Name + ", " + someDevice.DataFlow);
-        // foreach (var associatedClassicDevice in someDevice.AssociatedClassicDevices)
+        // foreach (var associatedClassicDevice in someDevice.AssociatedClassicChannels)
         // {
         //     Console.WriteLine("...." + associatedClassicDevice);
         // }
         //
-        // foreach (var associatedStreamDevice in someDevice.AssociatedStreamDevices)
+        // foreach (var associatedStreamDevice in someDevice.AssociatedStreamChannels)
         // {
         //     Console.WriteLine("...." + associatedStreamDevice);
         // }
@@ -224,10 +224,10 @@ class Program
         sonarManager.Configurations.SetConfigByName(Channel.MEDIA, "Default");
         sonarManager.SetChatMixBalance(0.5);
         
-        var redirectionDevices = sonarManager.GetPlaybackDevices(DataFlow.INPUT);
+        var redirectionDevices = sonarManager.PlaybackDevices.GetPlaybackDevices(DataFlow.INPUT);
         redirectionDevices.GetEnumerator().MoveNext();
-        sonarManager.SetClassicPlaybackDevice(redirectionDevices.GetEnumerator().Current.Id, Channel.MIC);
-        sonarManager.SetStreamPlaybackDevice(redirectionDevices.GetEnumerator().Current.Id, Channel.MIC);
+        sonarManager.PlaybackDevices.SetClassicPlaybackDevice(redirectionDevices.GetEnumerator().Current.Id, Channel.MIC);
+        sonarManager.PlaybackDevices.SetStreamerPlaybackDevice(redirectionDevices.GetEnumerator().Current.Id, Channel.MIC);
         
         sonarManager.SetRedirectionState(true, Channel.MEDIA, Mix.STREAM);
         sonarManager.SetAudienceMonitoringState(false);

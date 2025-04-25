@@ -63,16 +63,16 @@ class Program
         sonarManager.SetChatMixBalance(0.5); // 0.5 is halfway to Chat
         
         // Get playback devices (Windows devices)
-        List<PlaybackDevice> inputDevices = sonarManager.GetPlaybackDevices(DataFlow.INPUT).ToList(); // Input devices (Mics...)
-        sonarManager.GetPlaybackDevices(DataFlow.OUTPUT); // Output devices (headset, speakers...)
-        sonarManager.GetPlaybackDeviceFromId("{0.0.0.00000000}.{192b4f5b-9cc1-4eb2-b752-c5e15b99d548}"); // Get a redirection channel from its id
-        PlaybackDevice gameRDevice = sonarManager.GetClassicPlaybackDevice(Channel.GAME); // Give currently used Redirection Channel for classic mode
-        sonarManager.GetStreamPlaybackDevice(Mix.MONITORING); // Give currently used Redirection Channel for Streamer mode
-        sonarManager.GetStreamPlaybackDevice(Channel.MIC); // Give currently used Redirection Channel for Mic in streamer mode
+        List<PlaybackDevice> inputDevices = sonarManager.PlaybackDevices.GetPlaybackDevices(DataFlow.INPUT).ToList(); // Input devices (Mics...)
+        sonarManager.PlaybackDevices.GetPlaybackDevices(DataFlow.OUTPUT); // Output devices (headset, speakers...)
+        sonarManager.PlaybackDevices.GetPlaybackDevice("{0.0.0.00000000}.{192b4f5b-9cc1-4eb2-b752-c5e15b99d548}"); // Get a redirection channel from its id
+        PlaybackDevice gameRDevice = sonarManager.PlaybackDevices.GetClassicPlaybackDevice(Channel.GAME); // Give currently used Redirection Channel for classic mode
+        sonarManager.PlaybackDevices.GetStreamerPlaybackDevice(Mix.MONITORING); // Give currently used Redirection Channel for Streamer mode
+        sonarManager.PlaybackDevices.GetStreamerPlaybackDevice(Channel.MIC); // Give currently used Redirection Channel for Mic in streamer mode
         // Change playback devices using their id
-        sonarManager.SetClassicPlaybackDevice(gameRDevice.Id, Channel.GAME);
-        sonarManager.SetStreamPlaybackDevice(gameRDevice.Id, Mix.MONITORING);
-        sonarManager.SetStreamPlaybackDevice(inputDevices[0].Id, Channel.MIC);
+        sonarManager.PlaybackDevices.SetClassicPlaybackDevice(gameRDevice.Id, Channel.GAME);
+        sonarManager.PlaybackDevices.SetStreamerPlaybackDevice(gameRDevice.Id, Mix.MONITORING);
+        sonarManager.PlaybackDevices.SetStreamerPlaybackDevice(inputDevices[0].Id, Channel.MIC);
         
         // Get the redirections states
         sonarManager.GetRedirectionState(Channel.MEDIA, Mix.MONITORING);
