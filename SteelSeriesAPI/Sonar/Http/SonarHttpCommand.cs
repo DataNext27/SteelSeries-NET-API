@@ -2,6 +2,7 @@
 using System.Text.Json;
 using SteelSeriesAPI.Sonar.Interfaces;
 using SteelSeriesAPI.Sonar.Enums;
+using SteelSeriesAPI.Sonar.Exceptions;
 
 namespace SteelSeriesAPI.Sonar.Http;
 
@@ -50,7 +51,7 @@ public class SonarHttpCommand : ISonarCommandHandler
     {
         if (channel == Channel.MASTER)
         {
-            throw new Exception("Can't set process to master routing");
+            throw new MasterChannelNotSupported();
         }
         
         JsonDocument audioDeviceRouting = new HttpFetcher().Provide("AudioDeviceRouting");

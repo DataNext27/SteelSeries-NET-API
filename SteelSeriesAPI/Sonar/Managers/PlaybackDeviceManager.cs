@@ -5,6 +5,7 @@ using SteelSeriesAPI.Sonar.Http;
 using SteelSeriesAPI.Sonar.Models;
 
 using System.Text.Json;
+using SteelSeriesAPI.Sonar.Exceptions;
 
 namespace SteelSeriesAPI.Sonar.Managers;
 
@@ -57,7 +58,7 @@ public class PlaybackDeviceManager : IPlaybackDeviceManager
         catch (Exception e)
         {
             Console.WriteLine(e);
-            throw new Exception("Can't get any channel from this Id, maybe the channel doesn't exist or its Id changed.");
+            throw new Exception("Can't get any device from this Id, maybe the device doesn't exist or its Id changed.");
         }
     }
 
@@ -65,7 +66,7 @@ public class PlaybackDeviceManager : IPlaybackDeviceManager
     {
         if (channel == Channel.MASTER)
         {
-            throw new Exception("Can't get redirection channel for master");
+            throw new MasterChannelNotSupported();
         }
         
         JsonDocument classicRedirections = new HttpFetcher().Provide("classicRedirections");
@@ -126,7 +127,7 @@ public class PlaybackDeviceManager : IPlaybackDeviceManager
     {
         if (channel != Channel.MIC)
         {
-            throw new Exception("Can only get stream redirection channel for Mic");
+            throw new MicChannelSupportOnly();
         }
         
         JsonDocument streamRedirections = new HttpFetcher().Provide("streamRedirections");
@@ -198,7 +199,7 @@ public class PlaybackDeviceManager : IPlaybackDeviceManager
     {
         if (channel != Channel.MIC)
         {
-            throw new Exception("Can only change stream redirection channel for Mic");
+            throw new MicChannelSupportOnly();
         }
         
         new HttpFetcher().Put("streamRedirections/" + channel.ToDictKey(ChannelMapChoice.ChannelDict) +"/deviceId/" + deviceId);
