@@ -66,7 +66,7 @@ public class PlaybackDeviceManager : IPlaybackDeviceManager
     {
         if (channel == Channel.MASTER)
         {
-            throw new MasterChannelNotSupported();
+            throw new MasterChannelNotSupportedException();
         }
         
         JsonDocument classicRedirections = new HttpFetcher().Provide("classicRedirections");
@@ -127,7 +127,7 @@ public class PlaybackDeviceManager : IPlaybackDeviceManager
     {
         if (channel != Channel.MIC)
         {
-            throw new MicChannelSupportOnly();
+            throw new MicChannelSupportOnlyException();
         }
         
         JsonDocument streamRedirections = new HttpFetcher().Provide("streamRedirections");
@@ -199,7 +199,7 @@ public class PlaybackDeviceManager : IPlaybackDeviceManager
     {
         if (channel != Channel.MIC)
         {
-            throw new MicChannelSupportOnly();
+            throw new MicChannelSupportOnlyException();
         }
         
         new HttpFetcher().Put("streamRedirections/" + channel.ToDictKey(ChannelMapChoice.ChannelDict) +"/deviceId/" + deviceId);

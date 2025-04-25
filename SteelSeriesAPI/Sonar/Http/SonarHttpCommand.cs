@@ -38,7 +38,7 @@ public class SonarHttpCommand : ISonarCommandHandler
     {
         if (channel == Channel.MASTER)
         {
-            throw new MasterChannelNotSupported();
+            throw new MasterChannelNotSupportedException();
         }
         
         JsonDocument audioDeviceRouting = new HttpFetcher().Provide("AudioDeviceRouting");

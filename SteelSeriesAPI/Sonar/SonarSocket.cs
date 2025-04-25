@@ -48,7 +48,7 @@ public class SonarSocket : ISonarSocket
     {
         if (!IsConnected)
         {
-            throw new SonarListenerNotConnected();
+            throw new SonarListenerNotConnectedException();
         }
         
         _listenerThread.Start();

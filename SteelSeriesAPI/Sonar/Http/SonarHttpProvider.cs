@@ -20,7 +20,7 @@ public class SonarHttpProvider : ISonarDataProvider
     {
         if (channel == Channel.MASTER)
         {
-            throw new MasterChannelNotSupported();
+            throw new MasterChannelNotSupportedException();
         }
 
         JsonDocument streamRedirections = new HttpFetcher().Provide("streamRedirections");
@@ -62,7 +62,7 @@ public class SonarHttpProvider : ISonarDataProvider
     {
         if (channel == Channel.MASTER)
         {
-            throw new MasterChannelNotSupported();
+            throw new MasterChannelNotSupportedException();
         }
         
         JsonDocument audioDeviceRoutings = new HttpFetcher().Provide("AudioDeviceRouting");

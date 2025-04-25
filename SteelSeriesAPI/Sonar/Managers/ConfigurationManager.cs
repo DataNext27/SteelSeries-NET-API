@@ -28,7 +28,7 @@ public class ConfigurationManager : IConfigurationManager
     {
         if (channel == Channel.MASTER)
         {
-            throw new MasterChannelNotSupported();
+            throw new MasterChannelNotSupportedException();
         }
         
         IEnumerable<SonarAudioConfiguration> configs = GetAllAudioConfigurations();
@@ -66,7 +66,7 @@ public class ConfigurationManager : IConfigurationManager
     {
         if (channel == Channel.MASTER)
         {
-            throw new MasterChannelNotSupported();
+            throw new MasterChannelNotSupportedException();
         }
 
         JsonDocument selectedConfigs = new HttpFetcher().Provide("configs/selected");
@@ -90,7 +90,7 @@ public class ConfigurationManager : IConfigurationManager
 
     public void SetConfig(string configId)
     {
-        if (string.IsNullOrEmpty(configId)) throw new ConfigNotFound($"No audio configuration found with this id: {configId}");
+        if (string.IsNullOrEmpty(configId)) throw new ConfigNotFoundException($"No audio configuration found with this id: {configId}");
 
         new HttpFetcher().Put("configs/" + configId + "/select");
     }
