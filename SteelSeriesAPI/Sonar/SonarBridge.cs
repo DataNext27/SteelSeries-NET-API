@@ -22,18 +22,20 @@ public class SonarBridge : ISonarBridge
     public readonly ChatMixManager ChatMix;
     public readonly ConfigurationManager Configurations;
     public readonly PlaybackDeviceManager PlaybackDevices;
+    public readonly RedirectionStateManager RedirectionStates;
     public readonly RoutedProcessManager RoutedProcesses;
     public readonly EventManager Events;
 
     public SonarBridge()
     {
-        _sonarCommand = new SonarHttpCommand(this);
+        _sonarCommand = new SonarHttpCommand();
         _sonarProvider = new SonarHttpProvider();
         Mode = new ModeManager();
         VolumeSettings = new VolumeSettingsManager();
         ChatMix = new ChatMixManager();
         Configurations = new ConfigurationManager();
         PlaybackDevices = new PlaybackDeviceManager();
+        RedirectionStates = new RedirectionStateManager();
         RoutedProcesses = new RoutedProcessManager();
         Events = new EventManager();
     }
@@ -102,11 +104,6 @@ public class SonarBridge : ISonarBridge
 
     #region Providers
 
-    public bool GetRedirectionState(Channel channel, Mix mix)
-    {
-        return _sonarProvider.GetRedirectionState(channel, mix);
-    }
-
     public bool GetAudienceMonitoringState()
     {
         return _sonarProvider.GetAudienceMonitoringState();
@@ -115,11 +112,6 @@ public class SonarBridge : ISonarBridge
     #endregion
 
     #region Commands
-    
-    public void SetRedirectionState(bool newState, Channel channel, Mix mix)
-    {
-        _sonarCommand.SetRedirectionState(newState, channel, mix);
-    }
 
     public void SetAudienceMonitoringState(bool newState)
     {
