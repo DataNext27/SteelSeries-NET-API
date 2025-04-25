@@ -31,17 +31,17 @@ public class ConfigurationManager : IConfigurationManager
         }
         
         IEnumerable<SonarAudioConfiguration> configs = GetAllAudioConfigurations();
-        List<SonarAudioConfiguration> deviceConfigs = new List<SonarAudioConfiguration>();
+        List<SonarAudioConfiguration> channelConfigs = new List<SonarAudioConfiguration>();
         
         foreach (var config in configs)
         {
             if (config.AssociatedChannel == channel)
             {
-                deviceConfigs.Add(config);
+                channelConfigs.Add(config);
             }
         }
 
-        return deviceConfigs.OrderBy(s => s.Name);
+        return channelConfigs.OrderBy(s => s.Name);
     }
 
     public SonarAudioConfiguration GetAudioConfiguration(string configId)
