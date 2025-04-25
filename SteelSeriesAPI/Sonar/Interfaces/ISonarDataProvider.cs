@@ -6,12 +6,6 @@ namespace SteelSeriesAPI.Sonar.Interfaces;
 public interface ISonarDataProvider
 {
     /// <summary>
-    /// Get the current mode used by Sonar
-    /// </summary>
-    /// <returns>A <see cref="Mode"/>, either Classic or Streamer</returns>
-    Mode GetMode();
-
-    /// <summary>
     /// Get the mute state of the Redirection of the chosen Sonar <see cref="Mix"/> of the chosen Sonar <see cref="Channel"/>
     /// </summary>
     /// <param name="channel">The Sonar <see cref="Channel"/> you want the mute state of a Redirection mix</param>

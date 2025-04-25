@@ -17,6 +17,7 @@ public class SonarBridge : ISonarBridge
     private readonly ISonarDataProvider _sonarProvider;
     private ISonarSocket _sonarSocket;
 
+    public readonly ModeManager Mode;
     public readonly VolumeSettingsManager VolumeSettings;
     public readonly ChatMixManager ChatMix;
     public readonly ConfigurationManager Configurations;
@@ -28,6 +29,7 @@ public class SonarBridge : ISonarBridge
     {
         _sonarCommand = new SonarHttpCommand(this);
         _sonarProvider = new SonarHttpProvider();
+        Mode = new ModeManager();
         VolumeSettings = new VolumeSettingsManager();
         ChatMix = new ChatMixManager();
         Configurations = new ConfigurationManager();
@@ -100,11 +102,6 @@ public class SonarBridge : ISonarBridge
 
     #region Providers
 
-    public Mode GetMode()
-    {
-        return _sonarProvider.GetMode();
-    }
-
     public bool GetRedirectionState(Channel channel, Mix mix)
     {
         return _sonarProvider.GetRedirectionState(channel, mix);
@@ -118,11 +115,6 @@ public class SonarBridge : ISonarBridge
     #endregion
 
     #region Commands
-
-    public void SetMode(Mode mode)
-    {
-        _sonarCommand.SetMode(mode);
-    }
     
     public void SetRedirectionState(bool newState, Channel channel, Mix mix)
     {

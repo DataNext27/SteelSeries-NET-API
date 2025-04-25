@@ -9,13 +9,6 @@ namespace SteelSeriesAPI.Sonar.Http;
 
 public class SonarHttpProvider : ISonarDataProvider
 {
-    public Mode GetMode()
-    {
-        string mode = new HttpFetcher().Provide("mode").RootElement.ToString();
-        
-        return (Mode)ModeExtensions.FromDictKey(mode, ModeMapChoice.StreamDict);
-    }
-
     public bool GetRedirectionState(Channel channel, Mix mix)
     {
         if (channel == Channel.MASTER)

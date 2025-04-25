@@ -15,14 +15,6 @@ public class SonarHttpCommand : ISonarCommandHandler
         _sonarBridge = sonarBridge;
     }
     
-    public void SetMode(Mode mode)
-    {
-        new HttpFetcher().Put("mode/" + mode.ToDictKey(ModeMapChoice.StreamDict));
-        Thread.Sleep(100); // Prevent bugs/freezes/crashes
-    }
-
-    
-
     public void SetRedirectionState(bool newState, Channel channel, Mix mix)
     {
         new HttpFetcher().Put("streamRedirections/" + mix.ToDictKey() + "/redirections/" + channel.ToDictKey() +

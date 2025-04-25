@@ -5,12 +5,6 @@ namespace SteelSeriesAPI.Sonar.Interfaces;
 public interface ISonarCommandHandler
 {
     /// <summary>
-    /// Set the <see cref="Mode"/> Sonar will be using
-    /// </summary>
-    /// <param name="mode">The <see cref="Mode"/> you want to set</param>
-    void SetMode(Mode mode);
-
-    /// <summary>
     /// Enable or disable the Redirection of the chosen Sonar <see cref="Mix"/> of the chosen Sonar <see cref="Channel"/>
     /// </summary>
     /// <param name="newState">The new state of the Redirection</param>
