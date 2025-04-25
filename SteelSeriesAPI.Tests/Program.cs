@@ -23,7 +23,7 @@ class Program
         sonarManager.Event.OnSonarMuteChange += OnMuteChangeHandler;
         sonarManager.Event.OnSonarConfigChange += OnConfigChangeHandler;
         sonarManager.Event.OnSonarChatMixChange += OnChatMixChangeHandler;
-        sonarManager.Event.OnSonarRedirectionDeviceChange += OnRedirectionDeviceChangeHandler;
+        sonarManager.Event.OnSonarPlaybackDeviceChange += OnPlaybackDeviceChangeHandler;
         sonarManager.Event.OnSonarRedirectionStateChange += OnRedirectionStateChangeHandler;
         sonarManager.Event.OnSonarAudienceMonitoringChange += OnAudienceMonitoringChangeHandler;
 
@@ -259,7 +259,7 @@ class Program
         Console.WriteLine("Received ChatMix Event : " + eventArgs.Balance);
     }
 
-    static void OnRedirectionDeviceChangeHandler(object? sender, SonarPlaybackDeviceEvent eventArgs)
+    static void OnPlaybackDeviceChangeHandler(object? sender, SonarPlaybackDeviceEvent eventArgs)
     {
         Console.WriteLine("Received Redirection Channel Event : " + eventArgs.RedirectionDeviceId + ", " + eventArgs.Mode + ", " + eventArgs.Device + ", " + eventArgs.Channel);
     }

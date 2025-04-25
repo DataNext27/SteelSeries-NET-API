@@ -23,7 +23,7 @@ class Program
         sonarManager.Event.OnSonarMuteChange += OnMuteChangeHandler; // When a Sonar Channel or Mix is muted or unmuted
         sonarManager.Event.OnSonarConfigChange += OnConfigChangeHandler; // When a new config is set to a Sonar Channel
         sonarManager.Event.OnSonarChatMixChange += OnChatMixChangeHandler; // When the ChatMix value is changed
-        sonarManager.Event.OnSonarRedirectionDeviceChange += OnRedirectionDeviceChangeHandler; // When the Redirection Channel of a Sonar Channel is changed
+        sonarManager.Event.OnSonarPlaybackDeviceChange += OnPlaybackDeviceChangeHandler; // When the Redirection Channel of a Sonar Channel is changed
         sonarManager.Event.OnSonarRedirectionStateChange += OnRedirectionStateChangeHandler; // When the Redirection of a Sonar Mix is muted or unmuted
         sonarManager.Event.OnSonarAudienceMonitoringChange += OnAudienceMonitoringChangeHandler; // When the Audience Monitoring is muted or unmuted
 
@@ -115,7 +115,7 @@ class Program
         Console.WriteLine("Received ChatMix Event : " + eventArgs.Balance);
     }
 
-    static void OnRedirectionDeviceChangeHandler(object? sender, SonarPlaybackDeviceEvent eventArgs)
+    static void OnPlaybackDeviceChangeHandler(object? sender, SonarPlaybackDeviceEvent eventArgs)
     {
         Console.WriteLine("Received Redirection Channel Event : " + eventArgs.RedirectionDeviceId + ", " + eventArgs.Mode + ", " + eventArgs.Device + ", " + eventArgs.Channel);
     }

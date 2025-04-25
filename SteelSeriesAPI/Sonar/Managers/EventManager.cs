@@ -34,7 +34,7 @@ public class EventManager
     /// <summary>
     /// Notify when a redirection channel of a channel is changed
     /// </summary>
-    public event EventHandler<SonarPlaybackDeviceEvent> OnSonarRedirectionDeviceChange = delegate{  };
+    public event EventHandler<SonarPlaybackDeviceEvent> OnSonarPlaybackDeviceChange = delegate{  };
     
     /// <summary>
     /// Notify when a redirection state is changed
@@ -67,7 +67,7 @@ public class EventManager
                 OnSonarChatMixChange(this, sonarChatMixEvent);
                 break;
             case SonarPlaybackDeviceEvent sonarRedirectionDeviceEvent:
-                OnSonarRedirectionDeviceChange(this, sonarRedirectionDeviceEvent);
+                OnSonarPlaybackDeviceChange(this, sonarRedirectionDeviceEvent);
                 break;
             case SonarRedirectionStateEvent sonarRedirectionStateEvent:
                 OnSonarRedirectionStateChange(this, sonarRedirectionStateEvent);
