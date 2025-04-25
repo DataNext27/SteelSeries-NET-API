@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+ï»¿using System.Diagnostics;
 using System.Text.Json;
 using SteelSeriesAPI.Interfaces;
 
@@ -16,7 +16,7 @@ public class SteelSeriesRetriever : ISteelSeriesRetriever
 
     public SteelSeriesRetriever()
     {
-        _steelSeriesProcesses = Process.GetProcessesByName("SteelSeriesSonar");
+        _steelSeriesProcesses = Process.GetProcessesByName("SteelSeriesGG");
     }
 
     public string GetggEncryptedAddress()
@@ -53,7 +53,7 @@ public class SteelSeriesRetriever : ISteelSeriesRetriever
 
     private bool SteelSeriesProcessesChecker()
     {
-        _steelSeriesProcesses = Process.GetProcessesByName("SteelSeriesSonar");
+        _steelSeriesProcesses = Process.GetProcessesByName("SteelSeriesGG");
         return _steelSeriesProcesses.Length > 0;
     }
 }
