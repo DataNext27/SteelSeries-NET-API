@@ -13,9 +13,8 @@ namespace SteelSeriesAPI.Sonar;
 /// </summary>
 public class SonarBridge : ISonarBridge
 {
-    public bool IsRunning => _sonarRetriever is { IsEnabled: true, IsReady: true, IsRunning: true };
+    public bool IsRunning => SonarRetriever.Instance is { IsEnabled: true, IsReady: true, IsRunning: true };
     
-    private readonly IAppRetriever _sonarRetriever;
     private readonly ISonarCommandHandler _sonarCommand;
     private readonly ISonarDataProvider _sonarProvider;
     private ISonarSocket _sonarSocket;
@@ -27,8 +26,6 @@ public class SonarBridge : ISonarBridge
 
     public SonarBridge()
     {
-        _sonarRetriever = SonarRetriever.Instance;
-        
         _sonarCommand = new SonarHttpCommand(this);
         _sonarProvider = new SonarHttpProvider();
         VolumeSettings = new VolumeSettingsManager();
@@ -84,11 +81,19 @@ public class SonarBridge : ISonarBridge
     #endregion
 
     /// <summary>
+    /// Wait until SteelSeries GG is started and running before running your code below
+    /// </summary>
+    public void WaitUntilSteelSeriesStarted()
+    {
+        SteelSeriesRetriever.Instance.WaitUntilSteelSeriesStarted();
+    }
+
+    /// <summary>
     /// Wait until Sonar is started and running before running your code below
     /// </summary>
     public void WaitUntilSonarStarted()
     {
-        _sonarRetriever.WaitUntilAppStarted();
+        SonarRetriever.Instance.WaitUntilAppStarted();
     }
 
     #region Providers

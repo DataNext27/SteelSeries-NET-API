@@ -10,16 +10,13 @@ public class SteelSeriesRetriever : ISteelSeriesRetriever
     
     public static SteelSeriesRetriever Instance => _instance.Value;
     
-    public bool Running => _steelSeriesProcesses.Length > 0;
+    public bool Running => SteelSeriesProcessesChecker();
     
-    private readonly Thread _checkerThread;
     private Process[] _steelSeriesProcesses;
 
     public SteelSeriesRetriever()
     {
         _steelSeriesProcesses = Process.GetProcessesByName("SteelSeriesSonar");
-        _checkerThread = new Thread(SteelSeriesProcessesCheckerThread) { IsBackground = true };
-        _checkerThread.Start();
     }
 
     public string GetggEncryptedAddress()
@@ -54,12 +51,9 @@ public class SteelSeriesRetriever : ISteelSeriesRetriever
         }
     }
 
-    private void SteelSeriesProcessesCheckerThread()
+    private bool SteelSeriesProcessesChecker()
     {
-        while (_checkerThread.IsAlive)
-        {
-            Thread.Sleep(100);
-            _steelSeriesProcesses = Process.GetProcessesByName("SteelSeriesSonar");
-        }
+        _steelSeriesProcesses = Process.GetProcessesByName("SteelSeriesSonar");
+        return _steelSeriesProcesses.Length > 0;
     }
 }
