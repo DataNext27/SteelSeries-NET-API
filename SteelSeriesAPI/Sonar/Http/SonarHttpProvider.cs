@@ -8,13 +8,6 @@ namespace SteelSeriesAPI.Sonar.Http;
 
 public class SonarHttpProvider : ISonarDataProvider
 {
-    private readonly ISonarBridge _sonarBridge;
-    
-    public SonarHttpProvider(SonarBridge sonarBridge)
-    {
-        _sonarBridge = sonarBridge;
-    }
-
     public Mode GetMode()
     {
         string mode = new HttpProvider("mode").Provide().RootElement.ToString();

@@ -32,13 +32,13 @@ public class SonarBridge : ISonarBridge
         _sonarRetriever = SonarRetriever.Instance;
         WaitUntilSonarStarted();
         _sonarWebServerAddress = _sonarRetriever.WebServerAddress();
-        Event = new EventManager();
         _sonarSocket = new SonarSocket(_sonarWebServerAddress, Event);
         _sonarCommand = new SonarHttpCommand(this);
-        _sonarProvider = new SonarHttpProvider(this);
+        _sonarProvider = new SonarHttpProvider();
         VolumeSettings = new VolumeSettingsManager();
         Configurations = new ConfigurationManager();
         PlaybackDevices = new PlaybackDeviceManager();
+        Event = new EventManager();
     }
 
     #region Listener
