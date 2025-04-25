@@ -1,8 +1,10 @@
-﻿using System.Net;
-using System.Net.Sockets;
-using System.Text;
+﻿using SteelSeriesAPI.Sonar.Exceptions;
 using SteelSeriesAPI.Sonar.Interfaces;
 using SteelSeriesAPI.Sonar.Managers;
+
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 
 namespace SteelSeriesAPI.Sonar;
 
@@ -46,7 +48,7 @@ public class SonarSocket : ISonarSocket
     {
         if (!IsConnected)
         {
-            throw new Exception("Listener need to be connected before listening");
+            throw new SonarListenerNotConnected();
         }
         
         _listenerThread.Start();

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
+using SteelSeriesAPI.Exceptions;
 using SteelSeriesAPI.Interfaces;
 
 namespace SteelSeriesAPI;
@@ -16,14 +17,14 @@ public class SteelSeriesRetriever : ISteelSeriesRetriever
 
     public SteelSeriesRetriever()
     {
-        _steelSeriesProcesses = Process.GetProcessesByName("SteelSeriesSonar");
+        _steelSeriesProcesses = Process.GetProcessesByName("SteelSeriesGG");
     }
 
     public string GetggEncryptedAddress()
     {
         if (!Running)
         {
-            throw new Exception("SteelSeries is not started");
+            throw new SteelSeriesNotRunningException();
         }
         
         try
@@ -53,7 +54,7 @@ public class SteelSeriesRetriever : ISteelSeriesRetriever
 
     private bool SteelSeriesProcessesChecker()
     {
-        _steelSeriesProcesses = Process.GetProcessesByName("SteelSeriesSonar");
+        _steelSeriesProcesses = Process.GetProcessesByName("SteelSeriesGG");
         return _steelSeriesProcesses.Length > 0;
     }
 }

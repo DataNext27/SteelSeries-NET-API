@@ -4,6 +4,7 @@ using SteelSeriesAPI.Sonar.Http;
 using SteelSeriesAPI.Sonar.Models;
 
 using System.Text.Json;
+using SteelSeriesAPI.Sonar.Exceptions;
 
 namespace SteelSeriesAPI.Sonar.Managers;
 
@@ -27,7 +28,7 @@ public class ConfigurationManager : IConfigurationManager
     {
         if (channel == Channel.MASTER)
         {
-            throw new Exception("Can't get audio configurations for master");
+            throw new MasterChannelNotSupported();
         }
         
         IEnumerable<SonarAudioConfiguration> configs = GetAllAudioConfigurations();
@@ -65,7 +66,7 @@ public class ConfigurationManager : IConfigurationManager
     {
         if (channel == Channel.MASTER)
         {
-            throw new Exception("Can't get audio configuration for master");
+            throw new MasterChannelNotSupported();
         }
 
         JsonDocument selectedConfigs = new HttpFetcher().Provide("configs/selected");
@@ -89,7 +90,7 @@ public class ConfigurationManager : IConfigurationManager
 
     public void SetConfig(string configId)
     {
-        if (string.IsNullOrEmpty(configId)) throw new Exception("Couldn't retrieve config id");
+        if (string.IsNullOrEmpty(configId)) throw new ConfigNotFound($"No audio configuration found with this id: {configId}");
 
         new HttpFetcher().Put("configs/" + configId + "/select");
     }

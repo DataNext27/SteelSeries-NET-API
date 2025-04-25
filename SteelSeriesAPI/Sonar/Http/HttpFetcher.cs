@@ -1,5 +1,7 @@
-﻿using System.Text.Json;
+﻿using SteelSeriesAPI.Sonar.Exceptions;
 using SteelSeriesAPI.Interfaces;
+
+using System.Text.Json;
 
 namespace SteelSeriesAPI.Sonar.Http;
 
@@ -19,15 +21,43 @@ public class HttpFetcher
 
     public JsonDocument Provide(string targetHttp)
     {
-        JsonDocument response = JsonDocument.Parse(_httpClient.GetStringAsync(_sonarRetriever.WebServerAddress() + targetHttp).Result);
-        return response;
+        if (_sonarRetriever is { IsEnabled: false, IsReady: false, IsRunning: false })
+        {
+            throw new SonarNotRunningException();
+        }
+
+        try
+        {
+            JsonDocument response = JsonDocument.Parse(_httpClient.GetStringAsync(_sonarRetriever.WebServerAddress() + targetHttp).Result);
+            return response;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            Console.WriteLine("Sonar may not be running.");
+            throw;
+        }
     }
 
     public void Put(string targetHttp)
     {
-        HttpResponseMessage httpResponseMessage = _httpClient
-            .PutAsync(_sonarRetriever.WebServerAddress() + targetHttp, null)
-            .GetAwaiter().GetResult();
-        httpResponseMessage.EnsureSuccessStatusCode();
+        if (_sonarRetriever is { IsEnabled: false, IsReady: false, IsRunning: false })
+        {
+            throw new SonarNotRunningException();
+        }
+
+        try
+        {
+            HttpResponseMessage httpResponseMessage = _httpClient
+                .PutAsync(_sonarRetriever.WebServerAddress() + targetHttp, null)
+                .GetAwaiter().GetResult();
+            httpResponseMessage.EnsureSuccessStatusCode();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            Console.WriteLine("Sonar may not be running.");
+            throw;
+        }
     }
 }

@@ -2,6 +2,7 @@
 using System.Text.Json;
 using SteelSeriesAPI.Sonar.Interfaces;
 using SteelSeriesAPI.Sonar.Enums;
+using SteelSeriesAPI.Sonar.Exceptions;
 using SteelSeriesAPI.Sonar.Models;
 
 namespace SteelSeriesAPI.Sonar.Http;
@@ -46,7 +47,7 @@ public class SonarHttpProvider : ISonarDataProvider
     {
         if (channel == Channel.MASTER)
         {
-            throw new Exception("Can't get redirection state for master");
+            throw new MasterChannelNotSupported();
         }
 
         JsonDocument streamRedirections = new HttpFetcher().Provide("streamRedirections");
@@ -88,7 +89,7 @@ public class SonarHttpProvider : ISonarDataProvider
     {
         if (channel == Channel.MASTER)
         {
-            throw new Exception("Can't get routed process for Master");
+            throw new MasterChannelNotSupported();
         }
         
         JsonDocument audioDeviceRoutings = new HttpFetcher().Provide("AudioDeviceRouting");
