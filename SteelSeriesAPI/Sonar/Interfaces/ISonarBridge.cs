@@ -1,6 +1,6 @@
 namespace SteelSeriesAPI.Sonar.Interfaces;
 
-public interface ISonarBridge : ISonarDataProvider, ISonarCommandHandler
+public interface ISonarBridge
 {
     /// <summary>
     /// The running state of Sonar

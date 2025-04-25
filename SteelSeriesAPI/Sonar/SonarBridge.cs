@@ -13,8 +13,6 @@ public class SonarBridge : ISonarBridge
 {
     public bool IsRunning => SonarRetriever.Instance is { IsEnabled: true, IsReady: true, IsRunning: true };
     
-    private readonly ISonarCommandHandler _sonarCommand;
-    private readonly ISonarDataProvider _sonarProvider;
     private ISonarSocket _sonarSocket;
 
     public readonly ModeManager Mode;
@@ -23,19 +21,19 @@ public class SonarBridge : ISonarBridge
     public readonly ConfigurationManager Configurations;
     public readonly PlaybackDeviceManager PlaybackDevices;
     public readonly RedirectionStateManager RedirectionStates;
+    public readonly AudienceMonitoringManager AudienceMonitoring;
     public readonly RoutedProcessManager RoutedProcesses;
     public readonly EventManager Events;
 
     public SonarBridge()
     {
-        _sonarCommand = new SonarHttpCommand();
-        _sonarProvider = new SonarHttpProvider();
         Mode = new ModeManager();
         VolumeSettings = new VolumeSettingsManager();
         ChatMix = new ChatMixManager();
         Configurations = new ConfigurationManager();
         PlaybackDevices = new PlaybackDeviceManager();
         RedirectionStates = new RedirectionStateManager();
+        AudienceMonitoring = new AudienceMonitoringManager();
         RoutedProcesses = new RoutedProcessManager();
         Events = new EventManager();
     }
@@ -101,22 +99,4 @@ public class SonarBridge : ISonarBridge
     {
         SonarRetriever.Instance.WaitUntilAppStarted();
     }
-
-    #region Providers
-
-    public bool GetAudienceMonitoringState()
-    {
-        return _sonarProvider.GetAudienceMonitoringState();
-    }
-
-    #endregion
-
-    #region Commands
-
-    public void SetAudienceMonitoringState(bool newState)
-    {
-        _sonarCommand.SetAudienceMonitoringState(newState);
-    }
-
-    #endregion
 }
