@@ -10,7 +10,7 @@ public class SonarHttpProvider : ISonarDataProvider
 {
     public Mode GetMode()
     {
-        string mode = new HttpProvider("mode").Provide().RootElement.ToString();
+        string mode = new HttpFetcher().Provide("mode").RootElement.ToString();
         
         return (Mode)ModeExtensions.FromDictKey(mode, ModeMapChoice.StreamDict);
     }
@@ -19,14 +19,14 @@ public class SonarHttpProvider : ISonarDataProvider
 
     public double GetChatMixBalance()
     {
-        JsonDocument chatMix = new HttpProvider("chatMix").Provide();
+        JsonDocument chatMix = new HttpFetcher().Provide("chatMix");
 
         return chatMix.RootElement.GetProperty("balance").GetDouble();
     }
 
     public bool GetChatMixState()
     {
-        JsonDocument chatMix = new HttpProvider("chatMix").Provide();
+        JsonDocument chatMix = new HttpFetcher().Provide("chatMix");
         string cState = chatMix.RootElement.GetProperty("state").ToString();
         if (cState == "enabled")
         {
@@ -49,7 +49,7 @@ public class SonarHttpProvider : ISonarDataProvider
             throw new Exception("Can't get redirection state for master");
         }
 
-        JsonDocument streamRedirections = new HttpProvider("streamRedirections").Provide();
+        JsonDocument streamRedirections = new HttpFetcher().Provide("streamRedirections");
         JsonElement streamChannel = default;
 
         foreach (var element in streamRedirections.RootElement.EnumerateArray())
@@ -79,7 +79,7 @@ public class SonarHttpProvider : ISonarDataProvider
 
     public bool GetAudienceMonitoringState()
     {
-        JsonDocument streamMonitoring = new HttpProvider("streamRedirections/isStreamMonitoringEnabled").Provide();
+        JsonDocument streamMonitoring = new HttpFetcher().Provide("streamRedirections/isStreamMonitoringEnabled");
 
         return streamMonitoring.RootElement.GetBoolean();
     }
@@ -91,7 +91,7 @@ public class SonarHttpProvider : ISonarDataProvider
             throw new Exception("Can't get routed process for Master");
         }
         
-        JsonDocument audioDeviceRoutings = new HttpProvider("AudioDeviceRouting").Provide();
+        JsonDocument audioDeviceRoutings = new HttpFetcher().Provide("AudioDeviceRouting");
 
         foreach (var element in audioDeviceRoutings.RootElement.EnumerateArray())
         {

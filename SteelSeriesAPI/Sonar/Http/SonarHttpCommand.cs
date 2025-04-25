@@ -16,7 +16,7 @@ public class SonarHttpCommand : ISonarCommandHandler
     
     public void SetMode(Mode mode)
     {
-        new HttpPut("mode/" + mode.ToDictKey(ModeMapChoice.StreamDict));
+        new HttpFetcher().Put("mode/" + mode.ToDictKey(ModeMapChoice.StreamDict));
         Thread.Sleep(100); // Prevent bugs/freezes/crashes
     }
 
@@ -32,18 +32,18 @@ public class SonarHttpCommand : ISonarCommandHandler
             throw new Exception("ChatMix balance can't be less than -1 and greater than 1");
         }
 
-        new HttpPut("chatMix?balance=" + balance.ToString("0.00", CultureInfo.InvariantCulture));
+        new HttpFetcher().Put("chatMix?balance=" + balance.ToString("0.00", CultureInfo.InvariantCulture));
     }
 
     public void SetRedirectionState(bool newState, Channel channel, Mix mix)
     {
-        new HttpPut("streamRedirections/" + mix.ToDictKey() + "/redirections/" + channel.ToDictKey() +
-                    "/isEnabled/" + newState);
+        new HttpFetcher().Put("streamRedirections/" + mix.ToDictKey() + "/redirections/" + channel.ToDictKey() +
+                              "/isEnabled/" + newState);
     }
 
     public void SetAudienceMonitoringState(bool newState)
     {
-        new HttpPut("streamRedirections/isStreamMonitoringEnabled/" + newState);
+        new HttpFetcher().Put("streamRedirections/isStreamMonitoringEnabled/" + newState);
     }
     
     public void SetProcessToDeviceRouting(int pId, Channel channel)
@@ -53,7 +53,7 @@ public class SonarHttpCommand : ISonarCommandHandler
             throw new Exception("Can't set process to master routing");
         }
         
-        JsonDocument audioDeviceRouting = new HttpProvider("AudioDeviceRouting").Provide();
+        JsonDocument audioDeviceRouting = new HttpFetcher().Provide("AudioDeviceRouting");
 
         foreach (var element in audioDeviceRouting.RootElement.EnumerateArray())
         {
@@ -61,12 +61,12 @@ public class SonarHttpCommand : ISonarCommandHandler
             {
                 if (channel == Channel.MIC)
                 {
-                    new HttpPut("AudioDeviceRouting/capture/" + element.GetProperty("deviceId").GetString() + "/" + pId);
+                    new HttpFetcher().Put("AudioDeviceRouting/capture/" + element.GetProperty("deviceId").GetString() + "/" + pId);
                     break;
                 }
                 else
                 {
-                    new HttpPut("AudioDeviceRouting/render/" + element.GetProperty("deviceId").GetString() + "/" + pId);
+                    new HttpFetcher().Put("AudioDeviceRouting/render/" + element.GetProperty("deviceId").GetString() + "/" + pId);
                     break;
                 }
             }

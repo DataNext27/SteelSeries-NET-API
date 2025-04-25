@@ -22,7 +22,7 @@ public class SonarBridge : ISonarBridge
     public readonly VolumeSettingsManager VolumeSettings;
     public readonly ConfigurationManager Configurations;
     public readonly PlaybackDeviceManager PlaybackDevices;
-    public readonly EventManager Event;
+    public readonly EventManager Events;
 
     public SonarBridge()
     {
@@ -31,7 +31,7 @@ public class SonarBridge : ISonarBridge
         VolumeSettings = new VolumeSettingsManager();
         Configurations = new ConfigurationManager();
         PlaybackDevices = new PlaybackDeviceManager();
-        Event = new EventManager();
+        Events = new EventManager();
     }
 
     #region Listener
@@ -48,7 +48,7 @@ public class SonarBridge : ISonarBridge
             throw new Exception("Listener already started");
         }
         
-        _sonarSocket = new SonarSocket(Event);
+        _sonarSocket = new SonarSocket(Events);
         
         var connected = _sonarSocket.Connect();
         if (!connected)

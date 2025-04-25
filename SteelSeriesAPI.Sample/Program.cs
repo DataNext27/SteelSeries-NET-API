@@ -18,14 +18,14 @@ class Program
         // If I want to detect changes made on GG, I can use the listener (require admin rights)
         sonarManager.StartListener();
         // Then I register the events I want (I've put them all to demonstrate)
-        sonarManager.Event.OnSonarModeChange += OnModeChangeHandler; // When the mode is change
-        sonarManager.Event.OnSonarVolumeChange += OnVolumeChangeHandler; // When the volume of a Sonar Channel or Mix is changed
-        sonarManager.Event.OnSonarMuteChange += OnMuteChangeHandler; // When a Sonar Channel or Mix is muted or unmuted
-        sonarManager.Event.OnSonarConfigChange += OnConfigChangeHandler; // When a new config is set to a Sonar Channel
-        sonarManager.Event.OnSonarChatMixChange += OnChatMixChangeHandler; // When the ChatMix value is changed
-        sonarManager.Event.OnSonarPlaybackDeviceChange += OnPlaybackDeviceChangeHandler; // When the Redirection Channel of a Sonar Channel is changed
-        sonarManager.Event.OnSonarRedirectionStateChange += OnRedirectionStateChangeHandler; // When the Redirection of a Sonar Mix is muted or unmuted
-        sonarManager.Event.OnSonarAudienceMonitoringChange += OnAudienceMonitoringChangeHandler; // When the Audience Monitoring is muted or unmuted
+        sonarManager.Events.OnSonarModeChange += OnModeChangeHandler; // When the mode is change
+        sonarManager.Events.OnSonarVolumeChange += OnVolumeChangeHandler; // When the volume of a Sonar Channel or Mix is changed
+        sonarManager.Events.OnSonarMuteChange += OnMuteChangeHandler; // When a Sonar Channel or Mix is muted or unmuted
+        sonarManager.Events.OnSonarConfigChange += OnConfigChangeHandler; // When a new config is set to a Sonar Channel
+        sonarManager.Events.OnSonarChatMixChange += OnChatMixChangeHandler; // When the ChatMix value is changed
+        sonarManager.Events.OnSonarPlaybackDeviceChange += OnPlaybackDeviceChangeHandler; // When the Redirection Channel of a Sonar Channel is changed
+        sonarManager.Events.OnSonarRedirectionStateChange += OnRedirectionStateChangeHandler; // When the Redirection of a Sonar Mix is muted or unmuted
+        sonarManager.Events.OnSonarAudienceMonitoringChange += OnAudienceMonitoringChangeHandler; // When the Audience Monitoring is muted or unmuted
 
         // Get current sonar mode
         Mode mode = sonarManager.GetMode();

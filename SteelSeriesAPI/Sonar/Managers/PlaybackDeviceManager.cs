@@ -12,7 +12,7 @@ public class PlaybackDeviceManager : IPlaybackDeviceManager
 {
     public IEnumerable<PlaybackDevice> GetPlaybackDevices(DataFlow _dataFlow)
     {
-        JsonDocument audioDevices = new HttpProvider("audioDevices").Provide();
+        JsonDocument audioDevices = new HttpFetcher().Provide("audioDevices");
         // JsonDocument classicRedirections = new HttpProvider("classicRedirections").Provide();
         // JsonDocument streamRedirections = new HttpProvider("streamRedirections").Provide();
     
@@ -42,7 +42,7 @@ public class PlaybackDeviceManager : IPlaybackDeviceManager
     {
         try
         {
-            JsonElement device = new HttpProvider("audioDevices/" + deviceId).Provide().RootElement;
+            JsonElement device = new HttpFetcher().Provide("audioDevices/" + deviceId).RootElement;
             
             string id = device.GetProperty("id").GetString();
             string name = device.GetProperty("friendlyName").GetString();
@@ -68,7 +68,7 @@ public class PlaybackDeviceManager : IPlaybackDeviceManager
             throw new Exception("Can't get redirection channel for master");
         }
         
-        JsonDocument classicRedirections = new HttpProvider("classicRedirections").Provide();
+        JsonDocument classicRedirections = new HttpFetcher().Provide("classicRedirections");
         JsonElement cRedirections = default;
     
         foreach (var element in classicRedirections.RootElement.EnumerateArray())
@@ -86,7 +86,7 @@ public class PlaybackDeviceManager : IPlaybackDeviceManager
         
         GetAssociatedChannels(deviceId, associatedClassicChannels, associatedStreamChannels);
     
-        JsonDocument audioDevice = new HttpProvider("audioDevices/" + deviceId).Provide();
+        JsonDocument audioDevice = new HttpFetcher().Provide("audioDevices/" + deviceId);
     
         string name = audioDevice.RootElement.GetProperty("friendlyName").GetString();
         DataFlow dataFlow = (DataFlow)DataFlowExtensions.FromDictKey(audioDevice.RootElement.GetProperty("dataFlow").GetString());
@@ -96,7 +96,7 @@ public class PlaybackDeviceManager : IPlaybackDeviceManager
 
     public PlaybackDevice GetStreamerPlaybackDevice(Mix mix)
     {
-        JsonDocument streamRedirections = new HttpProvider("streamRedirections").Provide();
+        JsonDocument streamRedirections = new HttpFetcher().Provide("streamRedirections");
         JsonElement sRedirections = default;
     
         foreach (var element in streamRedirections.RootElement.EnumerateArray())
@@ -114,7 +114,7 @@ public class PlaybackDeviceManager : IPlaybackDeviceManager
 
         GetAssociatedChannels(deviceId, associatedClassicChannels, associatedStreamChannels);
     
-        JsonDocument audioDevice = new HttpProvider("audioDevices/" + deviceId).Provide();
+        JsonDocument audioDevice = new HttpFetcher().Provide("audioDevices/" + deviceId);
     
         string name = audioDevice.RootElement.GetProperty("friendlyName").GetString();
         DataFlow dataFlow = (DataFlow)DataFlowExtensions.FromDictKey(audioDevice.RootElement.GetProperty("dataFlow").GetString());
@@ -129,7 +129,7 @@ public class PlaybackDeviceManager : IPlaybackDeviceManager
             throw new Exception("Can only get stream redirection channel for Mic");
         }
         
-        JsonDocument streamRedirections = new HttpProvider("streamRedirections").Provide();
+        JsonDocument streamRedirections = new HttpFetcher().Provide("streamRedirections");
         JsonElement sRedirections = default;
     
         foreach (var element in streamRedirections.RootElement.EnumerateArray())
@@ -147,7 +147,7 @@ public class PlaybackDeviceManager : IPlaybackDeviceManager
         
         GetAssociatedChannels(deviceId, associatedClassicChannels, associatedStreamChannels);
     
-        JsonDocument audioDevice = new HttpProvider("audioDevices/" + deviceId).Provide();
+        JsonDocument audioDevice = new HttpFetcher().Provide("audioDevices/" + deviceId);
     
         string name = audioDevice.RootElement.GetProperty("friendlyName").GetString();
         DataFlow dataFlow = (DataFlow)DataFlowExtensions.FromDictKey(audioDevice.RootElement.GetProperty("dataFlow").GetString());
@@ -157,8 +157,8 @@ public class PlaybackDeviceManager : IPlaybackDeviceManager
     
     private void GetAssociatedChannels(string deviceId, List<Channel> associatedClassicDevices, ArrayList associatedStreamDevices)
     {
-        JsonDocument classicRedirections = new HttpProvider("classicRedirections").Provide();
-        JsonDocument streamRedirections = new HttpProvider("streamRedirections").Provide();
+        JsonDocument classicRedirections = new HttpFetcher().Provide("classicRedirections");
+        JsonDocument streamRedirections = new HttpFetcher().Provide("streamRedirections");
 
         foreach (var element in classicRedirections.RootElement.EnumerateArray())
         {
@@ -186,12 +186,12 @@ public class PlaybackDeviceManager : IPlaybackDeviceManager
 
     public void SetClassicPlaybackDevice(string deviceId, Channel channel)
     {
-        new HttpPut("classicRedirections/" + channel.ToDictKey(ChannelMapChoice.ChannelDict) +"/deviceId/" + deviceId);
+        new HttpFetcher().Put("classicRedirections/" + channel.ToDictKey(ChannelMapChoice.ChannelDict) +"/deviceId/" + deviceId);
     }
 
     public void SetStreamerPlaybackDevice(string deviceId, Mix mix)
     {
-        new HttpPut("streamRedirections/" + mix.ToDictKey() +"/deviceId/" + deviceId);
+        new HttpFetcher().Put("streamRedirections/" + mix.ToDictKey() +"/deviceId/" + deviceId);
     }
 
     public void SetStreamerPlaybackDevice(string deviceId, Channel channel = Channel.MIC)
@@ -201,7 +201,7 @@ public class PlaybackDeviceManager : IPlaybackDeviceManager
             throw new Exception("Can only change stream redirection channel for Mic");
         }
         
-        new HttpPut("streamRedirections/" + channel.ToDictKey(ChannelMapChoice.ChannelDict) +"/deviceId/" + deviceId);
+        new HttpFetcher().Put("streamRedirections/" + channel.ToDictKey(ChannelMapChoice.ChannelDict) +"/deviceId/" + deviceId);
     }
 
     public void SetClassicPlaybackDevice(PlaybackDevice playbackDevice, Channel channel)

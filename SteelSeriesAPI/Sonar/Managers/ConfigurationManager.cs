@@ -11,7 +11,7 @@ public class ConfigurationManager : IConfigurationManager
 {
     public IEnumerable<SonarAudioConfiguration> GetAllAudioConfigurations()
     {
-        JsonDocument configs = new HttpProvider("configs").Provide();
+        JsonDocument configs = new HttpFetcher().Provide("configs");
 
         foreach (var element in configs.RootElement.EnumerateArray())
         {
@@ -68,7 +68,7 @@ public class ConfigurationManager : IConfigurationManager
             throw new Exception("Can't get audio configuration for master");
         }
 
-        JsonDocument selectedConfigs = new HttpProvider("configs/selected").Provide();
+        JsonDocument selectedConfigs = new HttpFetcher().Provide("configs/selected");
         JsonElement sConfig = default;
 
         foreach (var config in selectedConfigs.RootElement.EnumerateArray())
@@ -91,7 +91,7 @@ public class ConfigurationManager : IConfigurationManager
     {
         if (string.IsNullOrEmpty(configId)) throw new Exception("Couldn't retrieve config id");
 
-        new HttpPut("configs/" + configId + "/select");
+        new HttpFetcher().Put("configs/" + configId + "/select");
     }
 
     public void SetConfig(SonarAudioConfiguration config)

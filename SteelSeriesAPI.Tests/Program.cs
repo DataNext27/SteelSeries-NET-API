@@ -10,22 +10,23 @@ class Program
     static void Main(string[] args)
     {
         SonarBridge sonarManager = new SonarBridge();
+        sonarManager.WaitUntilSteelSeriesStarted();
         sonarManager.WaitUntilSonarStarted();
         Console.WriteLine(SonarRetriever.Instance.WebServerAddress());
 
-        sonarManager.StartListener();
+        // sonarManager.StartListener();
 
         // Thread.Sleep(1000);
         // sonarManager.StopListener();
-
-        sonarManager.Event.OnSonarModeChange += OnModeChangeHandler;
-        sonarManager.Event.OnSonarVolumeChange += OnVolumeChangeHandler;
-        sonarManager.Event.OnSonarMuteChange += OnMuteChangeHandler;
-        sonarManager.Event.OnSonarConfigChange += OnConfigChangeHandler;
-        sonarManager.Event.OnSonarChatMixChange += OnChatMixChangeHandler;
-        sonarManager.Event.OnSonarPlaybackDeviceChange += OnPlaybackDeviceChangeHandler;
-        sonarManager.Event.OnSonarRedirectionStateChange += OnRedirectionStateChangeHandler;
-        sonarManager.Event.OnSonarAudienceMonitoringChange += OnAudienceMonitoringChangeHandler;
+        
+        // sonarManager.Events.OnSonarModeChange += OnModeChangeHandler;
+        // sonarManager.Events.OnSonarVolumeChange += OnVolumeChangeHandler;
+        // sonarManager.Events.OnSonarMuteChange += OnMuteChangeHandler;
+        // sonarManager.Events.OnSonarConfigChange += OnConfigChangeHandler;
+        // sonarManager.Events.OnSonarChatMixChange += OnChatMixChangeHandler;
+        // sonarManager.Events.OnSonarPlaybackDeviceChange += OnPlaybackDeviceChangeHandler;
+        // sonarManager.Events.OnSonarRedirectionStateChange += OnRedirectionStateChangeHandler;
+        // sonarManager.Events.OnSonarAudienceMonitoringChange += OnAudienceMonitoringChangeHandler;
 
         // new Program().GetTest(sonarManager);
         // new Program().SetTest(sonarManager);
