@@ -16,33 +16,6 @@ public class SonarHttpProvider : ISonarDataProvider
         return (Mode)ModeExtensions.FromDictKey(mode, ModeMapChoice.StreamDict);
     }
 
-    #region ChatMix
-
-    public double GetChatMixBalance()
-    {
-        JsonDocument chatMix = new HttpFetcher().Provide("chatMix");
-
-        return chatMix.RootElement.GetProperty("balance").GetDouble();
-    }
-
-    public bool GetChatMixState()
-    {
-        JsonDocument chatMix = new HttpFetcher().Provide("chatMix");
-        string cState = chatMix.RootElement.GetProperty("state").ToString();
-        if (cState == "enabled")
-        {
-            return true;
-        }
-        else if (cState == "differentDeviceSelected")
-        {
-            return false;
-        }
-
-        return false;
-    }
-    
-    #endregion
-
     public bool GetRedirectionState(Channel channel, Mix mix)
     {
         if (channel == Channel.MASTER)

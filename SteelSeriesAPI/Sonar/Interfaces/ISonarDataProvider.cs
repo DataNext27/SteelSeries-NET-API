@@ -12,18 +12,6 @@ public interface ISonarDataProvider
     Mode GetMode();
 
     /// <summary>
-    /// Get the actual ChatMix balance value
-    /// </summary>
-    /// <returns>A double between -1 and 1</returns>
-    double GetChatMixBalance();
-
-    /// <summary>
-    /// Get the actual state of the ChatMix
-    /// </summary>
-    /// <returns>True if ChatMix is enabled <br/> False if ChatMix is disabled</returns>
-    bool GetChatMixState();
-
-    /// <summary>
     /// Get the mute state of the Redirection of the chosen Sonar <see cref="Mix"/> of the chosen Sonar <see cref="Channel"/>
     /// </summary>
     /// <param name="channel">The Sonar <see cref="Channel"/> you want the mute state of a Redirection mix</param>

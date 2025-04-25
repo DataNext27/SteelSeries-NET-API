@@ -57,10 +57,10 @@ class Program
         sonarManager.Configurations.SetConfig(currentConfig); // Or you can just directly give the config
         
         // Get ChatMix info
-        double chatMixBalance = sonarManager.GetChatMixBalance(); // The ChatMix value between -1 and 1
-        bool chatMixState = sonarManager.GetChatMixState(); // If ChatMix is usable or not
+        double chatMixBalance = sonarManager.ChatMix.GetBalance(); // The ChatMix value between -1 and 1
+        bool chatMixState = sonarManager.ChatMix.GetState(); // If ChatMix is usable or not
         // Change ChatMix value
-        sonarManager.SetChatMixBalance(0.5); // 0.5 is halfway to Chat
+        sonarManager.ChatMix.SetBalance(0.5); // 0.5 is halfway to Chat
         
         // Get playback devices (Windows devices)
         List<PlaybackDevice> inputDevices = sonarManager.PlaybackDevices.GetPlaybackDevices(DataFlow.INPUT).ToList(); // Input devices (Mics...)

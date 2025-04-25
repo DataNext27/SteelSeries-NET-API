@@ -20,6 +20,7 @@ public class SonarBridge : ISonarBridge
     private ISonarSocket _sonarSocket;
 
     public readonly VolumeSettingsManager VolumeSettings;
+    public readonly ChatMixManager ChatMix;
     public readonly ConfigurationManager Configurations;
     public readonly PlaybackDeviceManager PlaybackDevices;
     public readonly EventManager Events;
@@ -29,6 +30,7 @@ public class SonarBridge : ISonarBridge
         _sonarCommand = new SonarHttpCommand(this);
         _sonarProvider = new SonarHttpProvider();
         VolumeSettings = new VolumeSettingsManager();
+        ChatMix = new ChatMixManager();
         Configurations = new ConfigurationManager();
         PlaybackDevices = new PlaybackDeviceManager();
         Events = new EventManager();
@@ -102,16 +104,6 @@ public class SonarBridge : ISonarBridge
     {
         return _sonarProvider.GetMode();
     }
-    
-    public double GetChatMixBalance()
-    {
-        return _sonarProvider.GetChatMixBalance();
-    }
-
-    public bool GetChatMixState()
-    {
-        return _sonarProvider.GetChatMixState();
-    }
 
     public bool GetRedirectionState(Channel channel, Mix mix)
     {
@@ -135,11 +127,6 @@ public class SonarBridge : ISonarBridge
     public void SetMode(Mode mode)
     {
         _sonarCommand.SetMode(mode);
-    }
-
-    public void SetChatMixBalance(double balance)
-    {
-        _sonarCommand.SetChatMixBalance(balance);
     }
     
     public void SetRedirectionState(bool newState, Channel channel, Mix mix)

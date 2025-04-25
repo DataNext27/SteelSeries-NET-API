@@ -9,13 +9,6 @@ public interface ISonarCommandHandler
     /// </summary>
     /// <param name="mode">The <see cref="Mode"/> you want to set</param>
     void SetMode(Mode mode);
-    
-    /// <summary>
-    /// Set the balance of the ChatMix
-    /// </summary>
-    /// <remarks>-1 to balance to Game channel<br/>1 to balance to Chat channel</remarks>
-    /// <param name="balance">A <see cref="double"/> between -1 and 1</param>
-    void SetChatMixBalance(double balance);
 
     /// <summary>
     /// Enable or disable the Redirection of the chosen Sonar <see cref="Mix"/> of the chosen Sonar <see cref="Channel"/>
