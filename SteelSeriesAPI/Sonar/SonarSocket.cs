@@ -17,9 +17,9 @@ public class SonarSocket : ISonarSocket
 
     private bool _isClosing;
 
-    public SonarSocket(string sonarWebServerAddress, EventManager eventManager)
+    public SonarSocket(EventManager eventManager)
     {
-        _sonarWebServerAddress = new Uri(sonarWebServerAddress);
+        _sonarWebServerAddress = new Uri(SonarRetriever.Instance.WebServerAddress());
         _listenerThread = new Thread(ListenerThreadSync) { IsBackground = false };
         _eventManager = eventManager;
     }

@@ -18,21 +18,17 @@ public class SonarBridge : ISonarBridge
     private readonly IAppRetriever _sonarRetriever;
     private readonly ISonarCommandHandler _sonarCommand;
     private readonly ISonarDataProvider _sonarProvider;
-    private readonly ISonarSocket _sonarSocket;
+    private ISonarSocket _sonarSocket;
 
     public readonly VolumeSettingsManager VolumeSettings;
     public readonly ConfigurationManager Configurations;
     public readonly PlaybackDeviceManager PlaybackDevices;
     public readonly EventManager Event;
 
-    private string _sonarWebServerAddress;
-
     public SonarBridge()
     {
         _sonarRetriever = SonarRetriever.Instance;
-        WaitUntilSonarStarted();
-        _sonarWebServerAddress = _sonarRetriever.WebServerAddress();
-        _sonarSocket = new SonarSocket(_sonarWebServerAddress, Event);
+        
         _sonarCommand = new SonarHttpCommand(this);
         _sonarProvider = new SonarHttpProvider();
         VolumeSettings = new VolumeSettingsManager();
@@ -50,10 +46,12 @@ public class SonarBridge : ISonarBridge
             throw new ApplicationException("Listener requires Administrator rights to be used");
         }
         
-        if (_sonarSocket.IsConnected)
+        if (_sonarSocket != null && _sonarSocket.IsConnected)
         {
             throw new Exception("Listener already started");
         }
+        
+        _sonarSocket = new SonarSocket(Event);
         
         var connected = _sonarSocket.Connect();
         if (!connected)

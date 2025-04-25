@@ -11,7 +11,7 @@ class Program
     {
         SonarBridge sonarManager = new SonarBridge();
         sonarManager.WaitUntilSonarStarted();
-        Console.WriteLine(new SonarRetriever().WebServerAddress());
+        Console.WriteLine(SonarRetriever.Instance.WebServerAddress());
 
         sonarManager.StartListener();
 
