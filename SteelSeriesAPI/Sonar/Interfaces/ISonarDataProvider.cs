@@ -24,11 +24,4 @@ public interface ISonarDataProvider
     /// </summary>
     /// <returns>The current state, un/muted</returns>
     bool GetAudienceMonitoringState();
-    
-    /// <summary>
-    /// Get the apps which their audio is redirected to a Sonar <see cref="Channel"/>
-    /// </summary>
-    /// <param name="channel">The Sonar <see cref="Channel"/> you want the associated processes</param>
-    /// <returns>A list of <see cref="RoutedProcess"/></returns>
-    IEnumerable<RoutedProcess> GetRoutedProcess(Channel channel);
 }

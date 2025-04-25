@@ -23,11 +23,4 @@ public interface ISonarCommandHandler
     /// </summary>
     /// <param name="newState">The new state, un/muted</param>
     void SetAudienceMonitoringState(bool newState);
-
-    /// <summary>
-    /// Redirect the audio of an app to a Sonar <see cref="Channel"/>
-    /// </summary>
-    /// <param name="pId">The process ID of the app</param>
-    /// <param name="channel">The Sonar <see cref="Channel"/> you want to set the app audio</param>
-    void SetProcessToDeviceRouting(int pId, Channel channel);
 }

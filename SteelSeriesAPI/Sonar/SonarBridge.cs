@@ -23,6 +23,7 @@ public class SonarBridge : ISonarBridge
     public readonly ChatMixManager ChatMix;
     public readonly ConfigurationManager Configurations;
     public readonly PlaybackDeviceManager PlaybackDevices;
+    public readonly RoutedProcessManager RoutedProcesses;
     public readonly EventManager Events;
 
     public SonarBridge()
@@ -33,6 +34,7 @@ public class SonarBridge : ISonarBridge
         ChatMix = new ChatMixManager();
         Configurations = new ConfigurationManager();
         PlaybackDevices = new PlaybackDeviceManager();
+        RoutedProcesses = new RoutedProcessManager();
         Events = new EventManager();
     }
 
@@ -115,11 +117,6 @@ public class SonarBridge : ISonarBridge
         return _sonarProvider.GetAudienceMonitoringState();
     }
 
-    public IEnumerable<RoutedProcess> GetRoutedProcess(Channel channel)
-    {
-        return _sonarProvider.GetRoutedProcess(channel);
-    }
-
     #endregion
 
     #region Commands
@@ -137,11 +134,6 @@ public class SonarBridge : ISonarBridge
     public void SetAudienceMonitoringState(bool newState)
     {
         _sonarCommand.SetAudienceMonitoringState(newState);
-    }
-
-    public void SetProcessToDeviceRouting(int pId, Channel channel)
-    {
-        _sonarCommand.SetProcessToDeviceRouting(pId, channel);
     }
 
     #endregion

@@ -57,40 +57,4 @@ public class SonarHttpProvider : ISonarDataProvider
 
         return streamMonitoring.RootElement.GetBoolean();
     }
-
-    public IEnumerable<RoutedProcess> GetRoutedProcess(Channel channel)
-    {
-        if (channel == Channel.MASTER)
-        {
-            throw new MasterChannelNotSupportedException();
-        }
-        
-        JsonDocument audioDeviceRoutings = new HttpFetcher().Provide("AudioDeviceRouting");
-
-        foreach (var element in audioDeviceRoutings.RootElement.EnumerateArray())
-        {
-            if (element.GetProperty("role").GetString() != channel.ToDictKey())
-            {
-                continue;
-            }
-
-            var audioSessions = element.GetProperty("audioSessions");
-
-            foreach (var session in audioSessions.EnumerateArray())
-            {
-                string id = session.GetProperty("id").GetString().Split("|")[0];
-                string processName = session.GetProperty("processName").GetString();
-                int pId = session.GetProperty("processId").GetInt32();
-                RoutedProcessState state = (RoutedProcessState)RoutedProcessStateExtensions.FromDictKey(session.GetProperty("state").GetString());
-                string displayName = session.GetProperty("displayName").GetString();
-
-                if (processName == "Idle" && displayName == "Idle" && state == RoutedProcessState.INACTIVE && pId == 0)
-                {
-                    continue;
-                }
-                
-                yield return new RoutedProcess(id, processName, pId, state, displayName);
-            }
-        }
-    }
 }

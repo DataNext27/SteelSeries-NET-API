@@ -33,31 +33,4 @@ public class SonarHttpCommand : ISonarCommandHandler
     {
         new HttpFetcher().Put("streamRedirections/isStreamMonitoringEnabled/" + newState);
     }
-    
-    public void SetProcessToDeviceRouting(int pId, Channel channel)
-    {
-        if (channel == Channel.MASTER)
-        {
-            throw new MasterChannelNotSupportedException();
-        }
-        
-        JsonDocument audioDeviceRouting = new HttpFetcher().Provide("AudioDeviceRouting");
-
-        foreach (var element in audioDeviceRouting.RootElement.EnumerateArray())
-        {
-            if (element.GetProperty("role").GetString() == channel.ToDictKey())
-            {
-                if (channel == Channel.MIC)
-                {
-                    new HttpFetcher().Put("AudioDeviceRouting/capture/" + element.GetProperty("deviceId").GetString() + "/" + pId);
-                    break;
-                }
-                else
-                {
-                    new HttpFetcher().Put("AudioDeviceRouting/render/" + element.GetProperty("deviceId").GetString() + "/" + pId);
-                    break;
-                }
-            }
-        }
-    }
 }
