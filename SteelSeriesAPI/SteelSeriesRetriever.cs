@@ -1,5 +1,6 @@
-ï»¿using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text.Json;
+using SteelSeriesAPI.Exceptions;
 using SteelSeriesAPI.Interfaces;
 
 namespace SteelSeriesAPI;
@@ -23,7 +24,7 @@ public class SteelSeriesRetriever : ISteelSeriesRetriever
     {
         if (!Running)
         {
-            throw new Exception("SteelSeries is not started");
+            throw new SteelSeriesNotRunningException();
         }
         
         try

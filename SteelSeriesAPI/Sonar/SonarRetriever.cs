@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
+using SteelSeriesAPI.Exceptions;
 using SteelSeriesAPI.Interfaces;
+using SteelSeriesAPI.Sonar.Exceptions;
 
 namespace SteelSeriesAPI.Sonar;
 
@@ -36,7 +38,7 @@ public class SonarRetriever : IAppRetriever
     {
         if (!SteelSeriesRetriever.Instance.Running)
         {
-            throw new Exception("SteelSeries Sonar is not running.");
+            throw new SteelSeriesNotRunningException();
         }
 
         try
@@ -72,7 +74,7 @@ public class SonarRetriever : IAppRetriever
     {
         if (!IsEnabled || !IsReady || !IsRunning)
         {
-            throw new Exception("SteelSeries Sonar not running");
+            throw new SonarNotRunningException();
         }
         
         JsonDocument subApps = JsonDocument.Parse(_httpClient.GetStringAsync("https://" + SteelSeriesRetriever.Instance.GetggEncryptedAddress() + "/subApps").Result);
