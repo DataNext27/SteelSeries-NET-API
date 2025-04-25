@@ -89,27 +89,27 @@ class Program
         Console.WriteLine("" + sonarManager.VolumeSettings.GetVolume(Channel.AUX, Mix.STREAM) + "  " + sonarManager.VolumeSettings.GetMute(Channel.AUX, Mix.STREAM));
         Console.WriteLine("" + sonarManager.VolumeSettings.GetVolume(Channel.MIC, Mix.STREAM) + "  " + sonarManager.VolumeSettings.GetMute(Channel.MIC, Mix.STREAM));
         Console.WriteLine("----AudioConfigs----------");
-        foreach (var config in sonarManager.GetAllAudioConfigurations())
+        foreach (var config in sonarManager.Configurations.GetAllAudioConfigurations())
         {
             Console.WriteLine(config.Id + ", " + config.Name + ", " + config.AssociatedChannel);
         }
         
         Console.WriteLine("----Media-Configs----------");
-        foreach (var config in sonarManager.GetAudioConfigurations(Channel.MEDIA))
+        foreach (var config in sonarManager.Configurations.GetAudioConfigurations(Channel.MEDIA))
         {
             Console.WriteLine(config.Id + ", " + config.Name);
         }
 
         Console.WriteLine("----Mic-Configs----------");
-        foreach (var config in sonarManager.GetAudioConfigurations(Channel.MIC))
+        foreach (var config in sonarManager.Configurations.GetAudioConfigurations(Channel.MIC))
         {
             Console.WriteLine(config.Id + ", " + config.Name);
         }
 
         Console.WriteLine("----Current Media Config----------");
-        Console.WriteLine(sonarManager.GetSelectedAudioConfiguration(Channel.MEDIA).Name);
+        Console.WriteLine(sonarManager.Configurations.GetSelectedAudioConfiguration(Channel.MEDIA).Name);
         Console.WriteLine("----Channel from config ID----------");
-        Console.WriteLine(sonarManager.GetAudioConfiguration("29ae2c02-792b-4487-863c-dc3e11a7a469").AssociatedChannel);
+        Console.WriteLine(sonarManager.Configurations.GetAudioConfiguration("29ae2c02-792b-4487-863c-dc3e11a7a469").AssociatedChannel);
         Console.WriteLine("--------ChatMix---------");
         Console.WriteLine(sonarManager.GetChatMixBalance());
         Console.WriteLine(sonarManager.GetChatMixState());
@@ -219,9 +219,9 @@ class Program
         sonarManager.SetMode(Mode.CLASSIC);
         sonarManager.VolumeSettings.SetVolume(0.4, Channel.MEDIA);
         sonarManager.VolumeSettings.SetMute(false, Channel.MEDIA);
-        string configId = sonarManager.GetAudioConfigurations(Channel.MEDIA).FirstOrDefault(config => config.Name == "Default")?.Id;
-        sonarManager.SetConfig(configId);
-        sonarManager.SetConfig(Channel.MEDIA, "Default");
+        string configId = sonarManager.Configurations.GetAudioConfigurations(Channel.MEDIA).FirstOrDefault(config => config.Name == "Default")?.Id;
+        sonarManager.Configurations.SetConfig(configId);
+        sonarManager.Configurations.SetConfigByName(Channel.MEDIA, "Default");
         sonarManager.SetChatMixBalance(0.5);
         
         var redirectionDevices = sonarManager.GetPlaybackDevices(DataFlow.INPUT);

@@ -9,21 +9,6 @@ public interface ISonarCommandHandler
     /// </summary>
     /// <param name="mode">The <see cref="Mode"/> you want to set</param>
     void SetMode(Mode mode);
-
-    /// <summary>
-    /// Set the config of a Sonar <see cref="Channel"/> by giving its id
-    /// </summary>
-    /// <remarks>For more explanation, go on the GitHub wiki</remarks>
-    /// <param name="configId">The id of the config</param>
-    void SetConfig(string configId);
-    
-    /// <summary>
-    /// Set the config of a Sonar <see cref="Channel"/> by giving its name
-    /// </summary>
-    /// <remarks>For more explanation, go on the GitHub wiki</remarks>
-    /// <param name="channel">The <see cref="Channel"/> you want to change the config</param>
-    /// <param name="name">The name of the config</param>
-    void SetConfig(Channel channel, string name);
     
     /// <summary>
     /// Set the balance of the ChatMix

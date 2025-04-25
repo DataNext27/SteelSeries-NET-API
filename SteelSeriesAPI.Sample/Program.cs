@@ -48,12 +48,13 @@ class Program
         sonarManager.VolumeSettings.SetMute(true, Channel.CHAT); // Mute chat
 
         // Get audio configs
-        List<SonarAudioConfiguration> allConfigs = sonarManager.GetAllAudioConfigurations().ToList(); // Return all configs (A SonarAudioConfiguration contains an Id, a Name and an AssociatedChannel)
-        List<SonarAudioConfiguration> mediaConfigs = sonarManager.GetAudioConfigurations(Channel.MEDIA).ToList(); // Return all configs of a Sonar Channel
-        SonarAudioConfiguration currentConfig = sonarManager.GetSelectedAudioConfiguration(Channel.MEDIA); // Return the currently used config of a Sonar Channel
+        List<SonarAudioConfiguration> allConfigs = sonarManager.Configurations.GetAllAudioConfigurations().ToList(); // Return all configs (A SonarAudioConfiguration contains an Id, a Name and an AssociatedChannel)
+        List<SonarAudioConfiguration> mediaConfigs = sonarManager.Configurations.GetAudioConfigurations(Channel.MEDIA).ToList(); // Return all configs of a Sonar Channel
+        SonarAudioConfiguration currentConfig = sonarManager.Configurations.GetSelectedAudioConfiguration(Channel.MEDIA); // Return the currently used config of a Sonar Channel
         // Set the config of a Sonar Channel
-        sonarManager.SetConfig(Channel.MEDIA, "Podcast"); // Using its name
-        sonarManager.SetConfig(currentConfig.Id); // Using its id (no need to precise which Sonar Channel, one id goes to one Sonar Channel)
+        sonarManager.Configurations.SetConfigByName(Channel.MEDIA, "Podcast"); // Using its name
+        sonarManager.Configurations.SetConfig(currentConfig.Id); // Using its id (no need to precise which Sonar Channel, one id goes to one Sonar Channel)
+        sonarManager.Configurations.SetConfig(currentConfig); // Or you can just directly give the config
         
         // Get ChatMix info
         double chatMixBalance = sonarManager.GetChatMixBalance(); // The ChatMix value between -1 and 1

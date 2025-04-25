@@ -21,6 +21,7 @@ public class SonarBridge : ISonarBridge
     private readonly ISonarSocket _sonarSocket;
 
     public readonly VolumeSettingsManager VolumeSettings;
+    public readonly ConfigurationManager Configurations;
     public readonly EventManager Event;
 
     private string _sonarWebServerAddress;
@@ -35,6 +36,7 @@ public class SonarBridge : ISonarBridge
         _sonarCommand = new SonarHttpCommand(this);
         _sonarProvider = new SonarHttpProvider(this);
         VolumeSettings = new VolumeSettingsManager();
+        Configurations = new ConfigurationManager();
     }
 
     #region Listener
@@ -95,26 +97,6 @@ public class SonarBridge : ISonarBridge
     {
         return _sonarProvider.GetMode();
     }
-
-    public IEnumerable<SonarAudioConfiguration> GetAllAudioConfigurations()
-    {
-        return _sonarProvider.GetAllAudioConfigurations();
-    }
-
-    public SonarAudioConfiguration GetAudioConfiguration(string configId)
-    {
-        return _sonarProvider.GetAudioConfiguration(configId);
-    }
-
-    public IEnumerable<SonarAudioConfiguration> GetAudioConfigurations(Channel channel)
-    {
-        return _sonarProvider.GetAudioConfigurations(channel);
-    }
-
-    public SonarAudioConfiguration GetSelectedAudioConfiguration(Channel channel)
-    {
-        return _sonarProvider.GetSelectedAudioConfiguration(channel);
-    }
     
     public double GetChatMixBalance()
     {
@@ -173,16 +155,6 @@ public class SonarBridge : ISonarBridge
     public void SetMode(Mode mode)
     {
         _sonarCommand.SetMode(mode);
-    }
-
-    public void SetConfig(string configId)
-    {
-        _sonarCommand.SetConfig(configId);
-    }
-    
-    public void SetConfig(Channel channel, string name)
-    {
-        _sonarCommand.SetConfig(channel, name);
     }
 
     public void SetChatMixBalance(double balance)

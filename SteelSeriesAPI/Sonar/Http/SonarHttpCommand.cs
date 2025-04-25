@@ -20,26 +20,6 @@ public class SonarHttpCommand : ISonarCommandHandler
         Thread.Sleep(100); // Prevent bugs/freezes/crashes
     }
 
-    public void SetConfig(string configId)
-    {
-        if (string.IsNullOrEmpty(configId)) throw new Exception("Couldn't retrieve config id");
-
-        new HttpPut("configs/" + configId + "/select");
-    }
-
-    public void SetConfig(Channel channel, string name)
-    {
-        var configs = _sonarBridge.GetAudioConfigurations(channel).ToList();
-        foreach (var config in configs)
-        {
-            if (config.Name == name)
-            {
-                SetConfig(config.Id);
-                break;
-            }
-        }
-    }
-
     public void SetChatMixBalance(double balance)
     {
         if (!_sonarBridge.GetChatMixState())

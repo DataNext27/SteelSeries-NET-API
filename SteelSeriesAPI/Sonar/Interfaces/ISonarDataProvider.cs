@@ -10,33 +10,6 @@ public interface ISonarDataProvider
     /// </summary>
     /// <returns>A <see cref="Mode"/>, either Classic or Streamer</returns>
     Mode GetMode();
-    
-    /// <summary>
-    /// Get all audio configurations from Sonar
-    /// </summary>
-    /// <returns>An IEnumerable of <see cref="SonarAudioConfiguration"/></returns>
-    IEnumerable<SonarAudioConfiguration> GetAllAudioConfigurations();
-
-    /// <summary>
-    /// Get a specific audio configuration from Sonar
-    /// </summary>
-    /// <param name="configId">The id of the config</param>
-    /// <returns>A <see cref="SonarAudioConfiguration"/></returns>
-    SonarAudioConfiguration GetAudioConfiguration(string configId);
-
-    /// <summary>
-    /// Get all audio configurations of a <see cref="Channel"/> from Sonar
-    /// </summary>
-    /// <param name="channel">The channel you want the configs</param>
-    /// <returns>An IEnumerable of <see cref="SonarAudioConfiguration"/> ordered alphabetically</returns>
-    IEnumerable<SonarAudioConfiguration> GetAudioConfigurations(Channel channel);
-
-    /// <summary>
-    /// Get the current audio configuration of a chosen <see cref="Channel"/>
-    /// </summary>
-    /// <param name="channel">The channel you want the current config</param>
-    /// <returns>A <see cref="SonarAudioConfiguration"/></returns>
-    SonarAudioConfiguration GetSelectedAudioConfiguration(Channel channel);
 
     /// <summary>
     /// Get the actual ChatMix balance value
