@@ -1,6 +1,6 @@
 ﻿namespace SteelSeriesAPI.Sonar.Interfaces.Managers;
 
-public interface IChatMixManager
+internal interface IChatMixManager
 {
     /// <summary>
     /// Get the actual ChatMix balance value

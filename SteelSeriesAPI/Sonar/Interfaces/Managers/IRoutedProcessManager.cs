@@ -3,7 +3,7 @@ using SteelSeriesAPI.Sonar.Models;
 
 namespace SteelSeriesAPI.Sonar.Interfaces.Managers;
 
-public interface IRoutedProcessManager
+internal interface IRoutedProcessManager
 {
     /// <summary>
     /// Get the apps which their audio is redirected to a Sonar <see cref="Channel"/>

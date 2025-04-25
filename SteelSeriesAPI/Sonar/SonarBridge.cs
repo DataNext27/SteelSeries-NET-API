@@ -1,10 +1,8 @@
 ﻿using System.Security.Principal;
-using SteelSeriesAPI.Interfaces;
 using SteelSeriesAPI.Sonar.Enums;
 using SteelSeriesAPI.Sonar.Http;
 using SteelSeriesAPI.Sonar.Interfaces;
 using SteelSeriesAPI.Sonar.Managers;
-using SteelSeriesAPI.Sonar.Models;
 
 namespace SteelSeriesAPI.Sonar;
 
