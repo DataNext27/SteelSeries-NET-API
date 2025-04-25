@@ -18,14 +18,14 @@ class Program
         // Thread.Sleep(1000);
         // sonarManager.StopListener();
 
-        sonarManager.EventManager.OnSonarModeChange += OnModeChangeHandler;
-        sonarManager.EventManager.OnSonarVolumeChange += OnVolumeChangeHandler;
-        sonarManager.EventManager.OnSonarMuteChange += OnMuteChangeHandler;
-        sonarManager.EventManager.OnSonarConfigChange += OnConfigChangeHandler;
-        sonarManager.EventManager.OnSonarChatMixChange += OnChatMixChangeHandler;
-        sonarManager.EventManager.OnSonarRedirectionDeviceChange += OnRedirectionDeviceChangeHandler;
-        sonarManager.EventManager.OnSonarRedirectionStateChange += OnRedirectionStateChangeHandler;
-        sonarManager.EventManager.OnSonarAudienceMonitoringChange += OnAudienceMonitoringChangeHandler;
+        sonarManager.Event.OnSonarModeChange += OnModeChangeHandler;
+        sonarManager.Event.OnSonarVolumeChange += OnVolumeChangeHandler;
+        sonarManager.Event.OnSonarMuteChange += OnMuteChangeHandler;
+        sonarManager.Event.OnSonarConfigChange += OnConfigChangeHandler;
+        sonarManager.Event.OnSonarChatMixChange += OnChatMixChangeHandler;
+        sonarManager.Event.OnSonarRedirectionDeviceChange += OnRedirectionDeviceChangeHandler;
+        sonarManager.Event.OnSonarRedirectionStateChange += OnRedirectionStateChangeHandler;
+        sonarManager.Event.OnSonarAudienceMonitoringChange += OnAudienceMonitoringChangeHandler;
 
         // new Program().GetTest(sonarManager);
         // new Program().SetTest(sonarManager);
@@ -38,28 +38,28 @@ class Program
         // Classic
         sonarManager.SetMode(Mode.CLASSIC);
         Console.WriteLine("------ Classic Master Test ------");
-        Console.WriteLine(sonarManager.GetVolume(Channel.MASTER));
-        Console.WriteLine(sonarManager.GetMute(Channel.MASTER));
-        sonarManager.SetVolume(0.25f, Channel.MASTER);
-        sonarManager.SetVolume(1, Channel.MASTER);
-        sonarManager.SetMute(true, Channel.MASTER);
-        sonarManager.SetMute(false, Channel.MASTER);
+        Console.WriteLine(sonarManager.VolumeSettings.GetVolume(Channel.MASTER));
+        Console.WriteLine(sonarManager.VolumeSettings.GetMute(Channel.MASTER));
+        sonarManager.VolumeSettings.SetVolume(0.25f, Channel.MASTER);
+        sonarManager.VolumeSettings.SetVolume(1, Channel.MASTER);
+        sonarManager.VolumeSettings.SetMute(true, Channel.MASTER);
+        sonarManager.VolumeSettings.SetMute(false, Channel.MASTER);
 
         // Streamer
         sonarManager.SetMode(Mode.STREAMER);
         Console.WriteLine("------ Streamer Master Test ------");
-        Console.WriteLine(sonarManager.GetVolume(Channel.MASTER, Mix.MONITORING));
-        Console.WriteLine(sonarManager.GetVolume(Channel.MASTER, Mix.STREAM));
-        Console.WriteLine(sonarManager.GetMute(Channel.MASTER, Mix.MONITORING));
-        Console.WriteLine(sonarManager.GetMute(Channel.MASTER, Mix.STREAM));
-        sonarManager.SetVolume(0.25f, Channel.MASTER, Mix.MONITORING);
-        sonarManager.SetVolume(0.25f, Channel.MASTER, Mix.STREAM);
-        sonarManager.SetVolume(1, Channel.MASTER, Mix.MONITORING);
-        sonarManager.SetVolume(1, Channel.MASTER, Mix.STREAM);
-        sonarManager.SetMute(true, Channel.MASTER, Mix.MONITORING);
-        sonarManager.SetMute(true, Channel.MASTER, Mix.STREAM);
-        sonarManager.SetMute(false, Channel.MASTER, Mix.MONITORING);
-        sonarManager.SetMute(false, Channel.MASTER, Mix.STREAM);
+        Console.WriteLine(sonarManager.VolumeSettings.GetVolume(Channel.MASTER, Mix.MONITORING));
+        Console.WriteLine(sonarManager.VolumeSettings.GetVolume(Channel.MASTER, Mix.STREAM));
+        Console.WriteLine(sonarManager.VolumeSettings.GetMute(Channel.MASTER, Mix.MONITORING));
+        Console.WriteLine(sonarManager.VolumeSettings.GetMute(Channel.MASTER, Mix.STREAM));
+        sonarManager.VolumeSettings.SetVolume(0.25f, Channel.MASTER, Mix.MONITORING);
+        sonarManager.VolumeSettings.SetVolume(0.25f, Channel.MASTER, Mix.STREAM);
+        sonarManager.VolumeSettings.SetVolume(1, Channel.MASTER, Mix.MONITORING);
+        sonarManager.VolumeSettings.SetVolume(1, Channel.MASTER, Mix.STREAM);
+        sonarManager.VolumeSettings.SetMute(true, Channel.MASTER, Mix.MONITORING);
+        sonarManager.VolumeSettings.SetMute(true, Channel.MASTER, Mix.STREAM);
+        sonarManager.VolumeSettings.SetMute(false, Channel.MASTER, Mix.MONITORING);
+        sonarManager.VolumeSettings.SetMute(false, Channel.MASTER, Mix.STREAM);
         
         sonarManager.SetMode(Mode.CLASSIC);
     }
@@ -68,105 +68,105 @@ class Program
     {
 
         Console.WriteLine(sonarManager.GetMode());
-        Console.WriteLine("" + sonarManager.GetVolume(Channel.MASTER) + "  " + sonarManager.GetMute(Channel.MASTER));
-        Console.WriteLine("" + sonarManager.GetVolume(Channel.GAME) + "  " + sonarManager.GetMute(Channel.GAME));
-        Console.WriteLine("" + sonarManager.GetVolume(Channel.CHAT) + "  " + sonarManager.GetMute(Channel.CHAT));
-        Console.WriteLine("" + sonarManager.GetVolume(Channel.MEDIA) + "  " + sonarManager.GetMute(Channel.MEDIA));
-        Console.WriteLine("" + sonarManager.GetVolume(Channel.AUX) + "  " + sonarManager.GetMute(Channel.AUX));
-        Console.WriteLine("" + sonarManager.GetVolume(Channel.MIC) + "  " + sonarManager.GetMute(Channel.MIC));
+        Console.WriteLine("" + sonarManager.VolumeSettings.GetVolume(Channel.MASTER) + "  " + sonarManager.VolumeSettings.GetMute(Channel.MASTER));
+        Console.WriteLine("" + sonarManager.VolumeSettings.GetVolume(Channel.GAME) + "  " + sonarManager.VolumeSettings.GetMute(Channel.GAME));
+        Console.WriteLine("" + sonarManager.VolumeSettings.GetVolume(Channel.CHAT) + "  " + sonarManager.VolumeSettings.GetMute(Channel.CHAT));
+        Console.WriteLine("" + sonarManager.VolumeSettings.GetVolume(Channel.MEDIA) + "  " + sonarManager.VolumeSettings.GetMute(Channel.MEDIA));
+        Console.WriteLine("" + sonarManager.VolumeSettings.GetVolume(Channel.AUX) + "  " + sonarManager.VolumeSettings.GetMute(Channel.AUX));
+        Console.WriteLine("" + sonarManager.VolumeSettings.GetVolume(Channel.MIC) + "  " + sonarManager.VolumeSettings.GetMute(Channel.MIC));
         Console.WriteLine("-----------------Streamer-Monitoring-------------");
-        Console.WriteLine("" + sonarManager.GetVolume(Channel.MASTER, Mix.MONITORING) + "  " + sonarManager.GetMute(Channel.MASTER, Mix.MONITORING));
-        Console.WriteLine("" + sonarManager.GetVolume(Channel.GAME, Mix.MONITORING) + "  " + sonarManager.GetMute(Channel.GAME, Mix.MONITORING));
-        Console.WriteLine("" + sonarManager.GetVolume(Channel.CHAT, Mix.MONITORING) + "  " + sonarManager.GetMute(Channel.CHAT, Mix.MONITORING));
-        Console.WriteLine("" + sonarManager.GetVolume(Channel.MEDIA, Mix.MONITORING) + "  " + sonarManager.GetMute(Channel.MEDIA, Mix.MONITORING));
-        Console.WriteLine("" + sonarManager.GetVolume(Channel.AUX, Mix.MONITORING) + "  " + sonarManager.GetMute(Channel.AUX, Mix.MONITORING));
-        Console.WriteLine("" + sonarManager.GetVolume(Channel.MIC, Mix.MONITORING) + "  " + sonarManager.GetMute(Channel.MIC, Mix.MONITORING));
+        Console.WriteLine("" + sonarManager.VolumeSettings.GetVolume(Channel.MASTER, Mix.MONITORING) + "  " + sonarManager.VolumeSettings.GetMute(Channel.MASTER, Mix.MONITORING));
+        Console.WriteLine("" + sonarManager.VolumeSettings.GetVolume(Channel.GAME, Mix.MONITORING) + "  " + sonarManager.VolumeSettings.GetMute(Channel.GAME, Mix.MONITORING));
+        Console.WriteLine("" + sonarManager.VolumeSettings.GetVolume(Channel.CHAT, Mix.MONITORING) + "  " + sonarManager.VolumeSettings.GetMute(Channel.CHAT, Mix.MONITORING));
+        Console.WriteLine("" + sonarManager.VolumeSettings.GetVolume(Channel.MEDIA, Mix.MONITORING) + "  " + sonarManager.VolumeSettings.GetMute(Channel.MEDIA, Mix.MONITORING));
+        Console.WriteLine("" + sonarManager.VolumeSettings.GetVolume(Channel.AUX, Mix.MONITORING) + "  " + sonarManager.VolumeSettings.GetMute(Channel.AUX, Mix.MONITORING));
+        Console.WriteLine("" + sonarManager.VolumeSettings.GetVolume(Channel.MIC, Mix.MONITORING) + "  " + sonarManager.VolumeSettings.GetMute(Channel.MIC, Mix.MONITORING));
         Console.WriteLine("-----------------Streamer-Stream-------------");
-        Console.WriteLine("" + sonarManager.GetVolume(Channel.MASTER, Mix.STREAM) + "  " + sonarManager.GetMute(Channel.MASTER, Mix.STREAM));
-        Console.WriteLine("" + sonarManager.GetVolume(Channel.GAME, Mix.STREAM) + "  " + sonarManager.GetMute(Channel.GAME, Mix.STREAM));
-        Console.WriteLine("" + sonarManager.GetVolume(Channel.CHAT, Mix.STREAM) + "  " + sonarManager.GetMute(Channel.CHAT, Mix.STREAM));
-        Console.WriteLine("" + sonarManager.GetVolume(Channel.MEDIA, Mix.STREAM) + "  " + sonarManager.GetMute(Channel.MEDIA, Mix.STREAM));
-        Console.WriteLine("" + sonarManager.GetVolume(Channel.AUX, Mix.STREAM) + "  " + sonarManager.GetMute(Channel.AUX, Mix.STREAM));
-        Console.WriteLine("" + sonarManager.GetVolume(Channel.MIC, Mix.STREAM) + "  " + sonarManager.GetMute(Channel.MIC, Mix.STREAM));
+        Console.WriteLine("" + sonarManager.VolumeSettings.GetVolume(Channel.MASTER, Mix.STREAM) + "  " + sonarManager.VolumeSettings.GetMute(Channel.MASTER, Mix.STREAM));
+        Console.WriteLine("" + sonarManager.VolumeSettings.GetVolume(Channel.GAME, Mix.STREAM) + "  " + sonarManager.VolumeSettings.GetMute(Channel.GAME, Mix.STREAM));
+        Console.WriteLine("" + sonarManager.VolumeSettings.GetVolume(Channel.CHAT, Mix.STREAM) + "  " + sonarManager.VolumeSettings.GetMute(Channel.CHAT, Mix.STREAM));
+        Console.WriteLine("" + sonarManager.VolumeSettings.GetVolume(Channel.MEDIA, Mix.STREAM) + "  " + sonarManager.VolumeSettings.GetMute(Channel.MEDIA, Mix.STREAM));
+        Console.WriteLine("" + sonarManager.VolumeSettings.GetVolume(Channel.AUX, Mix.STREAM) + "  " + sonarManager.VolumeSettings.GetMute(Channel.AUX, Mix.STREAM));
+        Console.WriteLine("" + sonarManager.VolumeSettings.GetVolume(Channel.MIC, Mix.STREAM) + "  " + sonarManager.VolumeSettings.GetMute(Channel.MIC, Mix.STREAM));
         Console.WriteLine("----AudioConfigs----------");
-        foreach (var config in sonarManager.GetAllAudioConfigurations())
+        foreach (var config in sonarManager.Configurations.GetAllAudioConfigurations())
         {
             Console.WriteLine(config.Id + ", " + config.Name + ", " + config.AssociatedChannel);
         }
         
         Console.WriteLine("----Media-Configs----------");
-        foreach (var config in sonarManager.GetAudioConfigurations(Channel.MEDIA))
+        foreach (var config in sonarManager.Configurations.GetAudioConfigurations(Channel.MEDIA))
         {
             Console.WriteLine(config.Id + ", " + config.Name);
         }
 
         Console.WriteLine("----Mic-Configs----------");
-        foreach (var config in sonarManager.GetAudioConfigurations(Channel.MIC))
+        foreach (var config in sonarManager.Configurations.GetAudioConfigurations(Channel.MIC))
         {
             Console.WriteLine(config.Id + ", " + config.Name);
         }
 
         Console.WriteLine("----Current Media Config----------");
-        Console.WriteLine(sonarManager.GetSelectedAudioConfiguration(Channel.MEDIA).Name);
+        Console.WriteLine(sonarManager.Configurations.GetSelectedAudioConfiguration(Channel.MEDIA).Name);
         Console.WriteLine("----Channel from config ID----------");
-        Console.WriteLine(sonarManager.GetAudioConfiguration("29ae2c02-792b-4487-863c-dc3e11a7a469").AssociatedChannel);
+        Console.WriteLine(sonarManager.Configurations.GetAudioConfiguration("29ae2c02-792b-4487-863c-dc3e11a7a469").AssociatedChannel);
         Console.WriteLine("--------ChatMix---------");
         Console.WriteLine(sonarManager.GetChatMixBalance());
         Console.WriteLine(sonarManager.GetChatMixState());
 
         Console.WriteLine("-----Redirection Devices-----------");
         Console.WriteLine("---Output---");
-        foreach (var rDevice in sonarManager.GetPlaybackDevices(DataFlow.OUTPUT))
+        foreach (var rDevice in sonarManager.PlaybackDevices.GetPlaybackDevices(DataFlow.OUTPUT))
         {
             Console.WriteLine(rDevice.Id + ", " + rDevice.Name);
-            foreach (var device in rDevice.AssociatedClassicDevices)
+            foreach (var device in rDevice.AssociatedClassicChannels)
             {
                 Console.WriteLine("...." + device);
             }
 
-            foreach (var channel in rDevice.AssociatedStreamDevices)
+            foreach (var channel in rDevice.AssociatedStreamChannels)
             {
                 Console.WriteLine("...." + channel);
             }
         }
 
         Console.WriteLine("---Input---");
-        foreach (var rDevice in sonarManager.GetPlaybackDevices(DataFlow.INPUT))
+        foreach (var rDevice in sonarManager.PlaybackDevices.GetPlaybackDevices(DataFlow.INPUT))
         {
             Console.WriteLine(rDevice.Id + ", " + rDevice.Name);
-            foreach (var device in rDevice.AssociatedClassicDevices)
+            foreach (var device in rDevice.AssociatedClassicChannels)
             {
                 Console.WriteLine("...." + device);
             }
 
-            foreach (var channel in rDevice.AssociatedStreamDevices)
+            foreach (var channel in rDevice.AssociatedStreamChannels)
             {
                 Console.WriteLine("...." + channel);
             }
         }
 
-        Console.WriteLine("-----Classic Redirection Devices------------");
-        PlaybackDevice reDevice = sonarManager.GetClassicPlaybackDevice(Channel.GAME);
+        Console.WriteLine("-----Classic Playback Devices------------");
+        PlaybackDevice reDevice = sonarManager.PlaybackDevices.GetClassicPlaybackDevice(Channel.GAME);
         Console.WriteLine(reDevice.Id + ", " + reDevice.Name);
-        foreach (var device in reDevice.AssociatedClassicDevices)
+        foreach (var device in reDevice.AssociatedClassicChannels)
         {
             Console.WriteLine("...." + device);
         }
 
-        foreach (var channel in reDevice.AssociatedStreamDevices)
+        foreach (var channel in reDevice.AssociatedStreamChannels)
         {
             Console.WriteLine("...." + channel);
         }
 
-        Console.WriteLine("-----Stream Redirection Devices------------");
-        PlaybackDevice reDeviceS = sonarManager.GetStreamPlaybackDevice(Channel.MIC); // sonarManager.GetStreamPlaybackDevice(Mix.MONITORING);
+        Console.WriteLine("-----Stream Playback Devices------------");
+        PlaybackDevice reDeviceS = sonarManager.PlaybackDevices.GetStreamerPlaybackDevice(Channel.MIC); // sonarManager.GetStreamPlaybackDevice(Mix.MONITORING);
         Console.WriteLine(reDeviceS.Id + ", " + reDeviceS.Name);
-        foreach (var device in reDeviceS.AssociatedClassicDevices)
+        foreach (var device in reDeviceS.AssociatedClassicChannels)
         {
             Console.WriteLine("...." + device);
         }
 
-        foreach (var channel in reDeviceS.AssociatedStreamDevices)
+        foreach (var channel in reDeviceS.AssociatedStreamChannels)
         {
             Console.WriteLine("...." + channel);
         }
@@ -174,12 +174,12 @@ class Program
         Console.WriteLine("-----Redirection Channel From Id");
         // PlaybackDevice someDevice = sonarManager.GetPlaybackDeviceFromId("{0.0.0.00000000}.{453f6e2f-375e-4b36-97b2-2aa55691ab3c}");
         // Console.WriteLine(someDevice.Id + ", " + someDevice.Name + ", " + someDevice.DataFlow);
-        // foreach (var associatedClassicDevice in someDevice.AssociatedClassicDevices)
+        // foreach (var associatedClassicDevice in someDevice.AssociatedClassicChannels)
         // {
         //     Console.WriteLine("...." + associatedClassicDevice);
         // }
         //
-        // foreach (var associatedStreamDevice in someDevice.AssociatedStreamDevices)
+        // foreach (var associatedStreamDevice in someDevice.AssociatedStreamChannels)
         // {
         //     Console.WriteLine("...." + associatedStreamDevice);
         // }
@@ -217,17 +217,17 @@ class Program
     void SetTest(SonarBridge sonarManager){
 
         sonarManager.SetMode(Mode.CLASSIC);
-        sonarManager.SetVolume(0.4, Channel.MEDIA);
-        sonarManager.SetMute(false, Channel.MEDIA);
-        string configId = sonarManager.GetAudioConfigurations(Channel.MEDIA).FirstOrDefault(config => config.Name == "Default")?.Id;
-        sonarManager.SetConfig(configId);
-        sonarManager.SetConfig(Channel.MEDIA, "Default");
+        sonarManager.VolumeSettings.SetVolume(0.4, Channel.MEDIA);
+        sonarManager.VolumeSettings.SetMute(false, Channel.MEDIA);
+        string configId = sonarManager.Configurations.GetAudioConfigurations(Channel.MEDIA).FirstOrDefault(config => config.Name == "Default")?.Id;
+        sonarManager.Configurations.SetConfig(configId);
+        sonarManager.Configurations.SetConfigByName(Channel.MEDIA, "Default");
         sonarManager.SetChatMixBalance(0.5);
         
-        var redirectionDevices = sonarManager.GetPlaybackDevices(DataFlow.INPUT);
+        var redirectionDevices = sonarManager.PlaybackDevices.GetPlaybackDevices(DataFlow.INPUT);
         redirectionDevices.GetEnumerator().MoveNext();
-        sonarManager.SetClassicPlaybackDevice(redirectionDevices.GetEnumerator().Current.Id, Channel.MIC);
-        sonarManager.SetStreamPlaybackDevice(redirectionDevices.GetEnumerator().Current.Id, Channel.MIC);
+        sonarManager.PlaybackDevices.SetClassicPlaybackDevice(redirectionDevices.GetEnumerator().Current.Id, Channel.MIC);
+        sonarManager.PlaybackDevices.SetStreamerPlaybackDevice(redirectionDevices.GetEnumerator().Current.Id, Channel.MIC);
         
         sonarManager.SetRedirectionState(true, Channel.MEDIA, Mix.STREAM);
         sonarManager.SetAudienceMonitoringState(false);

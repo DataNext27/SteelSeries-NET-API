@@ -19,7 +19,11 @@ public class SonarBridge : ISonarBridge
     private readonly ISonarCommandHandler _sonarCommand;
     private readonly ISonarDataProvider _sonarProvider;
     private readonly ISonarSocket _sonarSocket;
-    public readonly EventManager EventManager;
+
+    public readonly VolumeSettingsManager VolumeSettings;
+    public readonly ConfigurationManager Configurations;
+    public readonly PlaybackDeviceManager PlaybackDevices;
+    public readonly EventManager Event;
 
     private string _sonarWebServerAddress;
 
@@ -28,10 +32,13 @@ public class SonarBridge : ISonarBridge
         _sonarRetriever = SonarRetriever.Instance;
         WaitUntilSonarStarted();
         _sonarWebServerAddress = _sonarRetriever.WebServerAddress();
-        EventManager = new EventManager();
-        _sonarSocket = new SonarSocket(_sonarWebServerAddress, EventManager);
+        _sonarSocket = new SonarSocket(_sonarWebServerAddress, Event);
         _sonarCommand = new SonarHttpCommand(this);
-        _sonarProvider = new SonarHttpProvider(this);
+        _sonarProvider = new SonarHttpProvider();
+        VolumeSettings = new VolumeSettingsManager();
+        Configurations = new ConfigurationManager();
+        PlaybackDevices = new PlaybackDeviceManager();
+        Event = new EventManager();
     }
 
     #region Listener
@@ -93,47 +100,6 @@ public class SonarBridge : ISonarBridge
         return _sonarProvider.GetMode();
     }
     
-    // volume = 0,00000000 <-- 8 decimal max
-    public double GetVolume(Channel channel)
-    {
-        return _sonarProvider.GetVolume(channel);
-    }
-
-    public double GetVolume(Channel channel, Mix mix)
-    {
-        return _sonarProvider.GetVolume(channel, mix);
-    }
-
-    public bool GetMute(Channel channel)
-    {
-        return _sonarProvider.GetMute(channel);
-    }
-
-    public bool GetMute(Channel channel, Mix mix)
-    {
-        return _sonarProvider.GetMute(channel, mix);
-    }
-
-    public IEnumerable<SonarAudioConfiguration> GetAllAudioConfigurations()
-    {
-        return _sonarProvider.GetAllAudioConfigurations();
-    }
-
-    public SonarAudioConfiguration GetAudioConfiguration(string configId)
-    {
-        return _sonarProvider.GetAudioConfiguration(configId);
-    }
-
-    public IEnumerable<SonarAudioConfiguration> GetAudioConfigurations(Channel channel)
-    {
-        return _sonarProvider.GetAudioConfigurations(channel);
-    }
-
-    public SonarAudioConfiguration GetSelectedAudioConfiguration(Channel channel)
-    {
-        return _sonarProvider.GetSelectedAudioConfiguration(channel);
-    }
-    
     public double GetChatMixBalance()
     {
         return _sonarProvider.GetChatMixBalance();
@@ -142,31 +108,6 @@ public class SonarBridge : ISonarBridge
     public bool GetChatMixState()
     {
         return _sonarProvider.GetChatMixState();
-    }
-
-    public IEnumerable<PlaybackDevice> GetPlaybackDevices(DataFlow dataFlow)
-    {
-        return _sonarProvider.GetPlaybackDevices(dataFlow);
-    }
-
-    public PlaybackDevice GetClassicPlaybackDevice(Channel channel)
-    {
-        return _sonarProvider.GetClassicPlaybackDevice(channel);
-    }
-
-    public PlaybackDevice GetStreamPlaybackDevice(Mix mix)
-    {
-        return _sonarProvider.GetStreamPlaybackDevice(mix);
-    }
-
-    public PlaybackDevice GetStreamPlaybackDevice(Channel channel = Channel.MIC)
-    {
-        return _sonarProvider.GetStreamPlaybackDevice(channel);
-    }
-
-    public PlaybackDevice GetPlaybackDeviceFromId(string deviceId)
-    {
-        return _sonarProvider.GetPlaybackDeviceFromId(deviceId);
     }
 
     public bool GetRedirectionState(Channel channel, Mix mix)
@@ -193,54 +134,9 @@ public class SonarBridge : ISonarBridge
         _sonarCommand.SetMode(mode);
     }
 
-    public void SetVolume(double vol, Channel channel)
-    {
-        _sonarCommand.SetVolume(vol, channel);
-    }
-
-    public void SetVolume(double vol, Channel channel, Mix mix)
-    {
-        _sonarCommand.SetVolume(vol, channel, mix);
-    }
-    
-    public void SetMute(bool mute, Channel channel)
-    {
-        _sonarCommand.SetMute(mute, channel);
-    }
-
-    public void SetMute(bool mute, Channel channel, Mix mix)
-    {
-        _sonarCommand.SetMute(mute, channel, mix);
-    }
-
-    public void SetConfig(string configId)
-    {
-        _sonarCommand.SetConfig(configId);
-    }
-    
-    public void SetConfig(Channel channel, string name)
-    {
-        _sonarCommand.SetConfig(channel, name);
-    }
-
     public void SetChatMixBalance(double balance)
     {
         _sonarCommand.SetChatMixBalance(balance);
-    }
-
-    public void SetClassicPlaybackDevice(string deviceId, Channel channel)
-    {
-        _sonarCommand.SetClassicPlaybackDevice(deviceId, channel);
-    }
-
-    public void SetStreamPlaybackDevice(string deviceId, Mix mix)
-    {
-        _sonarCommand.SetStreamPlaybackDevice(deviceId, mix);
-    }
-
-    public void SetStreamPlaybackDevice(string deviceId, Channel channel = Channel.MIC)
-    {
-        _sonarCommand.SetStreamPlaybackDevice(deviceId, channel);
     }
     
     public void SetRedirectionState(bool newState, Channel channel, Mix mix)
