@@ -16,7 +16,7 @@ public class RedirectionStateManager : IRedirectionStateManager
             throw new MasterChannelNotSupportedException();
         }
 
-        JsonDocument streamRedirections = new HttpFetcher().Provide("streamRedirections");
+        JsonDocument streamRedirections = new Fetcher().Provide("streamRedirections");
         JsonElement streamChannel = default;
 
         foreach (var element in streamRedirections.RootElement.EnumerateArray())
@@ -46,7 +46,7 @@ public class RedirectionStateManager : IRedirectionStateManager
     
     public void Set(bool newState, Channel channel, Mix mix)
     {
-        new HttpFetcher().Put("streamRedirections/" + mix.ToDictKey() + "/redirections/" + channel.ToDictKey() +
+        new Fetcher().Put("streamRedirections/" + mix.ToDictKey() + "/redirections/" + channel.ToDictKey() +
                               "/isEnabled/" + newState);
     }
 }

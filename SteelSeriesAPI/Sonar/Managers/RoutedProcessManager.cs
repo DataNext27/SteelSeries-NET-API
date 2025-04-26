@@ -17,7 +17,7 @@ public class RoutedProcessManager : IRoutedProcessManager
             throw new MasterChannelNotSupportedException();
         }
         
-        JsonDocument audioDeviceRoutings = new HttpFetcher().Provide("AudioDeviceRouting");
+        JsonDocument audioDeviceRoutings = new Fetcher().Provide("AudioDeviceRouting");
 
         foreach (var element in audioDeviceRoutings.RootElement.EnumerateArray())
         {
@@ -53,7 +53,7 @@ public class RoutedProcessManager : IRoutedProcessManager
             throw new MasterChannelNotSupportedException();
         }
         
-        JsonDocument audioDeviceRouting = new HttpFetcher().Provide("AudioDeviceRouting");
+        JsonDocument audioDeviceRouting = new Fetcher().Provide("AudioDeviceRouting");
 
         foreach (var element in audioDeviceRouting.RootElement.EnumerateArray())
         {
@@ -61,12 +61,12 @@ public class RoutedProcessManager : IRoutedProcessManager
             {
                 if (channel == Channel.MIC)
                 {
-                    new HttpFetcher().Put("AudioDeviceRouting/capture/" + element.GetProperty("deviceId").GetString() + "/" + pId);
+                    new Fetcher().Put("AudioDeviceRouting/capture/" + element.GetProperty("deviceId").GetString() + "/" + pId);
                     break;
                 }
                 else
                 {
-                    new HttpFetcher().Put("AudioDeviceRouting/render/" + element.GetProperty("deviceId").GetString() + "/" + pId);
+                    new Fetcher().Put("AudioDeviceRouting/render/" + element.GetProperty("deviceId").GetString() + "/" + pId);
                     break;
                 }
             }

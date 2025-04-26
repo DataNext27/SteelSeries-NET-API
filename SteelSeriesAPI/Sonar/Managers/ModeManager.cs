@@ -8,14 +8,14 @@ public class ModeManager : IModeManager
 {
     public Mode Get()
     {
-        string mode = new HttpFetcher().Provide("mode").RootElement.ToString();
+        string mode = new Fetcher().Provide("mode").RootElement.ToString();
         
         return (Mode)ModeExtensions.FromDictKey(mode, ModeMapChoice.StreamDict);
     }
 
     public void Set(Mode mode)
     {
-        new HttpFetcher().Put("mode/" + mode.ToDictKey(ModeMapChoice.StreamDict));
+        new Fetcher().Put("mode/" + mode.ToDictKey(ModeMapChoice.StreamDict));
         Thread.Sleep(100); // Prevent bugs/freezes/crashes
     }
 }

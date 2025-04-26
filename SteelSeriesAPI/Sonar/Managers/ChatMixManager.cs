@@ -11,14 +11,14 @@ public class ChatMixManager : IChatMixManager
 {
     public double GetBalance()
     {
-        JsonDocument chatMix = new HttpFetcher().Provide("chatMix");
+        JsonDocument chatMix = new Fetcher().Provide("chatMix");
 
         return chatMix.RootElement.GetProperty("balance").GetDouble();
     }
 
     public bool GetState()
     {
-        JsonDocument chatMix = new HttpFetcher().Provide("chatMix");
+        JsonDocument chatMix = new Fetcher().Provide("chatMix");
         string cState = chatMix.RootElement.GetProperty("state").ToString();
         
         if (cState == "enabled")
@@ -41,6 +41,6 @@ public class ChatMixManager : IChatMixManager
             throw new ChatMixBalanceException();
         }
 
-        new HttpFetcher().Put("chatMix?balance=" + balance.ToString("0.00", CultureInfo.InvariantCulture));
+        new Fetcher().Put("chatMix?balance=" + balance.ToString("0.00", CultureInfo.InvariantCulture));
     }
 }

@@ -12,7 +12,7 @@ public class ConfigurationManager : IConfigurationManager
 {
     public IEnumerable<SonarAudioConfiguration> GetAllAudioConfigurations()
     {
-        JsonDocument configs = new HttpFetcher().Provide("configs");
+        JsonDocument configs = new Fetcher().Provide("configs");
 
         foreach (var element in configs.RootElement.EnumerateArray())
         {
@@ -69,7 +69,7 @@ public class ConfigurationManager : IConfigurationManager
             throw new MasterChannelNotSupportedException();
         }
 
-        JsonDocument selectedConfigs = new HttpFetcher().Provide("configs/selected");
+        JsonDocument selectedConfigs = new Fetcher().Provide("configs/selected");
         JsonElement sConfig = default;
 
         foreach (var config in selectedConfigs.RootElement.EnumerateArray())
@@ -92,7 +92,7 @@ public class ConfigurationManager : IConfigurationManager
     {
         if (string.IsNullOrEmpty(configId)) throw new ConfigNotFoundException($"No audio configuration found with this id: {configId}");
 
-        new HttpFetcher().Put("configs/" + configId + "/select");
+        new Fetcher().Put("configs/" + configId + "/select");
     }
 
     public void SetConfig(SonarAudioConfiguration config)

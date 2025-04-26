@@ -9,13 +9,13 @@ public class AudienceMonitoringManager : IAudienceMonitoringManager
 {
     public bool GetState()
     {
-        JsonDocument streamMonitoring = new HttpFetcher().Provide("streamRedirections/isStreamMonitoringEnabled");
+        JsonDocument streamMonitoring = new Fetcher().Provide("streamRedirections/isStreamMonitoringEnabled");
 
         return streamMonitoring.RootElement.GetBoolean();
     }
     
     public void SetState(bool newState)
     {
-        new HttpFetcher().Put("streamRedirections/isStreamMonitoringEnabled/" + newState);
+        new Fetcher().Put("streamRedirections/isStreamMonitoringEnabled/" + newState);
     }
 }
