@@ -46,7 +46,7 @@ public class EventManager
     /// </summary>
     public event EventHandler<SonarAudienceMonitoringEvent> OnSonarAudienceMonitoringChange = delegate{  };
 
-    public void HandleEvent(string path)
+    internal void HandleEvent(string path)
     {
         var eventMessage = PathResolver(path);
         switch (eventMessage)
