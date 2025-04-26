@@ -32,7 +32,7 @@ public class EventManager
     public event EventHandler<SonarChatMixEvent> OnSonarChatMixChange = delegate{  };
     
     /// <summary>
-    /// Notify when a redirection channel of a channel is changed
+    /// Notify when a playback device of a channel is changed
     /// </summary>
     public event EventHandler<SonarPlaybackDeviceEvent> OnSonarPlaybackDeviceChange = delegate{  };
     

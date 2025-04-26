@@ -1,8 +1,8 @@
-﻿using System.Security.Principal;
-using SteelSeriesAPI.Sonar.Enums;
-using SteelSeriesAPI.Sonar.Http;
-using SteelSeriesAPI.Sonar.Interfaces;
+﻿using SteelSeriesAPI.Sonar.Interfaces;
+using SteelSeriesAPI.Sonar.Interfaces.Managers;
 using SteelSeriesAPI.Sonar.Managers;
+
+using System.Security.Principal;
 
 namespace SteelSeriesAPI.Sonar;
 
@@ -20,9 +20,9 @@ public class SonarBridge : ISonarBridge
     public readonly ChatMixManager ChatMix;
     public readonly ConfigurationManager Configurations;
     public readonly PlaybackDeviceManager PlaybackDevices;
-    public readonly RedirectionStateManager RedirectionStates;
-    public readonly AudienceMonitoringManager AudienceMonitoring;
     public readonly RoutedProcessManager RoutedProcesses;
+    public readonly IMixManager Mix;
+    public readonly AudienceMonitoringManager AudienceMonitoring;
     public readonly EventManager Events;
 
     public SonarBridge()
@@ -32,9 +32,9 @@ public class SonarBridge : ISonarBridge
         ChatMix = new ChatMixManager();
         Configurations = new ConfigurationManager();
         PlaybackDevices = new PlaybackDeviceManager();
-        RedirectionStates = new RedirectionStateManager();
-        AudienceMonitoring = new AudienceMonitoringManager();
         RoutedProcesses = new RoutedProcessManager();
+        Mix = new MixManager();
+        AudienceMonitoring = new AudienceMonitoringManager();
         Events = new EventManager();
     }
 
