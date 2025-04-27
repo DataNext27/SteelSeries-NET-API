@@ -40,17 +40,17 @@ public interface IVolumeSettingsManager
     /// <summary>
     /// Set the volume of a Sonar <see cref="Channel"/>
     /// </summary>
-    /// <param name="vol">The volume you want to set, between 1 and 0</param>
+    /// <param name="volume">The volume you want to set, between 1 and 0</param>
     /// <param name="channel">The <see cref="Channel"/> you want to change the volume of</param>
-    void SetVolume(double vol, Channel channel);
+    void SetVolume(double volume, Channel channel);
     
     /// <summary>
     /// Set the volume of a Streamer mode Sonar <see cref="Mix"/>
     /// </summary>
-    /// <param name="vol">The volume you want to set, between 1 and 0</param>
+    /// <param name="volume">The volume you want to set, between 1 and 0</param>
     /// <param name="channel">The <see cref="Channel"/> of the <see cref="Mix"/> you want to change the volume of</param>
     /// <param name="mix">The <see cref="Mix"/> you want to change the volume of</param>
-    void SetVolume(double vol, Channel channel, Mix mix);
+    void SetVolume(double volume, Channel channel, Mix mix);
     
     /// <summary>
     /// Mute or unmute a Sonar <see cref="Channel"/>

@@ -46,16 +46,16 @@ internal class VolumeSettingsManager : IVolumeSettingsManager
         return volumeSettings.RootElement.GetProperty("devices").GetProperty(channel.ToDictKey()).GetProperty("stream").GetProperty(mix.ToDictKey()).GetProperty("muted").GetBoolean();
     }
 
-    public void SetVolume(double vol, Channel channel)
+    public void SetVolume(double volume, Channel channel)
     {
-        string _vol = vol.ToString("0.00", CultureInfo.InvariantCulture);
-        new Fetcher().Put("volumeSettings/classic/" + channel.ToDictKey(ChannelMapChoice.HttpDict) + "/Volume/" + _vol);
+        string vol = volume.ToString("0.00", CultureInfo.InvariantCulture);
+        new Fetcher().Put("volumeSettings/classic/" + channel.ToDictKey(ChannelMapChoice.HttpDict) + "/Volume/" + vol);
     }
 
-    public void SetVolume(double vol, Channel channel, Mix mix)
+    public void SetVolume(double volume, Channel channel, Mix mix)
     {
-        string _vol = vol.ToString("0.00", CultureInfo.InvariantCulture);
-        new Fetcher().Put("volumeSettings/streamer/" + mix.ToDictKey() + "/" + channel.ToDictKey(ChannelMapChoice.HttpDict) + "/volume/" + _vol);
+        string vol = volume.ToString("0.00", CultureInfo.InvariantCulture);
+        new Fetcher().Put("volumeSettings/streamer/" + mix.ToDictKey() + "/" + channel.ToDictKey(ChannelMapChoice.HttpDict) + "/volume/" + vol);
     }
 
     public void SetMute(bool mute, Channel channel)
