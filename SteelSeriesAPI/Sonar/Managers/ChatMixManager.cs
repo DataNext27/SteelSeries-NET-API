@@ -7,7 +7,7 @@ using System.Globalization;
 
 namespace SteelSeriesAPI.Sonar.Managers;
 
-public class ChatMixManager : IChatMixManager
+internal class ChatMixManager : IChatMixManager
 {
     public double GetBalance()
     {
