@@ -4,13 +4,13 @@ using SteelSeriesAPI.Sonar.Interfaces.Managers;
 
 namespace SteelSeriesAPI.Sonar.Managers;
 
-public class ModeManager : IModeManager
+internal class ModeManager : IModeManager
 {
     public Mode Get()
     {
         string mode = new Fetcher().Provide("mode").RootElement.ToString();
         
-        return (Mode)ModeExtensions.FromDictKey(mode, ModeMapChoice.StreamDict);
+        return (Mode)ModeExtensions.FromDictKey(mode, ModeMapChoice.StreamDict)!;
     }
 
     public void Set(Mode mode)

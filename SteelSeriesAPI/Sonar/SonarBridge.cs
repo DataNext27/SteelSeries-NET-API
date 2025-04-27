@@ -15,7 +15,7 @@ public class SonarBridge : ISonarBridge
     
     private ISonarSocket _sonarSocket;
 
-    public readonly ModeManager Mode;
+    public readonly IModeManager Mode;
     public readonly VolumeSettingsManager VolumeSettings;
     public readonly ChatMixManager ChatMix;
     public readonly ConfigurationManager Configurations;

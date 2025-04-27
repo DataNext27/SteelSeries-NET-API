@@ -2,17 +2,20 @@
 
 namespace SteelSeriesAPI.Sonar.Interfaces.Managers;
 
-internal interface IModeManager
+/// <summary>
+/// Manage the Sonar <see cref="Mode"/>
+/// </summary>
+public interface IModeManager
 {
     /// <summary>
-    /// Get the current mode used by Sonar
+    /// Get the current <see cref="Mode"/> used by Sonar
     /// </summary>
-    /// <returns>A <see cref="Mode"/>, either Classic or Streamer</returns>
+    /// <returns><see cref="Mode"/></returns>
     Mode Get();
     
     /// <summary>
     /// Set the <see cref="Mode"/> Sonar will be using
     /// </summary>
-    /// <param name="mode">The <see cref="Mode"/> you want to set</param>
+    /// <param name="mode"><see cref="Mode"/></param>
     void Set(Mode mode);
 }
