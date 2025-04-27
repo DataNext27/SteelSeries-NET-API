@@ -22,7 +22,7 @@ public class SonarBridge : ISonarBridge
     public readonly PlaybackDeviceManager PlaybackDevices;
     public readonly IRoutedProcessManager RoutedProcesses;
     public readonly IMixManager Mix;
-    public readonly AudienceMonitoringManager AudienceMonitoring;
+    public readonly IAudienceMonitoringManager AudienceMonitoring;
     public readonly EventManager Events;
 
     public SonarBridge()

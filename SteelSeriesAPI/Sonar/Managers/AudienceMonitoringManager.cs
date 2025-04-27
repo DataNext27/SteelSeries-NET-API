@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace SteelSeriesAPI.Sonar.Managers;
 
-public class AudienceMonitoringManager : IAudienceMonitoringManager
+internal class AudienceMonitoringManager : IAudienceMonitoringManager
 {
     public bool GetState()
     {
