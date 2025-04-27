@@ -37,6 +37,11 @@ public class EventManager
     public event EventHandler<SonarPlaybackDeviceEvent> OnSonarPlaybackDeviceChange = delegate{  };
     
     /// <summary>
+    /// Notify when an audio process is routed to a new <see cref="Channel"/>
+    /// </summary>
+    public event EventHandler<SonarRoutedProcessEvent> OnSonarRoutedProcessChange = delegate{  }; 
+    
+    /// <summary>
     /// Notify when a redirection state is changed
     /// </summary>
     public event EventHandler<SonarRedirectionStateEvent> OnSonarRedirectionStateChange = delegate{  };
@@ -68,6 +73,9 @@ public class EventManager
                 break;
             case SonarPlaybackDeviceEvent sonarRedirectionDeviceEvent:
                 OnSonarPlaybackDeviceChange(this, sonarRedirectionDeviceEvent);
+                break;
+            case SonarRoutedProcessEvent sonarRoutedProcessEvent:
+                OnSonarRoutedProcessChange(this, sonarRoutedProcessEvent);
                 break;
             case SonarRedirectionStateEvent sonarRedirectionStateEvent:
                 OnSonarRedirectionStateChange(this, sonarRedirectionStateEvent);
@@ -189,6 +197,12 @@ public class EventManager
                         };
                         break;
                 }
+                break;
+            case "AudioDeviceRouting":
+                eventArgs = new SonarRoutedProcessEvent(subs[3].Replace("%7B", "{").Replace("%7D", "}"))
+                {
+                    ProcessId = Convert.ToInt32(subs[4])
+                };
                 break;
             default:
                 if (subs[1].StartsWith("chatMix"))

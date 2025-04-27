@@ -1,15 +1,72 @@
 ﻿using SteelSeriesAPI.Sonar.Exceptions;
 using SteelSeriesAPI.Sonar.Enums;
 using SteelSeriesAPI.Sonar.Http;
-using SteelSeriesAPI.Sonar.Models;
 using SteelSeriesAPI.Sonar.Interfaces.Managers;
+using SteelSeriesAPI.Sonar.Models;
 
 using System.Text.Json;
 
 namespace SteelSeriesAPI.Sonar.Managers;
 
-public class RoutedProcessManager : IRoutedProcessManager
+internal class RoutedProcessManager : IRoutedProcessManager
 {
+    public IEnumerable<RoutedProcess> GetAllRoutedProcesses()
+    {
+        JsonElement audioDeviceRouting = new Fetcher().Provide("AudioDeviceRouting").RootElement;
+
+        foreach (JsonElement device in audioDeviceRouting.EnumerateArray())
+        {
+            string role = device.GetProperty("role").GetString()!;
+            if (role != "none")
+            {
+                foreach (JsonElement session in device.GetProperty("audioSessions").EnumerateArray())
+                {
+                    int processId = session.GetProperty("processId").GetInt32();
+                    string processName = session.GetProperty("processName").GetString()!;
+                    string displayName = session.GetProperty("displayName").GetString()!;
+                    
+                    if (processId == 0 && processName == "Idle" && displayName == "Idle") continue;
+                    
+                    RoutedProcessState state = (RoutedProcessState)RoutedProcessStateExtensions.FromDictKey(device.GetProperty("state").GetString()!)!;
+                    Channel channel = (Channel)ChannelExtensions.FromDictKey(role)!;
+                    string processPath = session.GetProperty("id").GetString()!.Split("|")[1].Replace('\\', '/');
+                    
+                    yield return new RoutedProcess(processId, processName, displayName, state, channel, processPath);
+                }
+            }
+        }
+    }
+
+    public IEnumerable<RoutedProcess> GetAllActiveRoutedProcesses()
+    {
+        JsonElement audioDeviceRouting = new Fetcher().Provide("AudioDeviceRouting").RootElement;
+
+        foreach (JsonElement device in audioDeviceRouting.EnumerateArray())
+        {
+            string role = device.GetProperty("role").GetString()!;
+            if (role != "none")
+            {
+                foreach (JsonElement session in device.GetProperty("audioSessions").EnumerateArray())
+                {
+                    if (session.GetProperty("state").GetString() == "active")
+                    {
+                        int processId = session.GetProperty("processId").GetInt32();
+                        string processName = session.GetProperty("processName").GetString()!;
+                        string displayName = session.GetProperty("displayName").GetString()!;
+                        
+                        if (processId == 0 && processName == "Idle" && displayName == "Idle") continue;
+                        
+                        RoutedProcessState state = RoutedProcessState.ACTIVE;
+                        Channel channel = (Channel)ChannelExtensions.FromDictKey(role)!;
+                        string processPath = session.GetProperty("id").GetString()!.Split("|")[1].Replace('\\', '/');
+                        
+                        yield return new RoutedProcess(processId, processName, displayName, state, channel, processPath);
+                    }
+                }
+            }
+        }
+    }
+
     public IEnumerable<RoutedProcess> GetRoutedProcesses(Channel channel)
     {
         if (channel == Channel.MASTER)
@@ -17,59 +74,143 @@ public class RoutedProcessManager : IRoutedProcessManager
             throw new MasterChannelNotSupportedException();
         }
         
-        JsonDocument audioDeviceRoutings = new Fetcher().Provide("AudioDeviceRouting");
+        JsonElement audioDeviceRouting = new Fetcher().Provide("AudioDeviceRouting").RootElement;
 
-        foreach (var element in audioDeviceRoutings.RootElement.EnumerateArray())
+        foreach (JsonElement device in audioDeviceRouting.EnumerateArray())
         {
-            if (element.GetProperty("role").GetString() != channel.ToDictKey())
+            if (device.GetProperty("role").GetString() == channel.ToDictKey())
             {
-                continue;
-            }
-
-            var audioSessions = element.GetProperty("audioSessions");
-
-            foreach (var session in audioSessions.EnumerateArray())
-            {
-                string id = session.GetProperty("id").GetString().Split("|")[0];
-                string processName = session.GetProperty("processName").GetString();
-                int pId = session.GetProperty("processId").GetInt32();
-                RoutedProcessState state = (RoutedProcessState)RoutedProcessStateExtensions.FromDictKey(session.GetProperty("state").GetString());
-                string displayName = session.GetProperty("displayName").GetString();
-
-                if (processName == "Idle" && displayName == "Idle" && state == RoutedProcessState.INACTIVE && pId == 0)
+                foreach (JsonElement session in device.GetProperty("audioSessions").EnumerateArray())
                 {
-                    continue;
+                    int processId = session.GetProperty("processId").GetInt32();
+                    string processName = session.GetProperty("processName").GetString()!;
+                    string displayName = session.GetProperty("displayName").GetString()!;
+                    
+                    if (processId == 0 && processName == "Idle" && displayName == "Idle") continue;
+                    
+                    RoutedProcessState state = (RoutedProcessState)RoutedProcessStateExtensions.FromDictKey(device.GetProperty("state").GetString()!)!;
+                    string processPath = session.GetProperty("id").GetString()!.Split("|")[1].Replace('\\', '/');
+                    
+                    yield return new RoutedProcess(processId, processName, displayName, state, channel, processPath);
                 }
-                
-                yield return new RoutedProcess(id, processName, pId, state, displayName);
             }
         }
     }
-    
-    public void RouteProcessToChannel(int pId, Channel channel)
+
+    public IEnumerable<RoutedProcess> GetActiveRoutedProcesses(Channel channel)
     {
         if (channel == Channel.MASTER)
         {
             throw new MasterChannelNotSupportedException();
         }
         
-        JsonDocument audioDeviceRouting = new Fetcher().Provide("AudioDeviceRouting");
+        JsonElement audioDeviceRouting = new Fetcher().Provide("AudioDeviceRouting").RootElement;
 
-        foreach (var element in audioDeviceRouting.RootElement.EnumerateArray())
+        foreach (JsonElement device in audioDeviceRouting.EnumerateArray())
         {
-            if (element.GetProperty("role").GetString() == channel.ToDictKey())
+            if (device.GetProperty("role").GetString() == channel.ToDictKey())
             {
-                if (channel == Channel.MIC)
+                foreach (JsonElement session in device.GetProperty("audioSessions").EnumerateArray())
                 {
-                    new Fetcher().Put("AudioDeviceRouting/capture/" + element.GetProperty("deviceId").GetString() + "/" + pId);
-                    break;
-                }
-                else
-                {
-                    new Fetcher().Put("AudioDeviceRouting/render/" + element.GetProperty("deviceId").GetString() + "/" + pId);
-                    break;
+                    if (session.GetProperty("state").GetString() == "active")
+                    {
+                        int processId = session.GetProperty("processId").GetInt32();
+                        string processName = session.GetProperty("processName").GetString()!;
+                        string displayName = session.GetProperty("displayName").GetString()!;
+                        
+                        if (processId == 0 && processName == "Idle" && displayName == "Idle") continue;
+                        
+                        RoutedProcessState state = RoutedProcessState.ACTIVE;
+                        string processPath = session.GetProperty("id").GetString()!.Split("|")[1].Replace('\\', '/');
+                        
+                        yield return new RoutedProcess(processId, processName, displayName, state, channel, processPath);
+                    }
                 }
             }
         }
+    }
+
+    public IEnumerable<RoutedProcess> GetRoutedProcessesById(int processId)
+    {
+        JsonElement audioDeviceRouting = new Fetcher().Provide("AudioDeviceRouting").RootElement;
+
+        foreach (JsonElement device in audioDeviceRouting.EnumerateArray())
+        {
+            string role = device.GetProperty("role").GetString()!;
+            if (role != "none")
+            {
+                foreach (JsonElement session in device.GetProperty("audioSessions").EnumerateArray())
+                {
+                    if (session.GetProperty("processId").GetInt32() == processId)
+                    {
+                        string processName = session.GetProperty("processName").GetString()!;
+                        string displayName = session.GetProperty("displayName").GetString()!;
+                        RoutedProcessState state = (RoutedProcessState)RoutedProcessStateExtensions.FromDictKey(device.GetProperty("state").GetString()!)!;
+                        Channel channel = (Channel)ChannelExtensions.FromDictKey(role)!;
+                        string processPath = session.GetProperty("id").GetString()!.Split("|")[1].Replace('\\', '/');
+                    
+                        yield return new RoutedProcess(processId, processName, displayName, state, channel, processPath);
+                    }
+                }
+            }
+        }
+    }
+
+    public RoutedProcess GetActiveRoutedProcessesById(int processId)
+    {
+        JsonElement audioDeviceRouting = new Fetcher().Provide("AudioDeviceRouting").RootElement;
+        
+        foreach (JsonElement device in audioDeviceRouting.EnumerateArray())
+        {
+            string role = device.GetProperty("role").GetString()!;
+            if (role != "none")
+            {
+                foreach (JsonElement session in device.GetProperty("audioSessions").EnumerateArray())
+                {
+                    if (session.GetProperty("state").GetString() == "active" && session.GetProperty("processId").GetInt32() == processId)
+                    {
+                        string processName = session.GetProperty("processName").GetString()!;
+                        string displayName = session.GetProperty("displayName").GetString()!;
+                        RoutedProcessState state = RoutedProcessState.ACTIVE;
+                        Channel channel = (Channel)ChannelExtensions.FromDictKey(role)!;
+                        string processPath = session.GetProperty("id").GetString()!.Split("|")[1].Replace('\\', '/');
+                        
+                        return new RoutedProcess(processId, processName, displayName, state, channel, processPath);
+                    }
+                }
+            }
+        }
+
+        throw new RoutedProcessNotFoundException("No active processes with id " + processId + " found");
+    }
+
+    public void RouteProcessToChannel(int processId, Channel channel)
+    {
+        if (channel == Channel.MASTER)
+        {
+            throw new MasterChannelNotSupportedException();
+        }
+        
+        JsonElement audioDeviceRouting = new Fetcher().Provide("AudioDeviceRouting").RootElement;
+
+        foreach (JsonElement device in audioDeviceRouting.EnumerateArray())
+        {
+            if (device.GetProperty("role").GetString() == channel.ToDictKey())
+            {
+                if (channel == Channel.MIC)
+                {
+                    new Fetcher().Put("AudioDeviceRouting/capture/" + device.GetProperty("deviceId").GetString() + "/" + processId);
+                    break;
+                }
+                
+                new Fetcher().Put("AudioDeviceRouting/render/" + device.GetProperty("deviceId").GetString() + "/" + processId);
+                break;
+            }
+        }
+    }
+
+    public void RouteProcessToChannel(RoutedProcess process, Channel channel)
+    {
+        RouteProcessToChannel(process.ProcessId, channel);
     }
 }
