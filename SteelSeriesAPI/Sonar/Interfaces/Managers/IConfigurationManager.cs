@@ -3,21 +3,31 @@ using SteelSeriesAPI.Sonar.Models;
 
 namespace SteelSeriesAPI.Sonar.Interfaces.Managers;
 
-internal interface IConfigurationManager
+/// <summary>
+/// Manage audio configurations for each <see cref="Channel"/>
+/// </summary>
+public interface IConfigurationManager
 {
     
     /// <summary>
-    /// Get all audio configurations from Sonar
+    /// Get all audio configurations of Sonar
     /// </summary>
     /// <returns>An IEnumerable of <see cref="SonarAudioConfiguration"/></returns>
     IEnumerable<SonarAudioConfiguration> GetAllAudioConfigurations();
     
     /// <summary>
-    /// Get all audio configurations of a <see cref="Channel"/> from Sonar
+    /// Get all audio configurations of a <see cref="Channel"/>
     /// </summary>
-    /// <param name="channel">The channel you want the configs</param>
-    /// <returns>An IEnumerable of <see cref="SonarAudioConfiguration"/> ordered alphabetically</returns>
+    /// <param name="channel">The channel you want the configs of</param>
+    /// <returns>An IEnumerable of <see cref="SonarAudioConfiguration"/></returns>
     IEnumerable<SonarAudioConfiguration> GetAudioConfigurations(Channel channel);
+    
+    /// <summary>
+    /// Get the current audio configuration of a <see cref="Channel"/>
+    /// </summary>
+    /// <param name="channel">The channel you want the current config</param>
+    /// <returns>A <see cref="SonarAudioConfiguration"/></returns>
+    SonarAudioConfiguration GetSelectedAudioConfiguration(Channel channel);
     
     /// <summary>
     /// Get a specific audio configuration from Sonar
@@ -25,13 +35,6 @@ internal interface IConfigurationManager
     /// <param name="configId">The id of the config</param>
     /// <returns>A <see cref="SonarAudioConfiguration"/></returns>
     SonarAudioConfiguration GetAudioConfiguration(string configId);
-    
-    /// <summary>
-    /// Get the current audio configuration of a chosen <see cref="Channel"/>
-    /// </summary>
-    /// <param name="channel">The channel you want the current config</param>
-    /// <returns>A <see cref="SonarAudioConfiguration"/></returns>
-    SonarAudioConfiguration GetSelectedAudioConfiguration(Channel channel);
     
     /// <summary>
     /// Set the config of a Sonar <see cref="Channel"/> by giving its id

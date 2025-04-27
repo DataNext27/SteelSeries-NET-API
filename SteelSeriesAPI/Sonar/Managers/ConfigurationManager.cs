@@ -8,19 +8,19 @@ using SteelSeriesAPI.Sonar.Exceptions;
 
 namespace SteelSeriesAPI.Sonar.Managers;
 
-public class ConfigurationManager : IConfigurationManager
+internal class ConfigurationManager : IConfigurationManager
 {
     public IEnumerable<SonarAudioConfiguration> GetAllAudioConfigurations()
     {
-        JsonDocument configs = new Fetcher().Provide("configs");
+        JsonElement configs = new Fetcher().Provide("configs").RootElement;
 
-        foreach (var element in configs.RootElement.EnumerateArray())
+        foreach (JsonElement config in configs.EnumerateArray())
         {
-            string vDevice = element.GetProperty("virtualAudioDevice").GetString();
-            string id = element.GetProperty("id").GetString();
-            string name = element.GetProperty("name").GetString();
+            string device = config.GetProperty("virtualAudioDevice").GetString()!;
+            string id = config.GetProperty("id").GetString()!;
+            string name = config.GetProperty("name").GetString()!;
             
-            yield return new SonarAudioConfiguration(id, name, (Channel)ChannelExtensions.FromDictKey(vDevice));
+            yield return new SonarAudioConfiguration(id, name, (Channel)ChannelExtensions.FromDictKey(device)!);
         }
     }
 
@@ -31,68 +31,81 @@ public class ConfigurationManager : IConfigurationManager
             throw new MasterChannelNotSupportedException();
         }
         
-        IEnumerable<SonarAudioConfiguration> configs = GetAllAudioConfigurations();
-        List<SonarAudioConfiguration> channelConfigs = new List<SonarAudioConfiguration>();
-        
-        foreach (var config in configs)
+        JsonElement configs = new Fetcher().Provide("configs").RootElement;
+
+        foreach (JsonElement config in configs.EnumerateArray())
         {
-            if (config.AssociatedChannel == channel)
+            string device = config.GetProperty("virtualAudioDevice").GetString()!;
+            if (device == channel.ToDictKey())
             {
-                channelConfigs.Add(config);
+                string id = config.GetProperty("id").GetString()!;
+                string name = config.GetProperty("name").GetString()!;
+                
+                yield return new SonarAudioConfiguration(id, name, (Channel)ChannelExtensions.FromDictKey(device)!);
             }
         }
-
-        return channelConfigs.OrderBy(s => s.Name);
     }
-
-    public SonarAudioConfiguration GetAudioConfiguration(string configId)
-    {
-        IEnumerable<SonarAudioConfiguration> configs = GetAllAudioConfigurations();
-        SonarAudioConfiguration sonarConfig = null;
-        
-        foreach (var config in configs)
-        {
-            if (config.Id == configId)
-            {
-                sonarConfig = config;
-                break;
-            }
-        }
-
-        return sonarConfig;
-    }
-
+    
     public SonarAudioConfiguration GetSelectedAudioConfiguration(Channel channel)
     {
         if (channel == Channel.MASTER)
         {
             throw new MasterChannelNotSupportedException();
         }
+        
+        JsonElement selectedConfigs = new Fetcher().Provide("configs/selected").RootElement;
 
-        JsonDocument selectedConfigs = new Fetcher().Provide("configs/selected");
-        JsonElement sConfig = default;
-
-        foreach (var config in selectedConfigs.RootElement.EnumerateArray())
+        foreach (JsonElement config in selectedConfigs.EnumerateArray())
         {
-            if (config.GetProperty("virtualAudioDevice").GetString() == channel.ToDictKey())
+            var device = config.GetProperty("virtualAudioDevice").GetString()!;
+            if (device == channel.ToDictKey())
             {
-                sConfig = config;
-                break;
+                string id = config.GetProperty("id").GetString()!;
+                string name = config.GetProperty("name").GetString()!;
+
+                return new SonarAudioConfiguration(id, name, (Channel)ChannelExtensions.FromDictKey(device)!);
             }
         }
 
-        string id = sConfig.GetProperty("id").GetString();
-        string name = sConfig.GetProperty("name").GetString();
-        string vDevice = sConfig.GetProperty("virtualAudioDevice").GetString();
+        throw new ChannelNotFoundException();
+    }
 
-        return new SonarAudioConfiguration(id, name, (Channel)ChannelExtensions.FromDictKey(vDevice));
+    public SonarAudioConfiguration GetAudioConfiguration(string configId)
+    {
+        JsonElement configs = new Fetcher().Provide("configs").RootElement;
+
+        foreach (JsonElement config in configs.EnumerateArray())
+        {
+            string id = config.GetProperty("id").GetString()!;
+            if (id == configId)
+            {
+                string device = config.GetProperty("virtualAudioDevice").GetString()!;
+                string name = config.GetProperty("name").GetString()!;
+                
+                return new SonarAudioConfiguration(id, name, (Channel)ChannelExtensions.FromDictKey(device)!);
+            }
+        }
+        
+        throw new ConfigNotFoundException($"No audio configuration found with this id: {configId}");
     }
 
     public void SetConfig(string configId)
     {
-        if (string.IsNullOrEmpty(configId)) throw new ConfigNotFoundException($"No audio configuration found with this id: {configId}");
+        if (string.IsNullOrEmpty(configId)) throw new ConfigNotFoundException("Id can't be null or empty");
+        
+        JsonElement configs = new Fetcher().Provide("configs").RootElement;
 
-        new Fetcher().Put("configs/" + configId + "/select");
+        foreach (JsonElement config in configs.EnumerateArray())
+        {
+            string id = config.GetProperty("id").GetString()!;
+            if (id == configId)
+            {
+                new Fetcher().Put("configs/" + configId + "/select");
+                return;
+            }
+        }
+        
+        throw new ConfigNotFoundException($"No audio configuration found with this id: {configId}");
     }
 
     public void SetConfig(SonarAudioConfiguration config)
