@@ -12,5 +12,6 @@ public class SonarVolumeEvent : EventArgs
     public Mode Mode { get; set; }
     
     public Channel Channel { get; set; }
+    
     public Mix? Mix { get; set; }
 }

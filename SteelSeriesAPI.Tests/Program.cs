@@ -112,8 +112,8 @@ class Program
         Console.WriteLine("----Channel from config ID----------");
         Console.WriteLine(sonarManager.Configurations.GetAudioConfiguration("29ae2c02-792b-4487-863c-dc3e11a7a469").AssociatedChannel);
         Console.WriteLine("--------ChatMix---------");
-        Console.WriteLine(sonarManager.GetChatMixBalance());
-        Console.WriteLine(sonarManager.GetChatMixState());
+        Console.WriteLine(sonarManager.ChatMix.GetBalance());
+        Console.WriteLine(sonarManager.ChatMix.GetState());
 
         Console.WriteLine("-----Redirection Devices-----------");
         Console.WriteLine("---Output---");
@@ -207,7 +207,7 @@ class Program
             }
 
             Console.WriteLine("-- " + device);
-            foreach (var routed in sonarManager.GetRoutedProcess(device))
+            foreach (var routed in sonarManager.RoutedProcesses.GetRoutedProcesses(device))
             {
                 Console.WriteLine(routed.Id + ", " + routed.ProcessName + ", " + routed.PId + ", " + routed.State +
                                   ", " + routed.DisplayName);
@@ -223,7 +223,7 @@ class Program
         string configId = sonarManager.Configurations.GetAudioConfigurations(Channel.MEDIA).FirstOrDefault(config => config.Name == "Default")?.Id;
         sonarManager.Configurations.SetConfig(configId);
         sonarManager.Configurations.SetConfigByName(Channel.MEDIA, "Default");
-        sonarManager.SetChatMixBalance(0.5);
+        sonarManager.ChatMix.SetBalance(0.5);
         
         var redirectionDevices = sonarManager.PlaybackDevices.GetPlaybackDevices(DataFlow.INPUT);
         redirectionDevices.GetEnumerator().MoveNext();
@@ -232,7 +232,7 @@ class Program
         
         sonarManager.SetRedirectionState(true, Channel.MEDIA, Mix.STREAM);
         sonarManager.SetAudienceMonitoringState(false);
-        sonarManager.SetProcessToDeviceRouting(19152, Channel.MIC);
+        sonarManager.RoutedProcesses.RouteProcessToChannel(19152, Channel.MIC);
     }
 
     static void OnModeChangeHandler(object? sender, SonarModeEvent eventArgs)

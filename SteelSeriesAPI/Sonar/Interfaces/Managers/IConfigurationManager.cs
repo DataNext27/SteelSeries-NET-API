@@ -3,7 +3,7 @@ using SteelSeriesAPI.Sonar.Models;
 
 namespace SteelSeriesAPI.Sonar.Interfaces.Managers;
 
-public interface IConfigurationManager
+internal interface IConfigurationManager
 {
     
     /// <summary>

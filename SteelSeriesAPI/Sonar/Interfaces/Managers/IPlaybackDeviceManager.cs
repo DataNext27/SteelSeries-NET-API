@@ -3,7 +3,7 @@ using SteelSeriesAPI.Sonar.Models;
 
 namespace SteelSeriesAPI.Sonar.Interfaces.Managers;
 
-public interface IPlaybackDeviceManager
+internal interface IPlaybackDeviceManager
 {
     /// <summary>
     /// Get all the in/output Redirection Devices (Windows devices)

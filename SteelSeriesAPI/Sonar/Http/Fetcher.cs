@@ -5,12 +5,12 @@ using System.Text.Json;
 
 namespace SteelSeriesAPI.Sonar.Http;
 
-public class HttpFetcher
+public class Fetcher
 {
     private readonly HttpClient _httpClient;
     private readonly IAppRetriever _sonarRetriever;
     
-    public HttpFetcher()
+    public Fetcher()
     {
         _sonarRetriever = SonarRetriever.Instance;
         

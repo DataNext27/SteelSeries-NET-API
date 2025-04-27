@@ -1,10 +1,8 @@
-﻿using System.Security.Principal;
-using SteelSeriesAPI.Interfaces;
-using SteelSeriesAPI.Sonar.Enums;
-using SteelSeriesAPI.Sonar.Http;
-using SteelSeriesAPI.Sonar.Interfaces;
+﻿using SteelSeriesAPI.Sonar.Interfaces;
+using SteelSeriesAPI.Sonar.Interfaces.Managers;
 using SteelSeriesAPI.Sonar.Managers;
-using SteelSeriesAPI.Sonar.Models;
+
+using System.Security.Principal;
 
 namespace SteelSeriesAPI.Sonar;
 
@@ -15,22 +13,28 @@ public class SonarBridge : ISonarBridge
 {
     public bool IsRunning => SonarRetriever.Instance is { IsEnabled: true, IsReady: true, IsRunning: true };
     
-    private readonly ISonarCommandHandler _sonarCommand;
-    private readonly ISonarDataProvider _sonarProvider;
     private ISonarSocket _sonarSocket;
 
+    public readonly ModeManager Mode;
     public readonly VolumeSettingsManager VolumeSettings;
+    public readonly ChatMixManager ChatMix;
     public readonly ConfigurationManager Configurations;
     public readonly PlaybackDeviceManager PlaybackDevices;
+    public readonly IRoutedProcessManager RoutedProcesses;
+    public readonly IMixManager Mix;
+    public readonly AudienceMonitoringManager AudienceMonitoring;
     public readonly EventManager Events;
 
     public SonarBridge()
     {
-        _sonarCommand = new SonarHttpCommand(this);
-        _sonarProvider = new SonarHttpProvider();
+        Mode = new ModeManager();
         VolumeSettings = new VolumeSettingsManager();
+        ChatMix = new ChatMixManager();
         Configurations = new ConfigurationManager();
         PlaybackDevices = new PlaybackDeviceManager();
+        RoutedProcesses = new RoutedProcessManager();
+        Mix = new MixManager();
+        AudienceMonitoring = new AudienceMonitoringManager();
         Events = new EventManager();
     }
 
@@ -95,67 +99,4 @@ public class SonarBridge : ISonarBridge
     {
         SonarRetriever.Instance.WaitUntilAppStarted();
     }
-
-    #region Providers
-
-    public Mode GetMode()
-    {
-        return _sonarProvider.GetMode();
-    }
-    
-    public double GetChatMixBalance()
-    {
-        return _sonarProvider.GetChatMixBalance();
-    }
-
-    public bool GetChatMixState()
-    {
-        return _sonarProvider.GetChatMixState();
-    }
-
-    public bool GetRedirectionState(Channel channel, Mix mix)
-    {
-        return _sonarProvider.GetRedirectionState(channel, mix);
-    }
-
-    public bool GetAudienceMonitoringState()
-    {
-        return _sonarProvider.GetAudienceMonitoringState();
-    }
-
-    public IEnumerable<RoutedProcess> GetRoutedProcess(Channel channel)
-    {
-        return _sonarProvider.GetRoutedProcess(channel);
-    }
-
-    #endregion
-
-    #region Commands
-
-    public void SetMode(Mode mode)
-    {
-        _sonarCommand.SetMode(mode);
-    }
-
-    public void SetChatMixBalance(double balance)
-    {
-        _sonarCommand.SetChatMixBalance(balance);
-    }
-    
-    public void SetRedirectionState(bool newState, Channel channel, Mix mix)
-    {
-        _sonarCommand.SetRedirectionState(newState, channel, mix);
-    }
-
-    public void SetAudienceMonitoringState(bool newState)
-    {
-        _sonarCommand.SetAudienceMonitoringState(newState);
-    }
-
-    public void SetProcessToDeviceRouting(int pId, Channel channel)
-    {
-        _sonarCommand.SetProcessToDeviceRouting(pId, channel);
-    }
-
-    #endregion
 }
