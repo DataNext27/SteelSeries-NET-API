@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace SteelSeriesAPI.Sonar.Managers;
 
-public class VolumeSettingsManager : IVolumeSettingsManager
+internal class VolumeSettingsManager : IVolumeSettingsManager
 {
     // volume = 0,00000000 <-- 8 decimal max
     public double GetVolume(Channel channel)
