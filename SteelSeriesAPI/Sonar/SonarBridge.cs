@@ -19,7 +19,7 @@ public class SonarBridge : ISonarBridge
     public readonly IVolumeSettingsManager VolumeSettings;
     public readonly IChatMixManager ChatMix;
     public readonly IConfigurationManager Configurations;
-    public readonly PlaybackDeviceManager PlaybackDevices;
+    public readonly IPlaybackDeviceManager PlaybackDevices;
     public readonly IRoutedProcessManager RoutedProcesses;
     public readonly IMixManager Mix;
     public readonly IAudienceMonitoringManager AudienceMonitoring;

@@ -1,222 +1,351 @@
 ﻿using System.Collections;
-using SteelSeriesAPI.Sonar.Interfaces.Managers;
+using SteelSeriesAPI.Sonar.Exceptions;
 using SteelSeriesAPI.Sonar.Enums;
 using SteelSeriesAPI.Sonar.Http;
+using SteelSeriesAPI.Sonar.Interfaces.Managers;
 using SteelSeriesAPI.Sonar.Models;
 
 using System.Text.Json;
-using SteelSeriesAPI.Sonar.Exceptions;
 
 namespace SteelSeriesAPI.Sonar.Managers;
 
-public class PlaybackDeviceManager : IPlaybackDeviceManager
+internal class PlaybackDeviceManager : IPlaybackDeviceManager
 {
-    public IEnumerable<PlaybackDevice> GetPlaybackDevices(DataFlow _dataFlow)
+    public IEnumerable<PlaybackDevice> GetAllPlaybackDevices()
     {
-        JsonDocument audioDevices = new Fetcher().Provide("audioDevices");
-        // JsonDocument classicRedirections = new HttpProvider("classicRedirections").Provide();
-        // JsonDocument streamRedirections = new HttpProvider("streamRedirections").Provide();
-    
-        foreach (var element in audioDevices.RootElement.EnumerateArray())
+        JsonElement audioDevices = new Fetcher().Provide("audioDevices").RootElement;
+
+        foreach (JsonElement device in audioDevices.EnumerateArray())
         {
-            if (element.GetProperty("role").GetString() != "none")
+            if (device.GetProperty("role").GetString() == "none")
             {
-                continue;
-            }
-            
-            string id = element.GetProperty("id").GetString();
-            string name = element.GetProperty("friendlyName").GetString();
-            string dataFlow = element.GetProperty("dataFlow").GetString();
-            List<Channel> associatedClassicChannels = new List<Channel>();
-            ArrayList associatedStreamChannels = new ArrayList();
-            
-            GetAssociatedChannels(id, associatedClassicChannels, associatedStreamChannels);
-    
-            if (dataFlow == _dataFlow.ToDictKey())
-            {
-                yield return new PlaybackDevice(id, name, (DataFlow)DataFlowExtensions.FromDictKey(dataFlow), associatedClassicChannels, associatedStreamChannels);
+                string id = device.GetProperty("id").GetString()!;
+                string name = device.GetProperty("friendlyName").GetString()!;
+                DataFlow dataFlow = (DataFlow)DataFlowExtensions.FromDictKey(device.GetProperty("dataFlow").GetString()!)!;
+                List<Tuple<Channel, Mode>> channels = new List<Tuple<Channel, Mode>>();
+                List<Mix> mixes = new List<Mix>();
+
+                GetChannelsAndMixes(id, channels, mixes);
+                
+                yield return new PlaybackDevice(id, name, dataFlow, channels, mixes);
             }
         }
+    }
+
+    public IEnumerable<PlaybackDevice> GetOutputPlaybackDevices()
+    {
+        JsonElement audioDevices = new Fetcher().Provide("audioDevices").RootElement;
+
+        foreach (JsonElement device in audioDevices.EnumerateArray())
+        {
+            if (device.GetProperty("role").GetString() == "none")
+            {
+                string dataFlow = device.GetProperty("dataFlow").GetString()!;
+                if (dataFlow == "render")
+                {
+                    string id = device.GetProperty("id").GetString()!;
+                    string name = device.GetProperty("friendlyName").GetString()!;
+                    List<Tuple<Channel, Mode>> channels = new List<Tuple<Channel, Mode>>();
+                    List<Mix> mixes = new List<Mix>();
+                    
+                    GetChannelsAndMixes(id, channels, mixes);
+                    
+                    yield return new PlaybackDevice(id, name, DataFlow.OUTPUT, channels, mixes);
+                }
+            }
+        }
+    }
+
+    public IEnumerable<PlaybackDevice> GetInputPlaybackDevices()
+    {
+        JsonElement audioDevices = new Fetcher().Provide("audioDevices").RootElement;
+
+        foreach (JsonElement device in audioDevices.EnumerateArray())
+        {
+            if (device.GetProperty("role").GetString() == "none")
+            {
+                string dataFlow = device.GetProperty("dataFlow").GetString()!;
+                if (dataFlow == "capture")
+                {
+                    string id = device.GetProperty("id").GetString()!;
+                    string name = device.GetProperty("friendlyName").GetString()!;
+                    List<Tuple<Channel, Mode>> channels = new List<Tuple<Channel, Mode>>();
+                    List<Mix> mixes = new List<Mix>();
+                    
+                    GetChannelsAndMixes(id, channels, mixes);
+                
+                    yield return new PlaybackDevice(id, name, DataFlow.INPUT, channels, mixes);
+                }
+            }
+        }
+    }
+
+    public PlaybackDevice GetPlaybackDevice(Channel channel)
+    {
+        JsonElement classicRedirections = new Fetcher().Provide("classicRedirections").RootElement;
+        JsonElement audioDevices = new Fetcher().Provide("audioDevices").RootElement;
+
+        foreach (JsonElement redirection in classicRedirections.EnumerateArray())
+        {
+            if (redirection.GetProperty("id").GetString() == channel.ToDictKey(ChannelMapChoice.ChannelDict))
+            {
+                string deviceId = redirection.GetProperty("deviceId").GetString()!;
+
+                if (string.IsNullOrEmpty(deviceId))
+                {
+                    throw new PlaybackDeviceNotFoundException("No device set on this channel");
+                }
+
+                foreach (JsonElement device in audioDevices.EnumerateArray())
+                {
+                    if (device.GetProperty("id").GetString() == deviceId)
+                    {
+                        string name = device.GetProperty("friendlyName").GetString()!;
+                        DataFlow dataFlow = (DataFlow)DataFlowExtensions.FromDictKey(device.GetProperty("dataFlow").GetString()!)!;
+                        List<Tuple<Channel, Mode>> channels = new List<Tuple<Channel, Mode>>();
+                        List<Mix> mixes = new List<Mix>();
+                        
+                        GetChannelsAndMixes(deviceId, channels, mixes);
+                        
+                        return new PlaybackDevice(deviceId, name, dataFlow, channels, mixes);
+                    }
+                }
+                
+                throw new PlaybackDeviceNotFoundException("Could not find the device");
+            }
+        }
+
+        throw new ChannelNotFoundException("Could not find the Channel");
+    }
+
+    public PlaybackDevice GetPlaybackDevice(Channel channel, Mode mode)
+    {
+        if (mode == Mode.CLASSIC)
+        {
+            return GetPlaybackDevice(channel);
+        }
+
+        if (mode == Mode.STREAMER && channel != Channel.MIC)
+        {
+            throw new ChannelNoStreamerSupportException();
+        }
+        
+        JsonElement streamRedirections = new Fetcher().Provide("streamRedirections").RootElement;
+        JsonElement audioDevices = new Fetcher().Provide("audioDevices").RootElement;
+        
+        foreach (JsonElement redirection in streamRedirections.EnumerateArray())
+        {
+            if (redirection.GetProperty("streamRedirectionId").GetString() == channel.ToDictKey(ChannelMapChoice.ChannelDict))
+            {
+                string deviceId = redirection.GetProperty("deviceId").GetString()!;
+                
+                if (string.IsNullOrEmpty(deviceId))
+                {
+                    throw new PlaybackDeviceNotFoundException("No device set on this channel");
+                }
+
+                foreach (JsonElement device in audioDevices.EnumerateArray())
+                {
+                    if (device.GetProperty("id").GetString() == deviceId)
+                    {
+                        string name = device.GetProperty("friendlyName").GetString()!;
+                        DataFlow dataFlow = (DataFlow)DataFlowExtensions.FromDictKey(device.GetProperty("dataFlow").GetString()!)!;
+                        List<Tuple<Channel, Mode>> channels = new List<Tuple<Channel, Mode>>();
+                        List<Mix> mixes = new List<Mix>();
+                        
+                        GetChannelsAndMixes(deviceId, channels, mixes);
+                        
+                        return new PlaybackDevice(deviceId, name, dataFlow, channels, mixes);
+                    }
+                }
+                
+                throw new PlaybackDeviceNotFoundException("Could not find the device");
+            }
+        }
+        
+        throw new ChannelNotFoundException("Could not find the Channel");
+    }
+
+    public PlaybackDevice GetPlaybackDevice(Mix mix)
+    {
+        JsonElement streamRedirections = new Fetcher().Provide("streamRedirections").RootElement;
+        JsonElement audioDevices = new Fetcher().Provide("audioDevices").RootElement;
+        
+        foreach (JsonElement redirection in streamRedirections.EnumerateArray())
+        {
+            if (redirection.GetProperty("streamRedirectionId").GetString() == mix.ToDictKey())
+            {
+                string deviceId = redirection.GetProperty("deviceId").GetString()!;
+                
+                if (string.IsNullOrEmpty(deviceId))
+                {
+                    throw new PlaybackDeviceNotFoundException("No device set on this channel");
+                }
+
+                foreach (JsonElement device in audioDevices.EnumerateArray())
+                {
+                    if (device.GetProperty("id").GetString() == deviceId)
+                    {
+                        string name = device.GetProperty("friendlyName").GetString()!;
+                        DataFlow dataFlow = (DataFlow)DataFlowExtensions.FromDictKey(device.GetProperty("dataFlow").GetString()!)!;
+                        List<Tuple<Channel, Mode>> channels = new List<Tuple<Channel, Mode>>();
+                        List<Mix> mixes = new List<Mix>();
+                        
+                        GetChannelsAndMixes(deviceId, channels, mixes);
+                        
+                        return new PlaybackDevice(deviceId, name, dataFlow, channels, mixes);
+                    }
+                }
+                
+                throw new PlaybackDeviceNotFoundException("Could not find the device");
+            }
+        }
+        
+        throw new ChannelNotFoundException("Could not find the Channel");
     }
 
     public PlaybackDevice GetPlaybackDevice(string deviceId)
     {
-        try
-        {
-            JsonElement device = new Fetcher().Provide("audioDevices/" + deviceId).RootElement;
-            
-            string id = device.GetProperty("id").GetString();
-            string name = device.GetProperty("friendlyName").GetString();
-            string dataFlow = device.GetProperty("dataFlow").GetString();
-            List<Channel> associatedClassicChannels = new List<Channel>();
-            ArrayList associatedStreamChannels = new ArrayList();
-        
-            GetAssociatedChannels(deviceId, associatedClassicChannels, associatedStreamChannels);
-        
-            return new PlaybackDevice(id, name, (DataFlow)DataFlowExtensions.FromDictKey(dataFlow), associatedClassicChannels, associatedStreamChannels);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw new Exception("Can't get any device from this Id, maybe the device doesn't exist or its Id changed.");
-        }
-    }
+        JsonElement audioDevices = new Fetcher().Provide("audioDevices").RootElement;
 
-    public PlaybackDevice GetClassicPlaybackDevice(Channel channel)
-    {
-        if (channel == Channel.MASTER)
+        foreach (JsonElement device in audioDevices.EnumerateArray())
         {
-            throw new MasterChannelNotSupportedException();
-        }
-        
-        JsonDocument classicRedirections = new Fetcher().Provide("classicRedirections");
-        JsonElement cRedirections = default;
-    
-        foreach (var element in classicRedirections.RootElement.EnumerateArray())
-        {
-            if (element.GetProperty("id").GetString() == channel.ToDictKey(ChannelMapChoice.ChannelDict))
+            if (device.GetProperty("id").GetString() == deviceId)
             {
-                cRedirections = element;
-                break;
+                string name = device.GetProperty("friendlyName").GetString()!;
+                DataFlow dataFlow = (DataFlow)DataFlowExtensions.FromDictKey(device.GetProperty("dataFlow").GetString()!)!;
+                List<Tuple<Channel, Mode>> channels = new List<Tuple<Channel, Mode>>();
+                List<Mix> mixes = new List<Mix>();
+                
+                GetChannelsAndMixes(deviceId, channels, mixes);
+                
+                return new PlaybackDevice(deviceId, name, dataFlow, channels, mixes);
             }
         }
         
-        string deviceId = cRedirections.GetProperty("deviceId").GetString();
-        List<Channel> associatedClassicChannels = new List<Channel>();
-        ArrayList associatedStreamChannels = new ArrayList();
-        
-        GetAssociatedChannels(deviceId, associatedClassicChannels, associatedStreamChannels);
-    
-        JsonDocument audioDevice = new Fetcher().Provide("audioDevices/" + deviceId);
-    
-        string name = audioDevice.RootElement.GetProperty("friendlyName").GetString();
-        DataFlow dataFlow = (DataFlow)DataFlowExtensions.FromDictKey(audioDevice.RootElement.GetProperty("dataFlow").GetString());
-    
-        return new PlaybackDevice(deviceId, name, dataFlow, associatedClassicChannels, associatedStreamChannels);
+        throw new PlaybackDeviceNotFoundException("Could not find the device");
     }
 
-    public PlaybackDevice GetStreamerPlaybackDevice(Mix mix)
+    private void GetChannelsAndMixes(string deviceId, List<Tuple<Channel, Mode>> channels, List<Mix> mixes)
     {
-        JsonDocument streamRedirections = new Fetcher().Provide("streamRedirections");
-        JsonElement sRedirections = default;
-    
-        foreach (var element in streamRedirections.RootElement.EnumerateArray())
+        JsonElement classicRedirections = new Fetcher().Provide("classicRedirections").RootElement;
+
+        foreach (JsonElement redirection in classicRedirections.EnumerateArray())
         {
-            if (element.GetProperty("streamRedirectionId").GetString() == mix.ToDictKey())
+            if (redirection.GetProperty("deviceId").GetString() == deviceId)
             {
-                sRedirections = element;
-                break;
+                channels.Add(new Tuple<Channel, Mode>((Channel)ChannelExtensions.FromDictKey(redirection.GetProperty("id").GetString()!, ChannelMapChoice.ChannelDict)!, Mode.CLASSIC));
             }
         }
         
-        string deviceId = sRedirections.GetProperty("deviceId").GetString();
-        List<Channel> associatedClassicChannels = new List<Channel>();
-        ArrayList associatedStreamChannels = new ArrayList();
+        JsonElement streamRedirections = new Fetcher().Provide("streamRedirections").RootElement;
 
-        GetAssociatedChannels(deviceId, associatedClassicChannels, associatedStreamChannels);
-    
-        JsonDocument audioDevice = new Fetcher().Provide("audioDevices/" + deviceId);
-    
-        string name = audioDevice.RootElement.GetProperty("friendlyName").GetString();
-        DataFlow dataFlow = (DataFlow)DataFlowExtensions.FromDictKey(audioDevice.RootElement.GetProperty("dataFlow").GetString());
-    
-        return new PlaybackDevice(deviceId, name, dataFlow, associatedClassicChannels, associatedStreamChannels);
-    }
-
-    public PlaybackDevice GetStreamerPlaybackDevice(Channel channel = Channel.MIC)
-    {
-        if (channel != Channel.MIC)
+        foreach (JsonElement redirection in streamRedirections.EnumerateArray())
         {
-            throw new MicChannelSupportOnlyException();
-        }
-        
-        JsonDocument streamRedirections = new Fetcher().Provide("streamRedirections");
-        JsonElement sRedirections = default;
-    
-        foreach (var element in streamRedirections.RootElement.EnumerateArray())
-        {
-            if (element.GetProperty("streamRedirectionId").GetString() == channel.ToDictKey(ChannelMapChoice.ChannelDict))
+            if (redirection.GetProperty("deviceId").GetString() == deviceId)
             {
-                sRedirections = element;
-                break;
-            }
-        }
-        
-        string deviceId = sRedirections.GetProperty("deviceId").GetString();
-        List<Channel> associatedClassicChannels = new List<Channel>();
-        ArrayList associatedStreamChannels = new ArrayList();
-        
-        GetAssociatedChannels(deviceId, associatedClassicChannels, associatedStreamChannels);
-    
-        JsonDocument audioDevice = new Fetcher().Provide("audioDevices/" + deviceId);
-    
-        string name = audioDevice.RootElement.GetProperty("friendlyName").GetString();
-        DataFlow dataFlow = (DataFlow)DataFlowExtensions.FromDictKey(audioDevice.RootElement.GetProperty("dataFlow").GetString());
-    
-        return new PlaybackDevice(deviceId, name, dataFlow, associatedClassicChannels, associatedStreamChannels);
-    }
-    
-    private void GetAssociatedChannels(string deviceId, List<Channel> associatedClassicDevices, ArrayList associatedStreamDevices)
-    {
-        JsonDocument classicRedirections = new Fetcher().Provide("classicRedirections");
-        JsonDocument streamRedirections = new Fetcher().Provide("streamRedirections");
-
-        foreach (var element in classicRedirections.RootElement.EnumerateArray())
-        {
-            if (element.GetProperty("deviceId").GetString() == deviceId)
-            {
-                associatedClassicDevices.Add((Channel)ChannelExtensions.FromDictKey(element.GetProperty("id").GetString(), ChannelMapChoice.ChannelDict));
-            }
-        }
-        
-        foreach (var element in streamRedirections.RootElement.EnumerateArray())
-        {
-            if (element.GetProperty("deviceId").GetString() == deviceId)
-            {
-                if (element.GetProperty("streamRedirectionId").GetString() == "mic")
+                var id = redirection.GetProperty("streamRedirectionId").GetString()!;
+                if (id == "mic")
                 {
-                    associatedStreamDevices.Add((Channel)ChannelExtensions.FromDictKey(element.GetProperty("streamRedirectionId").GetString(), ChannelMapChoice.ChannelDict));
+                    channels.Add(new Tuple<Channel, Mode>(Channel.MIC, Mode.STREAMER));
                 }
                 else
                 {
-                    associatedStreamDevices.Add((Mix)MixExtensions.FromDictKey(element.GetProperty("streamRedirectionId").GetString()));
+                    mixes.Add((Mix)MixExtensions.FromDictKey(id)!);
                 }
             }
         }
     }
 
-    public void SetClassicPlaybackDevice(string deviceId, Channel channel)
+    public void SetPlaybackDevice(string deviceId, Channel channel)
     {
-        new Fetcher().Put("classicRedirections/" + channel.ToDictKey(ChannelMapChoice.ChannelDict) +"/deviceId/" + deviceId);
-    }
+        JsonElement audioDevices = new Fetcher().Provide("audioDevices").RootElement;
 
-    public void SetStreamerPlaybackDevice(string deviceId, Mix mix)
-    {
-        new Fetcher().Put("streamRedirections/" + mix.ToDictKey() +"/deviceId/" + deviceId);
-    }
-
-    public void SetStreamerPlaybackDevice(string deviceId, Channel channel = Channel.MIC)
-    {
-        if (channel != Channel.MIC)
+        foreach (JsonElement device in audioDevices.EnumerateArray())
         {
-            throw new MicChannelSupportOnlyException();
+            if (device.GetProperty("id").GetString() == deviceId)
+            {
+                string dataFlow = device.GetProperty("dataFlow").GetString()!;
+                if ((dataFlow == "render" && channel == Channel.MIC)
+                    || (dataFlow == "capture" && channel != Channel.MIC))
+                {
+                    throw new PlaybackDeviceDataFlowException();
+                }
+                
+                new Fetcher().Put("classicRedirections/" + channel.ToDictKey(ChannelMapChoice.ChannelDict) +"/deviceId/" + deviceId);
+                return;
+            }
         }
         
-        new Fetcher().Put("streamRedirections/" + channel.ToDictKey(ChannelMapChoice.ChannelDict) +"/deviceId/" + deviceId);
+        throw new PlaybackDeviceNotFoundException("Could not find the device");
     }
 
-    public void SetClassicPlaybackDevice(PlaybackDevice playbackDevice, Channel channel)
+    public void SetPlaybackDevice(string deviceId, Channel channel, Mode mode)
     {
-        SetClassicPlaybackDevice(playbackDevice.Id, channel);
+        if (mode == Mode.CLASSIC)
+        {
+            SetPlaybackDevice(deviceId, channel);
+        }
+        
+        if (mode == Mode.STREAMER && channel != Channel.MIC)
+        {
+            throw new ChannelNoStreamerSupportException();
+        }
+        
+        JsonElement audioDevices = new Fetcher().Provide("audioDevices").RootElement;
+
+        foreach (JsonElement device in audioDevices.EnumerateArray())
+        {
+            if (device.GetProperty("id").GetString() == deviceId)
+            {
+                string dataFlow = device.GetProperty("dataFlow").GetString()!;
+                if (dataFlow == "capture" && channel != Channel.MIC)
+                {
+                    throw new PlaybackDeviceDataFlowException();
+                }
+                
+                new Fetcher().Put("streamRedirections/" + channel.ToDictKey(ChannelMapChoice.ChannelDict) +"/deviceId/" + deviceId);
+                return;
+            }
+        }
+        
+        throw new PlaybackDeviceNotFoundException("Could not find the device");
     }
 
-    public void SetStreamerPlaybackDevice(PlaybackDevice playbackDevice, Mix mix)
+    public void SetPlaybackDevice(string deviceId, Mix mix)
     {
-        SetStreamerPlaybackDevice(playbackDevice.Id, mix);
+        JsonElement audioDevices = new Fetcher().Provide("audioDevices").RootElement;
+
+        foreach (JsonElement device in audioDevices.EnumerateArray())
+        {
+            if (device.GetProperty("id").GetString() == deviceId)
+            {
+                string dataFlow = device.GetProperty("dataFlow").GetString()!;
+                if (dataFlow == "capture")
+                {
+                    throw new PlaybackDeviceDataFlowException();
+                }
+                
+                new Fetcher().Put("streamRedirections/" + mix.ToDictKey() +"/deviceId/" + deviceId);
+                return;
+            }
+        }
+        
+        throw new PlaybackDeviceNotFoundException("Could not find the device");
     }
 
-    public void SetStreamerPlaybackDevice(PlaybackDevice playbackDevice, Channel channel = Channel.MIC)
+    public void SetPlaybackDevice(PlaybackDevice device, Channel channel)
     {
-        SetStreamerPlaybackDevice(playbackDevice.Id, channel);
+        SetPlaybackDevice(device.Id, channel);
+    }
+
+    public void SetPlaybackDevice(PlaybackDevice device, Channel channel, Mode mode)
+    {
+        SetPlaybackDevice(device.Id, channel, mode);
+    }
+
+    public void SetPlaybackDevice(PlaybackDevice device, Mix mix)
+    {
+        SetPlaybackDevice(device.Id, mix);
     }
 }

@@ -3,66 +3,104 @@ using SteelSeriesAPI.Sonar.Models;
 
 namespace SteelSeriesAPI.Sonar.Interfaces.Managers;
 
-internal interface IPlaybackDeviceManager
+/// <summary>
+/// Manage the playback device of each <see cref="Channel"/>
+/// </summary>
+public interface IPlaybackDeviceManager
 {
-    /// <summary>
-    /// Get all the in/output Redirection Devices (Windows devices)
-    /// </summary>
-    /// <param name="dataFlow">The DataFlow of the channel (In/Output)</param>
-    /// <returns>A list of <see cref="PlaybackDevice"/></returns>
-    IEnumerable<PlaybackDevice> GetPlaybackDevices(DataFlow _dataFlow);
+    
     
     /// <summary>
-    /// Get a Redirection Channel using its ID
+    /// Get all the Playback Devices (Windows devices)
     /// </summary>
-    /// <param name="deviceId">The ID of the Redirection Channel</param>
+    /// <returns>A list of <see cref="PlaybackDevice"/></returns>
+    IEnumerable<PlaybackDevice> GetAllPlaybackDevices();
+    
+    /// <summary>
+    /// Get all output playback devices
+    /// </summary>
+    /// <returns>A list of <see cref="PlaybackDevice"/></returns>
+    IEnumerable<PlaybackDevice> GetOutputPlaybackDevices();
+    
+    /// <summary>
+    /// Get all input playback devices
+    /// </summary>
+    /// <returns>A list of <see cref="PlaybackDevice"/></returns>
+    IEnumerable<PlaybackDevice> GetInputPlaybackDevices();
+    
+    /// <summary>
+    /// Get the playback device of a <see cref="Channel"/>
+    /// </summary>
+    /// <param name="channel"><see cref="Channel"/></param>
+    /// <returns><see cref="PlaybackDevice"/></returns>
+    PlaybackDevice GetPlaybackDevice(Channel channel);
+    
+    /// <summary>
+    /// Get the playback device of a <see cref="Channel"/> depending on the mode<br/>
+    /// Mainly used to get the Streamer Mode Mic
+    /// </summary>
+    /// <param name="channel"><see cref="Channel"/></param>
+    /// <param name="mode"><see cref="Mode"/></param>
+    /// <returns><see cref="PlaybackDevice"/></returns>
+    PlaybackDevice GetPlaybackDevice(Channel channel, Mode mode);
+    
+    /// <summary>
+    /// Get the playback device of a <see cref="Mix"/>
+    /// </summary>
+    /// <param name="mix"><see cref="Mix"/></param>
+    /// <returns><see cref="PlaybackDevice"/></returns>
+    PlaybackDevice GetPlaybackDevice(Mix mix);
+    
+    /// <summary>
+    /// Get a playback device using its id
+    /// </summary>
+    /// <param name="deviceId">The id of the device</param>
     /// <returns><see cref="PlaybackDevice"/></returns>
     PlaybackDevice GetPlaybackDevice(string deviceId);
     
     /// <summary>
-    /// Get the current Redirection Channel of a Sonar <see cref="Channel"/>
+    /// Set the playback device of a <see cref="Channel"/>
     /// </summary>
-    /// <param name="channel">The Sonar <see cref="Channel"/> you want the redirection channel</param>
-    /// <returns><see cref="PlaybackDevice"/></returns>
-    PlaybackDevice GetClassicPlaybackDevice(Channel channel);
+    /// <param name="deviceId">The id of the device</param>
+    /// <param name="channel"><see cref="Channel"/></param>
+    void SetPlaybackDevice(string deviceId, Channel channel);
     
     /// <summary>
-    /// Get the current Redirection Channel of a Streamer mode Sonar <see cref="Mix"/>
+    /// Set the playback device of a <see cref="Channel"/> depending on the mode<br/>
+    /// Mainly used to change the playback device of the Streamer Mode <see cref="Channel.MIC"/>
     /// </summary>
-    /// <param name="mix">The Sonar <see cref="Mix"/> you want the redirection channel</param>
-    /// <returns>A <see cref="PlaybackDevice"/></returns>
-    PlaybackDevice GetStreamerPlaybackDevice(Mix mix);
+    /// <param name="deviceId">The id of the device</param>
+    /// <param name="channel"><see cref="Channel"/></param>
+    /// <param name="mode"><see cref="Mode"/></param>
+    void SetPlaybackDevice(string deviceId, Channel channel, Mode mode);
     
     /// <summary>
-    /// Get the current Redirection Channel of the Streamer mode Sonar <see cref="Channel.MIC"/>
+    /// Set the playback device of a <see cref="Mix"/>
     /// </summary>
-    /// <param name="channel">The Sonar <see cref="Channel"/> you want to change the redirection channel</param>
-    /// <returns><see cref="PlaybackDevice"/></returns>
-    /// <remarks><paramref name="channel"/> should be set to <see cref="Channel.MIC"/> for it to work</remarks>
-    PlaybackDevice GetStreamerPlaybackDevice(Channel channel = Channel.MIC);
+    /// <param name="deviceId">The id of the device</param>
+    /// <param name="mix"><see cref="Mix"/></param>
+    void SetPlaybackDevice(string deviceId, Mix mix);
     
     /// <summary>
-    /// Set the Redirection Channel of a Sonar <see cref="Channel"/> using its ID
+    /// Set the playback device of a <see cref="Channel"/>
     /// </summary>
-    /// <param name="deviceId">The id of the new Redirection Channel</param>
-    /// <param name="channel">The Sonar <see cref="Channel"/> you want to change the Redirection Channel</param>
-    void SetClassicPlaybackDevice(string deviceId, Channel channel);
+    /// <param name="device"><see cref="PlaybackDevice"/></param>
+    /// <param name="channel"><see cref="Channel"/></param>
+    void SetPlaybackDevice(PlaybackDevice device, Channel channel);
     
     /// <summary>
-    /// Set the Redirection Channel of a Streamer mode Sonar <see cref="Mix"/> using its ID
+    /// Set the playback device of a <see cref="Channel"/> depending on the mode<br/>
+    /// Mainly used to change the playback device of the Streamer Mode <see cref="Channel.MIC"/>
     /// </summary>
-    /// <param name="deviceId">The id of the new Redirection Channel</param>
-    /// <param name="mix">The Sonar <see cref="Mix"/> you want to change the Redirection Channel</param>
-    void SetStreamerPlaybackDevice(string deviceId, Mix mix);
+    /// <param name="device"><see cref="PlaybackDevice"/></param>
+    /// <param name="channel"><see cref="Channel"/></param>
+    /// <param name="mode"><see cref="Mode"/></param>
+    void SetPlaybackDevice(PlaybackDevice device, Channel channel, Mode mode);
     
     /// <summary>
-    /// Set the Redirection Channel of the Streamer mode Sonar <see cref="Channel.MIC"/> using its ID
+    /// Set the playback device of a <see cref="Mix"/>
     /// </summary>
-    /// <param name="deviceId">The id of the new Redirection Channel</param>
-    /// <param name="channel">The Sonar <see cref="Channel"/> you want to change the redirection channel</param>
-    /// <remarks><paramref name="channel"/> should be set to <see cref="Channel.MIC"/> for it to work</remarks>
-    void SetStreamerPlaybackDevice(string deviceId, Channel channel = Channel.MIC);
-    void SetClassicPlaybackDevice(PlaybackDevice playbackDevice, Channel channel);
-    void SetStreamerPlaybackDevice(PlaybackDevice playbackDevice, Mix mix);
-    void SetStreamerPlaybackDevice(PlaybackDevice playbackDevice, Channel channel = Channel.MIC);
+    /// <param name="device"><see cref="PlaybackDevice"/></param>
+    /// <param name="mix"><see cref="Mix"/></param>
+    void SetPlaybackDevice(PlaybackDevice device, Mix mix);
 }

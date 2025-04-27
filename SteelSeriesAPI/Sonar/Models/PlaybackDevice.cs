@@ -1,6 +1,6 @@
+﻿using SteelSeriesAPI.Sonar.Enums;
 using System.Collections;
-using SteelSeriesAPI.Sonar.Enums;
 
 namespace SteelSeriesAPI.Sonar.Models;
 
-public record PlaybackDevice(string Id, string Name, DataFlow DataFlow, List<Channel>? AssociatedClassicChannels, ArrayList? AssociatedStreamChannels);
+public record PlaybackDevice(string Id, string Name, DataFlow DataFlow, List<Tuple<Channel, Mode>> Channels, List<Mix> Mixes);
