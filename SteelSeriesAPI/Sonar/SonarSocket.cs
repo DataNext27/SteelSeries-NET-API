@@ -13,21 +13,21 @@ public class SonarSocket : ISonarSocket
     public bool IsConnected => _socket?.IsBound ?? false;
     
     private readonly Thread _listenerThread;
-    private readonly Uri _sonarWebServerAddress;
     private readonly EventManager _eventManager;
+    private Uri _sonarWebServerAddress;
     private Socket _socket;
 
     private bool _isClosing;
 
     public SonarSocket(EventManager eventManager)
     {
-        _sonarWebServerAddress = new Uri(SonarRetriever.Instance.WebServerAddress());
         _listenerThread = new Thread(ListenerThreadSync) { IsBackground = false };
         _eventManager = eventManager;
     }
 
     public bool Connect()
     {
+        _sonarWebServerAddress = new Uri(SonarRetriever.Instance.WebServerAddress());
         _socket = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.IP);
         try
         {

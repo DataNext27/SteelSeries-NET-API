@@ -79,6 +79,8 @@ public class SonarBridge : ISonarBridge
         Mix = new MixManager();
         AudienceMonitoring = new AudienceMonitoringManager();
         Events = new EventManager();
+
+        _sonarSocket = new SonarSocket(Events);
     }
 
     #region Listener
@@ -95,12 +97,10 @@ public class SonarBridge : ISonarBridge
             throw new ApplicationException("Listener requires Administrator rights to be used");
         }
         
-        if (_sonarSocket != null && _sonarSocket.IsConnected)
+        if (_sonarSocket.IsConnected)
         {
             throw new Exception("Listener already started");
         }
-        
-        _sonarSocket = new SonarSocket(Events);
         
         var connected = _sonarSocket.Connect();
         if (!connected)
