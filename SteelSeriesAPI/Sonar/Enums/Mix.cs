@@ -2,7 +2,7 @@ namespace SteelSeriesAPI.Sonar.Enums;
 
 public enum Mix
 {
-    MONITORING,
+    PERSONAL,
     STREAM
 }
 
@@ -10,7 +10,7 @@ public static class MixExtensions
 {
     private static readonly Dictionary<Mix, string> MixMap = new Dictionary<Mix, string>
     {
-        { Mix.MONITORING, "monitoring" },
+        { Mix.PERSONAL, "monitoring" },
         { Mix.STREAM, "streaming" }
     };
 
