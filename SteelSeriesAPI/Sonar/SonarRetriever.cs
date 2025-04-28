@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
+using SteelSeriesAPI.Exceptions;
 using SteelSeriesAPI.Interfaces;
+using SteelSeriesAPI.Sonar.Exceptions;
 
 namespace SteelSeriesAPI.Sonar;
 
@@ -20,8 +22,6 @@ public class SonarRetriever : IAppRetriever
     public bool ToggleViaSettings => GetMetaDatas()[6];
     public bool IsBrowserViewSupported => GetMetaDatas()[7];
 
-    private readonly ISteelSeriesRetriever _ssRetriever;
-    private readonly string _ggEncryptedAddress;
     private readonly HttpClient _httpClient;
     
     /// <summary>
@@ -29,10 +29,6 @@ public class SonarRetriever : IAppRetriever
     /// </summary>
     public SonarRetriever()
     {
-        _ssRetriever = SteelSeriesRetriever.Instance;
-        _ssRetriever.WaitUntilSteelSeriesStarted();
-        _ggEncryptedAddress = _ssRetriever.GetggEncryptedAddress();
-        
         HttpClientHandler clientHandler = new HttpClientHandler();
         clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
         _httpClient = new(clientHandler);
@@ -40,14 +36,14 @@ public class SonarRetriever : IAppRetriever
 
     public bool[] GetMetaDatas()
     {
-        if (!_ssRetriever.Running)
+        if (!SteelSeriesRetriever.Instance.Running)
         {
-            throw new Exception("SteelSeries Sonar is not running.");
+            throw new SteelSeriesNotRunningException();
         }
 
         try
         {
-            JsonDocument subApps = JsonDocument.Parse(_httpClient.GetStringAsync("https://" + _ggEncryptedAddress + "/subApps").Result);
+            JsonDocument subApps = JsonDocument.Parse(_httpClient.GetStringAsync("https://" + SteelSeriesRetriever.Instance.GetggEncryptedAddress() + "/subApps").Result);
             JsonElement appElement = subApps.RootElement.GetProperty("subApps").GetProperty(Name);
 
             bool isEnabled = appElement.GetProperty("isEnabled").GetBoolean();
@@ -78,10 +74,10 @@ public class SonarRetriever : IAppRetriever
     {
         if (!IsEnabled || !IsReady || !IsRunning)
         {
-            throw new Exception("SteelSeries Sonar not running");
+            throw new SonarNotRunningException();
         }
         
-        JsonDocument subApps = JsonDocument.Parse(_httpClient.GetStringAsync("https://" + _ggEncryptedAddress + "/subApps").Result);
+        JsonDocument subApps = JsonDocument.Parse(_httpClient.GetStringAsync("https://" + SteelSeriesRetriever.Instance.GetggEncryptedAddress() + "/subApps").Result);
         JsonElement appElement = subApps.RootElement.GetProperty("subApps").GetProperty(Name);
 
         return appElement.GetProperty("metadata").GetProperty("webServerAddress") + "/";
@@ -92,6 +88,11 @@ public class SonarRetriever : IAppRetriever
     /// </summary>
     public void WaitUntilAppStarted()
     {
+        if (!SteelSeriesRetriever.Instance.Running)
+        {
+            SteelSeriesRetriever.Instance.WaitUntilSteelSeriesStarted();
+        }
+        
         if (!IsEnabled || !IsReady || !IsRunning)
         {
             Console.WriteLine("Waiting for Sonar to start");
