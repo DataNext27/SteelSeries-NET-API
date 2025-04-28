@@ -11,7 +11,7 @@ public class SonarPlaybackDeviceEvent : EventArgs
     
     public Mode Mode { get; set; }
     
-    public Channel? Device { get; set; }
+    public Channel? Channel { get; set; }
     
-    public Mix? Channel { get; set; }
+    public Mix? Mix { get; set; }
 }
