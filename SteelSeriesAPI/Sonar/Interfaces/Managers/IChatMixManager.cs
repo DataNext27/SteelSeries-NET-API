@@ -1,5 +1,8 @@
 ﻿namespace SteelSeriesAPI.Sonar.Interfaces.Managers;
 
+/// <summary>
+/// Manage the balance of ChatMix
+/// </summary>
 public interface IChatMixManager
 {
     /// <summary>

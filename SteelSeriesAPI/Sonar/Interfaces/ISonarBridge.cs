@@ -1,5 +1,8 @@
 namespace SteelSeriesAPI.Sonar.Interfaces;
 
+/// <summary>
+/// Manage Sonar
+/// </summary>
 public interface ISonarBridge
 {
     /// <summary>
