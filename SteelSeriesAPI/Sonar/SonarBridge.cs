@@ -18,7 +18,7 @@ public class SonarBridge : ISonarBridge
     /// </summary>
     public bool IsRunning => SonarRetriever.Instance is { IsEnabled: true, IsReady: true, IsRunning: true };
     
-    private ISonarSocket _sonarSocket;
+    private readonly ISonarSocket _sonarSocket;
 
     /// <summary>
     /// Manage the Sonar <see cref="Mode"/>
