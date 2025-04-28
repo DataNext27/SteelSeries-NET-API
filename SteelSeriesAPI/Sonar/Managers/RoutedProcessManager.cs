@@ -156,7 +156,7 @@ internal class RoutedProcessManager : IRoutedProcessManager
         }
     }
 
-    public RoutedProcess GetActiveRoutedProcessesById(int processId)
+    public IEnumerable<RoutedProcess> GetActiveRoutedProcessesById(int processId)
     {
         JsonElement audioDeviceRouting = new Fetcher().Provide("AudioDeviceRouting").RootElement;
         
@@ -175,7 +175,7 @@ internal class RoutedProcessManager : IRoutedProcessManager
                         Channel channel = (Channel)ChannelExtensions.FromDictKey(role)!;
                         string processPath = session.GetProperty("id").GetString()!.Split("|")[1].Replace('\\', '/');
                         
-                        return new RoutedProcess(processId, processName, displayName, state, channel, processPath);
+                        yield return new RoutedProcess(processId, processName, displayName, state, channel, processPath);
                     }
                 }
             }
@@ -212,5 +212,14 @@ internal class RoutedProcessManager : IRoutedProcessManager
     public void RouteProcessToChannel(RoutedProcess process, Channel channel)
     {
         RouteProcessToChannel(process.ProcessId, channel);
+
+        if (process.Channel == channel)
+        {
+            process.State = RoutedProcessState.ACTIVE;
+        }
+        else
+        {
+            process.State = RoutedProcessState.INACTIVE;
+        }
     }
 }

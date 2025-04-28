@@ -46,7 +46,7 @@ public interface IRoutedProcessManager
     /// </summary>
     /// <param name="processId">The id of the process</param>
     /// <returns><see cref="RoutedProcess"/></returns>
-    RoutedProcess GetActiveRoutedProcessesById(int processId);
+    IEnumerable<RoutedProcess> GetActiveRoutedProcessesById(int processId);
     
     /// <summary>
     /// Route an audio process to a specific <see cref="Channel"/>
