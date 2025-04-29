@@ -1,7 +1,10 @@
-﻿using System.Net;
+﻿using SteelSeriesAPI.Sonar.Exceptions;
+using SteelSeriesAPI.Sonar.Interfaces;
+using SteelSeriesAPI.Sonar.Managers;
+
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using SteelSeriesAPI.Interfaces;
 
 namespace SteelSeriesAPI.Sonar;
 
@@ -10,21 +13,21 @@ public class SonarSocket : ISonarSocket
     public bool IsConnected => _socket?.IsBound ?? false;
     
     private readonly Thread _listenerThread;
-    private readonly Uri _sonarWebServerAddress;
-    private readonly SonarEventManager _sonarEventManager;
+    private readonly EventManager _eventManager;
+    private Uri _sonarWebServerAddress;
     private Socket _socket;
 
     private bool _isClosing;
 
-    public SonarSocket(string sonarWebServerAddress, SonarEventManager sonarEventManager)
+    public SonarSocket(EventManager eventManager)
     {
-        _sonarWebServerAddress = new Uri(sonarWebServerAddress);
         _listenerThread = new Thread(ListenerThreadSync) { IsBackground = false };
-        _sonarEventManager = sonarEventManager;
+        _eventManager = eventManager;
     }
 
     public bool Connect()
     {
+        _sonarWebServerAddress = new Uri(SonarRetriever.Instance.WebServerAddress());
         _socket = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.IP);
         try
         {
@@ -45,7 +48,7 @@ public class SonarSocket : ISonarSocket
     {
         if (!IsConnected)
         {
-            throw new Exception("Listener need to be connected before listening");
+            throw new SonarListenerNotConnectedException();
         }
         
         _listenerThread.Start();
@@ -102,7 +105,7 @@ public class SonarSocket : ISonarSocket
                     {
                         string path = putData.Split("PUT ")[1].Split(" HTTP")[0];
                         // Console.WriteLine(path); // For debugging
-                        _sonarEventManager.HandleEvent(path);  // Invoke events
+                        _eventManager.HandleEvent(path);  // Invoke events
                     }
                 }
             }

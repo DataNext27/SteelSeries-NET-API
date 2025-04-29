@@ -11,19 +11,30 @@
 > This library is **NOT** affiliated in any way with **SteelSeries**  
 > I've made it because it was interesting and funny to do, also I wanted to share this project for people to use it for their own projects
 
-This library allows you to take control over the SteelSeries GG app.
+This library allows you to take control over the SteelSeries GG app (only Sonar for now).
 
-The API is available via a [nuget package](https://www.nuget.org/packages/Steelseries-NET-API).  
+The library is available via a [nuget package](https://www.nuget.org/packages/Steelseries-NET-API).  
 It is also available in the [Releases](https://github.com/mpaperno/SteelSeries-NET-API/releases) tab as a .zip archive for each supported .NET version.
 
 ## Features
  - Full Sonar control
+   - Mode
+   - Volume
+   - Mute
+   - ChatMix
+   - Configs (Can't edit a config)
+   - Playback Devices
+   - Streamer mode Personal & Stream Mixes
+   - Streamer mode Audience Monitoring
 
 ## Getting Started
 To get started, you only need to create a Sonar Object.
 `````csharp
 // Create Sonar object
 SonarBridge sonarManager = new SonarBridge();
+
+// Wait for GG to start before continuing
+sonarManager.WaitUntilSteelSeriesStarted();
 
 // Wait for sonar to start before continuing
 sonarManager.WaitUntilSonarStarted();
@@ -32,23 +43,15 @@ sonarManager.WaitUntilSonarStarted();
 sonarManager.StartListener();
 sonarManager.SonarEventManager.OnSonarModeChange += OnModeChangeHandler; // Register event
 
-Mode currentMode = sonarManager.GetMode(); // Returns the current mode
-sonarManager.SetVolume(0.5, Device.Game); // Set the Game Device volume
+Mode currentMode = sonarManager.Mode.Get(); // Returns the current mode
+sonarManager.VolumeSettings.SetVolume(0.5, Device.Game); // Set the Game Device volume
 ...
 `````
-For more example, you can check the [Tests](https://github.com/DataNext27/SteelSeries-NET-API/tree/main/SteelSeriesAPI.Tests) and the [Sample](https://github.com/DataNext27/SteelSeries-NET-API/tree/main/SteelSeriesAPI.Sample) folders.  
+For more example, you can check the [Sample](SteelSeriesAPI.Sample/Program.cs) and the [Tests](SteelSeriesAPI.Tests/Program.cs) folders.  
 If you need any sort of Documentation, go check the [Repo's Wiki](https://github.com/DataNext27/SteelSeries-NET-API/wiki) for more information.
 
-### Some Vocabulary
-- Mode : Classic/Stream
-- Device : Master/Game/Chat/Media/Aux/Mic
-- Channel : *(Streamer mode)* Monitoring/Stream
-- Audio Configs : It's in the name
-- Redirection States : *(Streamer mode)* Button above sliders to un/mute a channel of a device
-- Redirection Device : Device where the sound got by GG is redirected (your headset for example)
-
 ## Todo
-(Actually not possible, maybe one day i guess :/ )
+(Actually not planned as not possible, maybe one day I guess :/ )
 - Moments
 - Engine
 - Settings
