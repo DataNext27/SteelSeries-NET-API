@@ -160,7 +160,7 @@ public class EventManager
                 {
                     PlaybackDeviceId = subs[4].Replace("%7B", "{").Replace("%7D", "}"),
                     Mode = Mode.CLASSIC,
-                    Device = (Channel)ChannelExtensions.FromDictKey(subs[2], ChannelMapChoice.ChannelDict)!
+                    Channel = (Channel)ChannelExtensions.FromDictKey(subs[2], ChannelMapChoice.ChannelDict)!
                 };
                 break;
             case "streamRedirections":
@@ -179,7 +179,7 @@ public class EventManager
                             {
                                 PlaybackDeviceId = subs[4].Replace("%7B", "{").Replace("%7D", "}"),
                                 Mode = Mode.STREAMER,
-                                Device = Channel.MIC
+                                Channel = Channel.MIC
                             };
                             break;
                         }
@@ -188,7 +188,7 @@ public class EventManager
                         {
                             PlaybackDeviceId = subs[4].Replace("%7B", "{").Replace("%7D", "}"),
                             Mode = Mode.STREAMER,
-                            Channel = (Mix)MixExtensions.FromDictKey(subs[2])!
+                            Mix = (Mix)MixExtensions.FromDictKey(subs[2])!
                         };
                         break;
                     case "redirections":

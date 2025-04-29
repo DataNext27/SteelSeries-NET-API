@@ -132,7 +132,7 @@ class Program
 
     static void OnPlaybackDeviceChangeHandler(object? sender, SonarPlaybackDeviceEvent eventArgs)
     {
-        Console.WriteLine("Received Redirection Channel Event : " + eventArgs.PlaybackDeviceId + ", " + eventArgs.Mode + ", " + eventArgs.Device + ", " + eventArgs.Channel);
+        Console.WriteLine("Received Redirection Channel Event : " + eventArgs.PlaybackDeviceId + ", " + eventArgs.Mode + ", " + eventArgs.Channel + ", " + eventArgs.Mix);
     }
     
     static void OnRoutedProcessChangeHandler(object? sender, SonarRoutedProcessEvent eventArgs)
