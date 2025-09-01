@@ -59,4 +59,4 @@ If you need any sort of Documentation, go check the [Repo's Wiki](https://github
 If anyone find a way to control these above, feel free to create a pull request or an issue
 
 ## Projects Using This API
-- [TouchPortal SteelSeries GG Plugin](https://github.com/DataNext27/TouchPortal_SteelSeriesGG) made by DataNext
+- [TouchPortal SteelSeries GG Plugin](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/tree/v2-api-rework) made by DataNext
