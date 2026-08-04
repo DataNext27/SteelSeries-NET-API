@@ -1,40 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <TargetFrameworks>net8.0;net9.0;net7.0</TargetFrameworks>
-        <Version>1.1.0</Version>
-        <PackageId>Steelseries-NET-API</PackageId>
-        <Product>Steelseries-NET-API</Product>
-        <Title>SteelSeries .NET API Client</Title>
-        <Authors>DataNext</Authors>
-        <Description>Unofficial .NET SteelSeries Sonar API (Since it's acutally impossible for Moments)</Description>
-        <PackageProjectUrl>https://github.com/DataNext27/SteelSeries-NET-API</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/DataNext27/SteelSeries-NET-API.git</RepositoryUrl>
-        <RepositoryType>git</RepositoryType>
-        <Copyright>Copyright DataNext; all rights reserved</Copyright>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <GenerateDocumentationFile>True</GenerateDocumentationFile>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageIcon>icon-24.png</PackageIcon>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageTags>steelseries; sonar; gg; api; lib; library</PackageTags>
+        <RootNamespace>SteelSeriesAPI</RootNamespace>
     </PropertyGroup>
 
-    <ItemGroup>
-        <Content Include="..\README.md">
-            <Pack>True</Pack>
-            <PackagePath>\</PackagePath>
-        </Content>
-    </ItemGroup>
-    
-    <ItemGroup>
-      <None Include="..\icon-24.png">
-        <Pack>True</Pack>
-        <PackagePath>\</PackagePath>
-      </None>
-    </ItemGroup>
+    <PropertyGroup Label="NuGet">
+        <PackageId>Steelseries-NET-API</PackageId>
+        <Version>2.0.0-alpha.1</Version>
+        <Authors>DataNext</Authors>
+        <Description>Unofficial .NET library to control SteelSeries GG (Sonar)</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/DataNext27/SteelSeries-NET-API</RepositoryUrl>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
 
 </Project>
