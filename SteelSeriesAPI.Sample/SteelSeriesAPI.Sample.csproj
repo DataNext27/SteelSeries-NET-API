@@ -11,4 +11,8 @@
         <ProjectReference Include="..\SteelSeriesAPI\SteelSeriesAPI.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.10" />
+    </ItemGroup>
+
 </Project>
