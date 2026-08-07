@@ -1,0 +1,111 @@
+﻿using System.Text.Json;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+
+namespace SteelSeriesAPI.Core;
+
+/// <summary>
+/// Resilient HTTP client for the Sonar web server.
+/// Caches the server address and transparently rediscovers it when GG restarts.
+/// </summary>
+public class SonarHttpClient : IDisposable
+{
+    private readonly HttpClient _http;
+    private readonly ServerDiscovery _discovery;
+    private readonly SemaphoreSlim _discoveryLock = new(1, 1);
+    private readonly ILogger _logger;
+
+    private Uri? _baseAddress;
+
+    /// <summary>Creates a new Sonar HTTP client.</summary>
+    /// <param name="discovery">The discovery service used to locate the Sonar web server.</param>
+    /// <param name="logger">Optional logger for diagnostics. When null, the library stays silent.</param>
+    public SonarHttpClient(ServerDiscovery discovery, ILogger? logger = null)
+    {
+        _discovery = discovery;
+        _logger = logger ?? NullLogger.Instance;
+        _http = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
+    }
+
+    /// <summary>Sends a GET request to the Sonar server and returns the parsed JSON response.</summary>
+    /// <param name="route">The route, relative to the Sonar server base address.</param>
+    /// <param name="ct">A token to cancel the operation.</param>
+    public async Task<JsonDocument> GetAsync(string route, CancellationToken ct = default)
+    {
+        var response = await SendAsync(HttpMethod.Get, route, ct);
+        await using var stream = await response.Content.ReadAsStreamAsync(ct);
+        return await JsonDocument.ParseAsync(stream, cancellationToken: ct);
+    }
+
+    /// <summary>Sends a PUT request to the Sonar server.</summary>
+    /// <param name="route">The route, relative to the Sonar server base address.</param>
+    /// <param name="ct">A token to cancel the operation.</param>
+    public async Task PutAsync(string route, CancellationToken ct = default)
+    {
+        await SendAsync(HttpMethod.Put, route, ct);
+    }
+
+    private async Task<HttpResponseMessage> SendAsync(
+        HttpMethod method, string route, CancellationToken ct, bool isRetry = false)
+    {
+        Uri baseAddress = await GetBaseAddressAsync(ct);
+        var request = new HttpRequestMessage(method, new Uri(baseAddress, route));
+
+        HttpResponseMessage response;
+        try
+        {
+            response = await _http.SendAsync(request, ct);
+        }
+        catch (HttpRequestException ex) when (!isRetry)
+        {
+            // Transport-level failure (connection refused, reset...):
+            // GG may have restarted on a new port. Rediscover once, retry once.
+            _logger.LogInformation(ex, "Request to {Route} failed, rediscovering Sonar address", route);
+            InvalidateAddress();
+            return await SendAsync(method, route, ct, isRetry: true);
+        }
+        catch (TaskCanceledException ex) when (!ct.IsCancellationRequested && !isRetry)
+        {
+            // Timeout (not a caller cancellation): treat as a transport failure.
+            _logger.LogInformation(ex, "Request to {Route} timed out, rediscovering Sonar address", route);
+            InvalidateAddress();
+            return await SendAsync(method, route, ct, isRetry: true);
+        }
+
+        if (!response.IsSuccessStatusCode)
+        {
+            // Protocol-level failure: the server received the request and rejected it.
+            // Rediscovery would not help; surface the error with as much context as possible.
+            string body = await response.Content.ReadAsStringAsync(ct);
+            throw new SonarRequestException(route, (int)response.StatusCode, body);
+        }
+
+        return response;
+    }
+
+    private async Task<Uri> GetBaseAddressAsync(CancellationToken ct)
+    {
+        if (_baseAddress is not null) return _baseAddress;
+
+        await _discoveryLock.WaitAsync(ct);
+        try
+        {
+            // Another caller may have resolved it while we waited.
+            return _baseAddress ??= await _discovery.DiscoverSonarAddressAsync(ct);
+        }
+        finally
+        {
+            _discoveryLock.Release();
+        }
+    }
+
+    private void InvalidateAddress() => _baseAddress = null;
+
+    /// <summary>Releases the underlying HTTP resources.</summary>
+    public void Dispose()
+    {
+        _http.Dispose();
+        _discoveryLock.Dispose();
+        GC.SuppressFinalize(this);
+    }
+}
