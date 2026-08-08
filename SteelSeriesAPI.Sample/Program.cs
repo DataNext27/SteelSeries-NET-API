@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using SteelSeriesAPI.Core;
+﻿using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using SteelSeriesAPI.Sonar;
 using SteelSeriesAPI.Sonar.Enums;
 
@@ -12,34 +12,45 @@ internal static class Program
         using var loggerFactory = LoggerFactory.Create(b => b.AddConsole().SetMinimumLevel(LogLevel.Debug));
         var logger = loggerFactory.CreateLogger("Sample");
 
-        var discovery = new ServerDiscovery(logger);
-        using var client = new SonarHttpClient(discovery, logger);
-
         using var sonar = new SonarClient(logger);
 
-        try
+        // --- 1. ModeManager validation: read, switch, time the confirmation, switch back ---
+        var initialMode = await sonar.Mode.GetAsync();
+        Console.WriteLine($"Current mode: {initialMode}");
+
+        var target = initialMode == Mode.Classic ? Mode.Streamer : Mode.Classic;
+        var sw = Stopwatch.StartNew();
+        await sonar.Mode.SetAsync(target);
+        sw.Stop();
+        Console.WriteLine($"Switched to {target}, confirmed in {sw.ElapsedMilliseconds} ms");
+
+        sw.Restart();
+        await sonar.Mode.SetAsync(initialMode);
+        sw.Stop();
+        Console.WriteLine($"Switched back to {initialMode}, confirmed in {sw.ElapsedMilliseconds} ms");
+
+        // --- 2. Route exploration sweep: V1 routes, do they still exist and what do they return? ---
+        string[] candidateRoutes =
+        [
+            "chatMix",
+            "configs",
+            "audioDevices",
+            "classicRedirections",
+            "streamRedirections"
+        ];
+
+        foreach (string route in candidateRoutes)
         {
-            await sonar.VolumeSettings.SetVolumeAsync(Channel.Game, 0.5);
-            Console.WriteLine("Classic set: OK (hypothesis rejected!)");
+            Console.WriteLine($"\n=== GET {route} ===");
+            try
+            {
+                using var doc = await sonar.GetRawAsync(route);
+                Console.WriteLine(doc.RootElement);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"FAILED: {e.GetType().Name} - {e.Message}");
+            }
         }
-        catch (SonarRequestException e)
-        {
-            Console.WriteLine($"Classic set rejected: HTTP {e.StatusCode}, body: '{e.ResponseBody}'");
-        }
-
-// 2. Streamer-route write should succeed
-        await sonar.VolumeSettings.SetVolumeAsync(Channel.Game, Mix.Personal, 0.42);
-        var check = await sonar.VolumeSettings.GetAsync(Channel.Game, Mix.Personal);
-        Console.WriteLine($"Streamer set check: {check}");
-
-// 3. Raw dumps for the test fixtures
-        using var classic = await client.GetAsync("volumeSettings/classic/", default);
-        Console.WriteLine(classic.RootElement);
-        using var streamer = await client.GetAsync("volumeSettings/streamer/", default);
-        Console.WriteLine(streamer.RootElement);
-
-// 4. Bonus: what does the mode route say? (route from your V1)
-        using var mode = await client.GetAsync("mode/", default);
-        Console.WriteLine($"Mode: {mode.RootElement}");
     }
 }

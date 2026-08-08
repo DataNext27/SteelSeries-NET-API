@@ -8,7 +8,7 @@ namespace SteelSeriesAPI.Core;
 /// Resilient HTTP client for the Sonar web server.
 /// Caches the server address and transparently rediscovers it when GG restarts.
 /// </summary>
-public class SonarHttpClient : IDisposable
+public class SonarHttpClient : IDisposable, ISonarTransport
 {
     private readonly HttpClient _http;
     private readonly ServerDiscovery _discovery;
@@ -74,9 +74,11 @@ public class SonarHttpClient : IDisposable
 
         if (!response.IsSuccessStatusCode)
         {
-            // Protocol-level failure: the server received the request and rejected it.
-            // Rediscovery would not help; surface the error with as much context as possible.
             string body = await response.Content.ReadAsStringAsync(ct);
+
+            if (body.Contains("Cannot be called in current mode", StringComparison.OrdinalIgnoreCase))
+                throw new SonarWrongModeException(route);
+
             throw new SonarRequestException(route, (int)response.StatusCode, body);
         }
 

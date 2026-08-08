@@ -8,14 +8,14 @@ namespace SteelSeriesAPI.Sonar.Managers;
 /// <inheritdoc />
 internal sealed class VolumeSettingsManager : IVolumeSettingsManager
 {
-    private readonly SonarHttpClient _client;
+    private readonly ISonarTransport _transport;
 
-    internal VolumeSettingsManager(SonarHttpClient client) => _client = client;
+    internal VolumeSettingsManager(ISonarTransport transport) => _transport = transport;
 
     /// <inheritdoc />
     public async Task<VolumeSetting> GetAsync(Channel channel, CancellationToken ct = default)
     {
-        using var doc = await _client.GetAsync(SonarRoutes.ClassicVolumes, ct);
+        using var doc = await _transport.GetAsync(SonarRoutes.ClassicVolumes, ct);
 
         // Master lives under "masters", other channels under "devices/{key}".
         JsonElement node = channel == Channel.Master
@@ -28,7 +28,7 @@ internal sealed class VolumeSettingsManager : IVolumeSettingsManager
     /// <inheritdoc />
     public async Task<VolumeSetting> GetAsync(Channel channel, Mix mix, CancellationToken ct = default)
     {
-        using var doc = await _client.GetAsync(SonarRoutes.StreamerVolumes, ct);
+        using var doc = await _transport.GetAsync(SonarRoutes.StreamerVolumes, ct);
 
         JsonElement node = channel == Channel.Master
             ? doc.RootElement.Dig("masters", "stream", mix.ToJsonKey())
@@ -41,23 +41,23 @@ internal sealed class VolumeSettingsManager : IVolumeSettingsManager
     public Task SetVolumeAsync(Channel channel, double volume, CancellationToken ct = default)
     {
         ValidateVolume(volume);
-        return _client.PutAsync(SonarRoutes.SetClassicVolume(channel, volume), ct);
+        return _transport.PutAsync(SonarRoutes.SetClassicVolume(channel, volume), ct);
     }
 
     /// <inheritdoc />
     public Task SetVolumeAsync(Channel channel, Mix mix, double volume, CancellationToken ct = default)
     {
         ValidateVolume(volume);
-        return _client.PutAsync(SonarRoutes.SetStreamerVolume(mix, channel, volume), ct);
+        return _transport.PutAsync(SonarRoutes.SetStreamerVolume(mix, channel, volume), ct);
     }
 
     /// <inheritdoc />
     public Task SetMuteAsync(Channel channel, bool muted, CancellationToken ct = default) =>
-        _client.PutAsync(SonarRoutes.SetClassicMute(channel, muted), ct);
+        _transport.PutAsync(SonarRoutes.SetClassicMute(channel, muted), ct);
 
     /// <inheritdoc />
     public Task SetMuteAsync(Channel channel, Mix mix, bool muted, CancellationToken ct = default) =>
-        _client.PutAsync(SonarRoutes.SetStreamerMute(mix, channel, muted), ct);
+        _transport.PutAsync(SonarRoutes.SetStreamerMute(mix, channel, muted), ct);
 
     private static VolumeSetting ParseSetting(JsonElement node)
     {

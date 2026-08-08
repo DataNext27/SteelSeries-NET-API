@@ -9,6 +9,9 @@ namespace SteelSeriesAPI.Sonar;
 /// </summary>
 internal static class SonarRoutes
 {
+    /// <summary>Current mixer mode, returned as a bare JSON string ("classic" or "stream").</summary>
+    internal const string GetMode = "mode/";
+    
     /// <summary>Volume/mute state of all channels in classic mode.</summary>
     internal const string ClassicVolumes = "volumeSettings/classic/";
 
@@ -19,6 +22,8 @@ internal static class SonarRoutes
     // in classic routes, "volume"/"isMuted" lowercase in streamer routes).
     // Verified against GG on 2026-08-04.
 
+    internal static string SetMode(Mode mode) => $"mode/{mode.ToApiValue()}";
+    
     internal static string SetClassicVolume(Channel channel, double volume) =>
         $"volumeSettings/classic/{channel.ToRouteKey()}/Volume/{Format(volume)}";
 

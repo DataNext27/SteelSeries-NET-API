@@ -12,6 +12,9 @@ namespace SteelSeriesAPI.Sonar;
 public sealed class SonarClient : IDisposable
 {
     private readonly SonarHttpClient _httpClient;
+    
+    /// <summary>Reads and switches the Sonar mixer mode.</summary>
+    public IModeManager Mode { get; }
 
     /// <summary>Controls the volume and mute state of Sonar channels.</summary>
     public IVolumeSettingsManager VolumeSettings { get; }
@@ -23,11 +26,9 @@ public sealed class SonarClient : IDisposable
         var discovery = new ServerDiscovery(logger);
         _httpClient = new SonarHttpClient(discovery, logger);
 
+        Mode = new ModeManager(_httpClient);
         VolumeSettings = new VolumeSettingsManager(_httpClient);
     }
-
-    /// <inheritdoc />
-    public void Dispose() => _httpClient.Dispose();
     
     /// <summary>
     /// Sends a GET request to an arbitrary Sonar route and returns the raw JSON response.
@@ -37,5 +38,7 @@ public sealed class SonarClient : IDisposable
     /// <param name="ct">A token to cancel the operation.</param>
     public Task<JsonDocument> GetRawAsync(string route, CancellationToken ct = default) =>
         _httpClient.GetAsync(route, ct);
-    
+
+    /// <inheritdoc />
+    public void Dispose() => _httpClient.Dispose();
 }

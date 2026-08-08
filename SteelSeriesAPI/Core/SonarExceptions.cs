@@ -65,3 +65,16 @@ public class SonarRequestException : SteelSeriesException
         ResponseBody = responseBody;
     }
 }
+
+/// <summary>
+/// The requested operation is not available in the current mixer mode.
+/// For example, classic volume routes cannot be written while streamer mode is active.
+/// Check <see cref="Sonar.Managers.IModeManager"/> to read or switch the mode.
+/// </summary>
+public class SonarWrongModeException : SteelSeriesException
+{
+    /// <summary>Creates the exception from the rejected route.</summary>
+    /// <param name="route">The route that was rejected.</param>
+    public SonarWrongModeException(string route)
+        : base($"Sonar rejected '{route}': this operation is not available in the current mixer mode.") { }
+}
