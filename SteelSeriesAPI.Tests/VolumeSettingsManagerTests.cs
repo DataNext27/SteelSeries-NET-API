@@ -77,13 +77,16 @@ public class VolumeSettingsManagerTests
         Assert.Equal("volumeSettings/classic/chatRender/Mute/true", Assert.Single(transport.PutRoutes));
     }
 
-    [Fact]
-    public async Task SetVolumeAsync_OutOfRange_Throws()
+    [Theory]
+    [InlineData(1.5)]
+    [InlineData(double.NaN)]
+    public async Task SetVolumeAsync_OutOfRange_Throws(double invalid)
     {
-        var manager = new VolumeSettingsManager(new FakeTransport());
+        var transport = new FakeTransport();
+        var manager = new VolumeSettingsManager(transport);
 
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
-            () => manager.SetVolumeAsync(Channel.Game, 1.5));
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => manager.SetVolumeAsync(Channel.Game, invalid));
+        Assert.Empty(transport.PutRoutes); // validation must happen BEFORE any HTTP call
     }
 
     [Fact]

@@ -17,6 +17,10 @@ internal static class SonarRoutes
 
     /// <summary>Volume/mute state of all channels/mixes in streamer mode.</summary>
     internal const string StreamerVolumes = "volumeSettings/streamer/";
+    
+    /// <summary>Current chat mix state (balance and availability).</summary>
+    /// <remarks>Moved to the /v1/ prefix by a 2026 GG update; the unprefixed route now returns 404.</remarks>
+    internal const string GetChatMix = "v1/chatMix";
 
     // Note: the Sonar API is inconsistent by design ("Volume"/"Mute" capitalized
     // in classic routes, "volume"/"isMuted" lowercase in streamer routes).
@@ -35,6 +39,9 @@ internal static class SonarRoutes
 
     internal static string SetStreamerMute(Mix mix, Channel channel, bool muted) =>
         $"volumeSettings/streamer/{mix.ToRouteKey()}/{channel.ToRouteKey()}/isMuted/{Bool(muted)}";
+
+    internal static string SetChatMix(double balance) =>
+        $"v1/chatMix?balance={Format(balance)}";
 
     private static string Format(double value) =>
         value.ToString("0.00", CultureInfo.InvariantCulture);

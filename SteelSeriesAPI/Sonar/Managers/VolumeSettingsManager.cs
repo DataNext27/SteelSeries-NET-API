@@ -73,7 +73,7 @@ internal sealed class VolumeSettingsManager : IVolumeSettingsManager
 
     private static void ValidateVolume(double volume)
     {
-        if (volume is < 0.0 or > 1.0)
+        if (double.IsNaN(volume) || volume is < 0.0 or > 1.0)
             throw new ArgumentOutOfRangeException(nameof(volume), volume,
                 "Volume must be between 0.0 and 1.0.");
     }
