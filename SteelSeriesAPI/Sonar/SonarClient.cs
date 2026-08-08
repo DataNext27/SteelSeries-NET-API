@@ -38,6 +38,20 @@ public sealed class SonarClient : IDisposable
     /// <param name="ct">A token to cancel the operation.</param>
     public Task<JsonDocument> GetRawAsync(string route, CancellationToken ct = default) =>
         _httpClient.GetAsync(route, ct);
+    
+    /// <summary>
+    /// Sends a PUT request to an arbitrary Sonar route.
+    /// Intended for exploration and debugging; prefer the typed managers for normal use.
+    /// </summary>
+    /// <param name="route">The route, relative to the Sonar server base address.</param>
+    /// <param name="ct">A token to cancel the operation.</param>
+    public Task PutRawAsync(string route, CancellationToken ct = default) =>
+        _httpClient.PutAsync(route, ct);
+    
+    /// <summary>Resolves and returns the current Sonar web server address.</summary>
+    /// <param name="ct">A token to cancel the operation.</param>
+    public Task<Uri> GetServerAddressAsync(CancellationToken ct = default) =>
+        _httpClient.GetServerAddressAsync(ct);
 
     /// <inheritdoc />
     public void Dispose() => _httpClient.Dispose();

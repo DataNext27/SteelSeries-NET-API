@@ -100,6 +100,14 @@ public class SonarHttpClient : IDisposable, ISonarTransport
             _discoveryLock.Release();
         }
     }
+    
+    /// <summary>
+    /// Resolves and returns the current Sonar web server address,
+    /// discovering it if not already cached.
+    /// </summary>
+    /// <param name="ct">A token to cancel the operation.</param>
+    public Task<Uri> GetServerAddressAsync(CancellationToken ct = default) =>
+        GetBaseAddressAsync(ct);
 
     private void InvalidateAddress() => _baseAddress = null;
 
