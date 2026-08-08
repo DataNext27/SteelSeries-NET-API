@@ -29,15 +29,15 @@ internal sealed class ModeManager : IModeManager
     {
         await _transport.PutAsync(SonarRoutes.SetMode(mode), ct);
 
-        // Mode switching is not instantaneous server-side (the V1 library used a
-        // blind 100ms sleep here). Poll until Sonar confirms, with a bounded budget.
-        for (int attempt = 0; attempt < 20; attempt++)
+        // Mode switching takes ~400-600ms in practice (measured 2026-08-07).
+        // Poll every 100ms with a generous 5s budget: succeeds as soon as confirmed.
+        for (int attempt = 0; attempt < 50; attempt++)
         {
             if (await GetAsync(ct) == mode) return;
-            await Task.Delay(50, ct);
+            await Task.Delay(100, ct);
         }
 
         throw new SonarResponseException(
-            $"Sonar did not confirm the switch to mode '{mode}' within 1 second.");
+            $"Sonar did not confirm the switch to mode '{mode}' within 5 seconds.");
     }
 }
