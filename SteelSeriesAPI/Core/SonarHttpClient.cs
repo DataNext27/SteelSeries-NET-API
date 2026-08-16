@@ -109,7 +109,7 @@ public class SonarHttpClient : IDisposable, ISonarTransport
     public Task<Uri> GetServerAddressAsync(CancellationToken ct = default) =>
         GetBaseAddressAsync(ct);
 
-    private void InvalidateAddress() => _baseAddress = null;
+    internal void InvalidateAddress() => _baseAddress = null;
 
     /// <summary>Releases the underlying HTTP resources.</summary>
     public void Dispose()

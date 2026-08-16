@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using SteelSeriesAPI.Core;
+using SteelSeriesAPI.Sonar.Events;
 using SteelSeriesAPI.Sonar.Managers;
 
 namespace SteelSeriesAPI.Sonar;
@@ -12,6 +13,9 @@ namespace SteelSeriesAPI.Sonar;
 public sealed class SonarClient : IDisposable
 {
     private readonly SonarHttpClient _httpClient;
+    
+    /// <summary>Real-time event stream from Sonar. Call <see cref="SonarEventListener.Start"/> to begin listening.</summary>
+    public SonarEventListener Events { get; }
     
     /// <summary>Reads and switches the Sonar mixer mode.</summary>
     public IModeManager Mode { get; }
@@ -28,6 +32,8 @@ public sealed class SonarClient : IDisposable
     {
         var discovery = new ServerDiscovery(logger);
         _httpClient = new SonarHttpClient(discovery, logger);
+        
+        Events = new SonarEventListener(_httpClient, logger);
 
         Mode = new ModeManager(_httpClient);
         VolumeSettings = new VolumeSettingsManager(_httpClient);
@@ -58,5 +64,9 @@ public sealed class SonarClient : IDisposable
         _httpClient.GetServerAddressAsync(ct);
 
     /// <inheritdoc />
-    public void Dispose() => _httpClient.Dispose();
+    public void Dispose()
+    {
+        Events.Dispose();
+        _httpClient.Dispose();
+    }
 }

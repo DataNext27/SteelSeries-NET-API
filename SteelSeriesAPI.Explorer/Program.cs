@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using System.Net.WebSockets;
+using System.Text;
+using System.Text.Json;
 using SteelSeriesAPI.Core;
 using SteelSeriesAPI.Sonar;
 
@@ -22,7 +24,7 @@ internal static class Program
     {
         using var sonar = new SonarClient();
         Console.WriteLine($"Sonar server: {await sonar.GetServerAddressAsync()}");
-        Console.WriteLine("Sonar API Explorer - commands: get <route> | put <route> | probe <r1> <r2> ... | dump | quit");
+        Console.WriteLine("Sonar API Explorer - commands: get <route> | put <route> | probe <r1> <r2> ... | dump | ws | quit");
 
         while (true)
         {
@@ -54,6 +56,13 @@ internal static class Program
 
                     case "dump":
                         await Dump(sonar);
+                        break;
+                    
+                    case "ws":
+                        await ListenWebSocketAsync(
+                            sonar,
+                            input.Length >= 2 ? input[1] : "/",
+                            input.Length >= 3 ? string.Join(' ', input[2..]) : null);
                         break;
 
                     default:
@@ -100,6 +109,52 @@ internal static class Program
             {
                 Console.WriteLine($"  {route,-30} -> FAILED: {e.Message}");
             }
+        }
+    }
+    
+    /// <summary>Connects to a WebSocket path on the Sonar server and prints every incoming message.</summary>
+    private static async Task ListenWebSocketAsync(SonarClient sonar, string path, string? initialMessage)
+    {
+        Uri http = await sonar.GetServerAddressAsync();
+        Uri wsUri = new UriBuilder(http) { Scheme = "ws", Path = path }.Uri;
+        Console.WriteLine($"Connecting to {wsUri} ... (press Enter to stop)");
+
+        using var ws = new ClientWebSocket();
+        await ws.ConnectAsync(wsUri, CancellationToken.None);
+        Console.WriteLine("Connected! Now interact with the Sonar UI (sliders, mute, mode...)");
+        
+        using var cts = new CancellationTokenSource();
+        
+        if (initialMessage is not null)
+        {
+            await ws.SendAsync(Encoding.UTF8.GetBytes(initialMessage),
+                WebSocketMessageType.Text, endOfMessage: true, cts.Token);
+            Console.WriteLine($"Sent: {initialMessage}");
+        }
+        
+        _ = Task.Run(() => { Console.ReadLine(); cts.Cancel(); });
+
+        var buffer = new byte[64 * 1024];
+        var message = new MemoryStream();
+
+        try
+        {
+            while (ws.State == WebSocketState.Open)
+            {
+                var result = await ws.ReceiveAsync(buffer, cts.Token);
+                if (result.MessageType == WebSocketMessageType.Close) break;
+
+                // A logical message may span several frames: accumulate until EndOfMessage
+                message.Write(buffer, 0, result.Count);
+                if (!result.EndOfMessage) continue;
+
+                Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] ({result.MessageType}) {Encoding.UTF8.GetString(message.ToArray())}");
+                message.SetLength(0);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            Console.WriteLine("Stopped listening.");
         }
     }
 

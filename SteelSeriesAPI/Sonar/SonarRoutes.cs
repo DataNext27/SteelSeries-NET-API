@@ -15,7 +15,11 @@ internal static class SonarRoutes
     /// <summary>Volume/mute state of all channels in classic mode.</summary>
     internal const string ClassicVolumes = "volumeSettings/classic/";
 
-    /// <summary>Volume/mute state of all channels/mixes in streamer mode.</summary>
+    /// <summary>
+    /// Volume/mute state in streamer mode. WARNING: only the "stream" sections are live;
+    /// the "classic" sections return stale data (and vice versa for the classic route).
+    /// Poll the route matching the current mode. Observed 2026-08-08.
+    /// </summary>
     internal const string StreamerVolumes = "volumeSettings/streamer/";
     
     /// <summary>Current chat mix state (balance and availability).</summary>
