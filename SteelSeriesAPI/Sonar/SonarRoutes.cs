@@ -25,6 +25,17 @@ internal static class SonarRoutes
     /// <summary>Current chat mix state (balance and availability).</summary>
     /// <remarks>Moved to the /v1/ prefix by a 2026 GG update; the unprefixed route now returns 404.</remarks>
     internal const string GetChatMix = "v1/chatMix";
+    
+    /// <summary>Classic-mode redirections: which device each channel is routed to.</summary>
+    /// <remarks>Uses the short channel ids ("chat", "mic") - see ToClassicRedirectionKey.</remarks>
+    internal const string ClassicRedirections = "classicRedirections";
+
+    /// <summary>Streamer-mode redirections: devices and per-channel enablement of each mix.</summary>
+    internal const string StreamRedirections = "streamRedirections";
+
+    /// <summary>Whether stream monitoring ("hear what the audience hears") is enabled. Bare JSON boolean.</summary>
+    internal const string StreamMonitoringEnabled = "streamRedirections/isStreamMonitoringEnabled";
+
 
     // Note: the Sonar API is inconsistent by design ("Volume"/"Mute" capitalized
     // in classic routes, "volume"/"isMuted" lowercase in streamer routes).
@@ -46,6 +57,18 @@ internal static class SonarRoutes
 
     internal static string SetChatMix(double balance) =>
         $"v1/chatMix?balance={Format(balance)}";
+    
+    internal static string SetClassicRedirectionDevice(Channel channel, string deviceId) =>
+        $"classicRedirections/{channel.ToClassicRedirectionKey()}/deviceId/{Uri.EscapeDataString(deviceId)}";
+
+    internal static string SetStreamRedirectionDevice(Mix mix, string deviceId) =>
+        $"streamRedirections/{mix.ToRouteKey()}/deviceId/{Uri.EscapeDataString(deviceId)}";
+
+    internal static string SetMixChannelEnabled(Mix mix, Channel channel, bool enabled) =>
+        $"streamRedirections/{mix.ToRouteKey()}/redirections/{channel.ToJsonKey()}/isEnabled/{Bool(enabled)}";
+
+    internal static string SetStreamMonitoringEnabled(bool enabled) =>
+        $"streamRedirections/isStreamMonitoringEnabled/{Bool(enabled)}";
 
     private static string Format(double value) =>
         value.ToString("0.00", CultureInfo.InvariantCulture);

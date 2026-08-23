@@ -14,7 +14,7 @@ internal static class Program
     private static async Task Main()
     {
         // Set to LogLevel.Debug to see discovery, reconnections and polling internals
-        using var loggerFactory = LoggerFactory.Create(b => b.AddConsole().SetMinimumLevel(LogLevel.Information));
+        using var loggerFactory = LoggerFactory.Create(b => b.AddConsole().SetMinimumLevel(LogLevel.Debug));
         var logger = loggerFactory.CreateLogger("Sample");
 
         using var sonar = new SonarClient(logger);
@@ -32,7 +32,7 @@ internal static class Program
 
         SubscribeToEvents(sonar);
 
-        sonar.Events.VolumePollingInterval = TimeSpan.FromMilliseconds(500);
+        sonar.Events.PollingInterval = TimeSpan.FromMilliseconds(500);
         sonar.Events.Start();
 
         Console.WriteLine();
@@ -109,7 +109,15 @@ internal static class Program
 
         // --- Invalidations (Sonar says "something changed" without details) ---
         sonar.Events.RedirectionsInvalidated += (_, _) =>
-            Console.WriteLine("[Redirections] changed (no details from Sonar)");
+            Console.WriteLine("[Invalidated] redirection invalidation received from Sonar");
+        sonar.Events.ClassicDeviceChanged += (_, e) =>
+            Console.WriteLine($"[Redirections] {e.Channel} routed to {e.NewDeviceId}");
+        sonar.Events.MixDeviceChanged += (_, e) =>
+            Console.WriteLine($"[Redirections] {e.Mix} mix routed to {e.NewDeviceId}");
+        sonar.Events.MixChannelToggled += (_, e) =>
+            Console.WriteLine($"[Redirections] {e.Channel} on {e.Mix} mix: {(e.IsEnabled ? "enabled" : "disabled")}");
+        sonar.Events.StreamMonitoringChanged += (_, e) =>
+            Console.WriteLine($"[Monitoring] {(e.IsEnabled ? "hearing what the audience hears" : "back to personal mix")}");
 
         sonar.Events.SelectedConfigChanged += (_, _) =>
             Console.WriteLine("[Config] selected config changed");

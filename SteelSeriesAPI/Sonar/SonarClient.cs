@@ -25,6 +25,9 @@ public sealed class SonarClient : IDisposable
     
     /// <summary>Controls the ChatMix balance</summary>
     public IChatMixManager ChatMix { get; }
+    
+    /// <summary>Controls the differents Redirections.</summary>
+    public IRedirectionsManager Redirections { get; }
 
     /// <summary>Creates a new Sonar client.</summary>
     /// <param name="logger">Optional logger for diagnostics. When null, the library stays silent.</param>
@@ -38,6 +41,7 @@ public sealed class SonarClient : IDisposable
         Mode = new ModeManager(_httpClient);
         VolumeSettings = new VolumeSettingsManager(_httpClient);
         ChatMix = new ChatMixManager(_httpClient);
+        Redirections = new RedirectionsManager(_httpClient);
     }
     
     /// <summary>
