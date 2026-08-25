@@ -32,17 +32,18 @@ public class SonarHttpClient : IDisposable, ISonarTransport
     /// <param name="ct">A token to cancel the operation.</param>
     public async Task<JsonDocument> GetAsync(string route, CancellationToken ct = default)
     {
-        var response = await SendAsync(HttpMethod.Get, route, ct);
+        using var response = await SendAsync(HttpMethod.Get, route, ct);
         await using var stream = await response.Content.ReadAsStreamAsync(ct);
         return await JsonDocument.ParseAsync(stream, cancellationToken: ct);
     }
+
 
     /// <summary>Sends a PUT request to the Sonar server.</summary>
     /// <param name="route">The route, relative to the Sonar server base address.</param>
     /// <param name="ct">A token to cancel the operation.</param>
     public async Task PutAsync(string route, CancellationToken ct = default)
     {
-        await SendAsync(HttpMethod.Put, route, ct);
+        using var _ = await SendAsync(HttpMethod.Put, route, ct);
     }
 
     private async Task<HttpResponseMessage> SendAsync(

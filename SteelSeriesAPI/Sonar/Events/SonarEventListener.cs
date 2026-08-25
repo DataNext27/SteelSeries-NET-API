@@ -156,7 +156,6 @@ public sealed class SonarEventListener : IDisposable
         catch (OperationCanceledException) { /* expected */ }
 
         _cts.Dispose();
-        _configsRefreshLock.Dispose();
         _cts = null;
         _runLoop = null;
         _pollLoop = null;
@@ -636,5 +635,6 @@ public sealed class SonarEventListener : IDisposable
         _cts?.Cancel();
         _cts?.Dispose();
         _redirectionsRefreshLock.Dispose();
+        _configsRefreshLock.Dispose();
     }
 }

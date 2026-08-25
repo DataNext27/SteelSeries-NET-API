@@ -31,9 +31,9 @@ public class DiscoveryException : SteelSeriesException
 {
     /// <summary>Creates the exception with a message describing where the discovery failed.</summary>
     /// <param name="message">A description of what went wrong.</param>
-    /// /// <param name="inner">The underlying exception, if any.</param>
+    /// <param name="inner">The underlying exception, if any.</param>
     public DiscoveryException(string message, Exception? inner = null)
-        : base(message) { }
+        : base(message, inner) { }
 }
 
 /// <summary>The Sonar API responded with an unexpected JSON structure.</summary>
