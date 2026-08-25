@@ -44,20 +44,12 @@ public sealed class SonarEventListener : IDisposable
     /// <summary>Raised when redirections changed. Sonar sends no details: re-query if needed.</summary>
     public event EventHandler? RedirectionsInvalidated;
 
-    /// <summary>Raised when the selected config changed. Re-query the configs route if needed.</summary>
-    public event EventHandler? SelectedConfigChanged;
-    
-    /// <summary>Raised when a channel is routed to a different device in classic mode.</summary>
-    public event EventHandler<ClassicDeviceChange>? ClassicDeviceChanged;
-
-    /// <summary>Raised when a streamer-mode mix is routed to a different output device.</summary>
-    public event EventHandler<MixDeviceChange>? MixDeviceChanged;
-
-    /// <summary>Raised when a channel is enabled or disabled on a streamer-mode mix.</summary>
-    public event EventHandler<MixChannelToggle>? MixChannelToggled;
-
-    /// <summary>Raised when stream monitoring ("hear what the audience hears") is toggled.</summary>
-    public event EventHandler<StreamMonitoringChange>? StreamMonitoringChanged;
+    /// <summary>
+    /// Raised when Sonar broadcasts a config invalidation, without details.
+    /// Most consumers should prefer <see cref="ConfigSelectionChanged"/>, which carries
+    /// the affected channel and both configs.
+    /// </summary>
+    public event EventHandler? ConfigsInvalidated;
 
     /// <summary>Raised for any Sonar event not yet mapped to a typed event.</summary>
     public event EventHandler<SonarUnknownEvent>? UnknownEventReceived;
@@ -78,6 +70,21 @@ public sealed class SonarEventListener : IDisposable
     
     /// <summary>Raised when polling detects a volume or mute change. Requires <see cref="PollingInterval"/>.</summary>
     public event EventHandler<VolumeChange>? VolumeChanged;
+    
+    /// <summary>Raised when a channel is routed to a different device in classic mode.</summary>
+    public event EventHandler<ClassicDeviceChange>? ClassicDeviceChanged;
+
+    /// <summary>Raised when a streamer-mode mix is routed to a different output device.</summary>
+    public event EventHandler<MixDeviceChange>? MixDeviceChanged;
+
+    /// <summary>Raised when a channel is enabled or disabled on a streamer-mode mix.</summary>
+    public event EventHandler<MixChannelToggle>? MixChannelToggled;
+
+    /// <summary>Raised when stream monitoring ("hear what the audience hears") is toggled.</summary>
+    public event EventHandler<StreamMonitoringChange>? StreamMonitoringChanged;
+    
+    /// <summary>Raised when the selected config of a channel changes.</summary>
+        public event EventHandler<ConfigSelectionChange>? ConfigSelectionChanged;
 
     private Task? _pollLoop;
     
@@ -91,6 +98,11 @@ public sealed class SonarEventListener : IDisposable
         IReadOnlyList<ClassicRedirection> Classic,
         StreamRedirections Stream,
         bool MonitoringEnabled);
+    
+    private readonly ConfigManager _configs;
+    private IReadOnlyDictionary<Channel, SonarConfig>? _selectedConfigsBaseline;
+    private int _configRefreshVersion;
+    private readonly SemaphoreSlim _configsRefreshLock = new(1, 1);
 
     internal SonarEventListener(SonarHttpClient httpClient, ILogger? logger = null)
     {
@@ -98,6 +110,7 @@ public sealed class SonarEventListener : IDisposable
         _logger = logger ?? NullLogger.Instance;
         
         _redirections = new RedirectionsManager(httpClient);
+        _configs = new ConfigManager(httpClient);
     }
 
     /// <summary>Starts listening in the background. Safe to call once; use <see cref="StopAsync"/> to stop.</summary>
@@ -124,6 +137,7 @@ public sealed class SonarEventListener : IDisposable
         catch (OperationCanceledException) { /* expected */ }
 
         _cts.Dispose();
+        _configsRefreshLock.Dispose();
         _cts = null;
         _runLoop = null;
         _pollLoop = null;
@@ -155,6 +169,7 @@ public sealed class SonarEventListener : IDisposable
                 // Seed the redirections baseline right away, so the very first user change
                 // after startup produces granular events instead of just creating the baseline.
                 ScheduleRedirectionRefresh();
+                ScheduleConfigRefresh();
                 
                 await ReceiveLoopAsync(ws, ct);
             }
@@ -234,7 +249,8 @@ public sealed class SonarEventListener : IDisposable
                     break;
 
                 case SonarEventNames.SelectedConfigUpdated:
-                    RaiseSafely(() => SelectedConfigChanged?.Invoke(this, EventArgs.Empty));
+                    RaiseSafely(() => ConfigsInvalidated?.Invoke(this, EventArgs.Empty));
+                    ScheduleConfigRefresh();
                     break;
 
                 default:
@@ -411,6 +427,53 @@ public sealed class SonarEventListener : IDisposable
         }
     }
     
+    private void ScheduleConfigRefresh()
+    {
+        int version = Interlocked.Increment(ref _configRefreshVersion);
+        CancellationToken ct = _lifetime;
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await Task.Delay(250, ct);
+                if (version != _configRefreshVersion) return;
+                await RefreshSelectedConfigsAsync(ct);
+            }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested) { }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Config selection refresh failed");
+            }
+        }, ct);
+    }
+
+    private async Task RefreshSelectedConfigsAsync(CancellationToken ct)
+    {
+        await _configsRefreshLock.WaitAsync(ct);
+        try
+        {
+            var selected = await _configs.GetSelectedAsync(ct);
+
+            if (_selectedConfigsBaseline is { } baseline)
+            {
+                foreach ((Channel channel, SonarConfig config) in selected)
+                {
+                    SonarConfig? previous = baseline.GetValueOrDefault(channel);
+                    if (previous?.Id != config.Id)
+                        RaiseSafely(() => ConfigSelectionChanged?.Invoke(this,
+                            new ConfigSelectionChange(channel, previous, config)));
+                }
+            }
+
+            _selectedConfigsBaseline = selected;
+        }
+        finally
+        {
+            _configsRefreshLock.Release();
+        }
+    }
+    
     /// <summary>
     /// Polls the mode and the matching volume route, raising granular events on differences.
     /// Each volumeSettings route only reliably reflects its own mode's values (observed
@@ -459,6 +522,7 @@ public sealed class SonarEventListener : IDisposable
                 // volume sliders), so we refresh them on the polling cadence too. The lock
                 // makes this safe alongside invalidation-triggered refreshes.
                 await RefreshRedirectionsAsync(ct);
+                await RefreshSelectedConfigsAsync(ct);
             }
             catch (OperationCanceledException) when (ct.IsCancellationRequested) { break; }
             catch (Exception ex)

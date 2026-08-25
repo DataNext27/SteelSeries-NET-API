@@ -34,7 +34,7 @@ internal static class Program
 
         sonar.Events.PollingInterval = TimeSpan.FromMilliseconds(500);
         sonar.Events.Start();
-
+        
         Console.WriteLine();
         Console.WriteLine("=== Listening to Sonar events - interact with the Sonar UI, press Enter to stop ===");
         Console.WriteLine();
@@ -119,8 +119,11 @@ internal static class Program
         sonar.Events.StreamMonitoringChanged += (_, e) =>
             Console.WriteLine($"[Monitoring] {(e.IsEnabled ? "hearing what the audience hears" : "back to personal mix")}");
 
-        sonar.Events.SelectedConfigChanged += (_, _) =>
+        sonar.Events.ConfigsInvalidated += (_, _) =>
             Console.WriteLine("[Config] selected config changed");
+        
+        sonar.Events.ConfigSelectionChanged += (_, e) => 
+            Console.WriteLine($"[Config] {e.Channel}: {e.PreviousConfig?.Name ?? "?"} -> {e.NewConfigName}");
 
         // --- Low-level / diagnostics ---
         sonar.Events.VolumeDataReceived += (_, e) =>

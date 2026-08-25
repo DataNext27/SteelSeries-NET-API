@@ -35,6 +35,12 @@ internal static class SonarRoutes
 
     /// <summary>Whether stream monitoring ("hear what the audience hears") is enabled. Bare JSON boolean.</summary>
     internal const string StreamMonitoringEnabled = "streamRedirections/isStreamMonitoringEnabled";
+    
+    /// <summary>All audio configs (user + presets). WARNING: very large payload (>1MB with EQ data). Never poll this route.</summary>
+    internal const string Configs = "configs";
+
+    /// <summary>The selected config of each channel (one entry per virtualAudioDevice).</summary>
+    internal const string SelectedConfigs = "configs/selected";
 
 
     // Note: the Sonar API is inconsistent by design ("Volume"/"Mute" capitalized
@@ -69,6 +75,10 @@ internal static class SonarRoutes
 
     internal static string SetStreamMonitoringEnabled(bool enabled) =>
         $"streamRedirections/isStreamMonitoringEnabled/{Bool(enabled)}";
+    
+    /// <summary>Selects a config by id. Route verified against the V1 library; re-verify on first use.</summary>
+    internal static string SelectConfig(string configId) =>
+        $"configs/{Uri.EscapeDataString(configId)}/select";
 
     private static string Format(double value) =>
         value.ToString("0.00", CultureInfo.InvariantCulture);

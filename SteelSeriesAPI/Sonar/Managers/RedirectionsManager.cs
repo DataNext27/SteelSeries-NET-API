@@ -83,8 +83,8 @@ internal sealed class RedirectionsManager : IRedirectionsManager
 
             result.Add(new ClassicRedirection(
                 channel.Value,
-                GetString(entry, "deviceId") ?? "",
-                GetBool(entry, "isRunning")));
+                entry.GetStringOrNull("deviceId") ?? "",
+                entry.GetBoolOrFalse("isRunning")));
         }
 
         return result;
@@ -103,9 +103,9 @@ internal sealed class RedirectionsManager : IRedirectionsManager
         {
             if (entry.ValueKind != JsonValueKind.Object) continue;
 
-            string? id = GetString(entry, "streamRedirectionId");
-            string deviceId = GetString(entry, "deviceId") ?? "";
-            bool isRunning = GetBool(entry, "isRunning");
+            string? id = entry.GetStringOrNull("streamRedirectionId");
+            string deviceId = entry.GetStringOrNull("deviceId") ?? "";
+            bool isRunning = entry.GetBoolOrFalse("isRunning");
 
             if (string.Equals(id, "mic", StringComparison.OrdinalIgnoreCase))
             {
@@ -121,12 +121,12 @@ internal sealed class RedirectionsManager : IRedirectionsManager
             {
                 foreach (var role in status.EnumerateArray())
                 {
-                    Channel? channel = GetString(role, "role") is { } r
+                    Channel? channel = role.GetStringOrNull("role") is { } r
                         ? ChannelExtensions.FromJsonKey(r)
                         : null;
                     if (channel is null) continue;
 
-                    enabled[channel.Value] = GetBool(role, "isEnabled");
+                    enabled[channel.Value] = role.GetBoolOrFalse("isEnabled");
                 }
             }
 
@@ -137,13 +137,4 @@ internal sealed class RedirectionsManager : IRedirectionsManager
 
         return new StreamRedirections(personal, stream, mic);
     }
-
-    private static string? GetString(JsonElement obj, string name) =>
-        obj.ValueKind == JsonValueKind.Object &&
-        obj.TryGetProperty(name, out var p) && p.ValueKind == JsonValueKind.String
-            ? p.GetString() : null;
-
-    private static bool GetBool(JsonElement obj, string name) =>
-        obj.ValueKind == JsonValueKind.Object &&
-        obj.TryGetProperty(name, out var p) && p.ValueKind == JsonValueKind.True;
 }

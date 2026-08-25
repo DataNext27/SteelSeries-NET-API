@@ -23,4 +23,24 @@ internal static class JsonExtensions
         }
         return current;
     }
+    
+    /// <summary>
+    /// Reads a string property, tolerating a missing property, a null/non-string value,
+    /// or a parent that is not a JSON object. Returns null in all those cases.
+    /// </summary>
+    internal static string? GetStringOrNull(this JsonElement element, string propertyName) =>
+        element.ValueKind == JsonValueKind.Object &&
+        element.TryGetProperty(propertyName, out var p) &&
+        p.ValueKind == JsonValueKind.String
+            ? p.GetString()
+            : null;
+
+    /// <summary>
+    /// Reads a boolean property, tolerating a missing property, a null/non-boolean value,
+    /// or a parent that is not a JSON object. Returns false in all those cases.
+    /// </summary>
+    internal static bool GetBoolOrFalse(this JsonElement element, string propertyName) =>
+        element.ValueKind == JsonValueKind.Object &&
+        element.TryGetProperty(propertyName, out var p) &&
+        p.ValueKind == JsonValueKind.True;
 }
