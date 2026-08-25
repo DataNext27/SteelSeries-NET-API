@@ -28,7 +28,10 @@ public sealed class SonarClient : IDisposable
     
     /// <summary>Controls the different Redirections.</summary>
     public IRedirectionsManager Redirections { get; }
-    
+
+    /// <summary>Retrieve audio devices</summary>
+    public IAudioDeviceManager Devices { get; }
+
     /// <summary>Retrieve and define Sonar audio configurations</summary>
     public IConfigManager Configs { get; }
 
@@ -45,6 +48,7 @@ public sealed class SonarClient : IDisposable
         VolumeSettings = new VolumeSettingsManager(_httpClient);
         ChatMix = new ChatMixManager(_httpClient);
         Redirections = new RedirectionsManager(_httpClient);
+        Devices = new AudioDeviceManager(_httpClient);
         Configs = new ConfigManager(_httpClient);
     }
     

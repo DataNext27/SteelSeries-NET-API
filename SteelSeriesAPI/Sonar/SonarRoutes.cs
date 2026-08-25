@@ -36,6 +36,9 @@ internal static class SonarRoutes
     /// <summary>Whether stream monitoring ("hear what the audience hears") is enabled. Bare JSON boolean.</summary>
     internal const string StreamMonitoringEnabled = "streamRedirections/isStreamMonitoringEnabled";
     
+    /// <summary>All audio devices known to Sonar (physical and Sonar virtual devices).</summary>
+    internal const string AudioDevices = "audioDevices";
+    
     /// <summary>All audio configs (user + presets). WARNING: very large payload (>1MB with EQ data). Never poll this route.</summary>
     internal const string Configs = "configs";
 

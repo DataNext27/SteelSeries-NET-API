@@ -87,11 +87,16 @@ internal static class Program
         foreach ((Channel channel, var config) in selected.OrderBy(p => p.Key))
             Console.WriteLine($"  {channel,-6} -> {config.Name}{(config.IsPreset ? " (preset)" : "")}");
 
+        // --- Audio devices (also used to resolve ids to names below) ---
+        var devices = await sonar.Devices.GetAllAsync();
+        var deviceNames = devices.ToDictionary(d => d.Id, d => d.Name);
+        string NameOf(string deviceId) => deviceNames.GetValueOrDefault(deviceId, deviceId);
+        
         // --- Classic redirections ---
         var classicRedirections = await sonar.Redirections.GetClassicRedirectionsAsync();
         Console.WriteLine("Classic redirections:");
         foreach (var redirection in classicRedirections)
-            Console.WriteLine($"  {redirection.Channel,-6} -> {redirection.DeviceId} (running: {redirection.IsRunning})");
+            Console.WriteLine($"  {redirection.Channel,-6} -> {NameOf(redirection.DeviceId)} (running: {redirection.IsRunning})");
 
         // --- Streamer-mode redirections (meaningful values in streamer mode only) ---
         if (mode == Mode.Streamer)
@@ -101,18 +106,18 @@ internal static class Program
             PrintMix(streamRedirections.Personal);
             PrintMix(streamRedirections.Stream);
             if (streamRedirections.Mic is { } mic)
-                Console.WriteLine($"  Mic passthrough -> {mic.DeviceId} (running: {mic.IsRunning})");
+                Console.WriteLine($"  Mic passthrough -> {NameOf(mic.DeviceId)} (running: {mic.IsRunning})");
 
             bool monitoring = await sonar.Redirections.GetStreamMonitoringEnabledAsync();
             Console.WriteLine($"Stream monitoring (hear the audience mix): {monitoring}");
         }
 
-        static void PrintMix(MixRedirection? mix)
+        void PrintMix(MixRedirection? mix)
         {
             if (mix is null) return;
             string enabledChannels = string.Join(", ",
                 mix.EnabledChannels.Where(p => p.Value).Select(p => p.Key));
-            Console.WriteLine($"  {mix.Mix,-8} mix -> {mix.DeviceId} (running: {mix.IsRunning}, enabled: [{enabledChannels}])");
+            Console.WriteLine($"  {mix.Mix,-8} mix -> {NameOf(mix.DeviceId)} (running: {mix.IsRunning}, enabled: [{enabledChannels}])");
         }
     }
 
