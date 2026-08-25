@@ -2,6 +2,7 @@
 using SteelSeriesAPI.Core;
 using SteelSeriesAPI.Sonar;
 using SteelSeriesAPI.Sonar.Enums;
+using SteelSeriesAPI.Sonar.Models;
 
 namespace SteelSeriesAPI.Sample;
 
@@ -13,8 +14,8 @@ internal static class Program
 {
     private static async Task Main()
     {
-        // Set to LogLevel.Debug to see discovery, reconnections and polling internals
-        using var loggerFactory = LoggerFactory.Create(b => b.AddConsole().SetMinimumLevel(LogLevel.Debug));
+        // Set to LogLevel.Debug to see discovery, reconnections and refresh internals
+        using var loggerFactory = LoggerFactory.Create(b => b.AddConsole().SetMinimumLevel(LogLevel.Information));
         var logger = loggerFactory.CreateLogger("Sample");
 
         using var sonar = new SonarClient(logger);
@@ -34,7 +35,7 @@ internal static class Program
 
         sonar.Events.PollingInterval = TimeSpan.FromMilliseconds(500);
         sonar.Events.Start();
-        
+
         Console.WriteLine();
         Console.WriteLine("=== Listening to Sonar events - interact with the Sonar UI, press Enter to stop ===");
         Console.WriteLine();
@@ -44,7 +45,7 @@ internal static class Program
         Console.WriteLine("Stopped. Bye!");
     }
 
-    /// <summary>Reads and prints the current mode, volumes, and chat mix using the typed managers.</summary>
+    /// <summary>Reads and prints the current Sonar state using every typed manager.</summary>
     private static async Task PrintCurrentStateAsync(SonarClient sonar)
     {
         Console.WriteLine("=== Current Sonar state ===");
@@ -53,7 +54,7 @@ internal static class Program
         Mode mode = await sonar.Mode.GetAsync();
         Console.WriteLine($"Mode: {mode}");
 
-        // --- Volumes (query the channels relevant to the current mode) ---
+        // --- Volumes (query what is reliable in the current mode) ---
         Channel[] channels = [Channel.Master, Channel.Game, Channel.Chat, Channel.Media, Channel.Aux, Channel.Mic];
 
         if (mode == Mode.Classic)
@@ -79,6 +80,40 @@ internal static class Program
         // --- Chat mix ---
         var chatMix = await sonar.ChatMix.GetAsync();
         Console.WriteLine($"ChatMix: balance {chatMix.Balance:+0.00;-0.00;0.00} (state: {chatMix.State})");
+
+        // --- Selected configs ---
+        var selected = await sonar.Configs.GetSelectedAsync();
+        Console.WriteLine("Selected configs:");
+        foreach ((Channel channel, var config) in selected.OrderBy(p => p.Key))
+            Console.WriteLine($"  {channel,-6} -> {config.Name}{(config.IsPreset ? " (preset)" : "")}");
+
+        // --- Classic redirections ---
+        var classicRedirections = await sonar.Redirections.GetClassicRedirectionsAsync();
+        Console.WriteLine("Classic redirections:");
+        foreach (var redirection in classicRedirections)
+            Console.WriteLine($"  {redirection.Channel,-6} -> {redirection.DeviceId} (running: {redirection.IsRunning})");
+
+        // --- Streamer-mode redirections (meaningful values in streamer mode only) ---
+        if (mode == Mode.Streamer)
+        {
+            var streamRedirections = await sonar.Redirections.GetStreamRedirectionsAsync();
+            Console.WriteLine("Stream redirections:");
+            PrintMix(streamRedirections.Personal);
+            PrintMix(streamRedirections.Stream);
+            if (streamRedirections.Mic is { } mic)
+                Console.WriteLine($"  Mic passthrough -> {mic.DeviceId} (running: {mic.IsRunning})");
+
+            bool monitoring = await sonar.Redirections.GetStreamMonitoringEnabledAsync();
+            Console.WriteLine($"Stream monitoring (hear the audience mix): {monitoring}");
+        }
+
+        static void PrintMix(MixRedirection? mix)
+        {
+            if (mix is null) return;
+            string enabledChannels = string.Join(", ",
+                mix.EnabledChannels.Where(p => p.Value).Select(p => p.Key));
+            Console.WriteLine($"  {mix.Mix,-8} mix -> {mix.DeviceId} (running: {mix.IsRunning}, enabled: [{enabledChannels}])");
+        }
     }
 
     /// <summary>Subscribes to every event the library exposes, printing each occurrence.</summary>
@@ -91,7 +126,7 @@ internal static class Program
         sonar.Events.Disconnected += (_, _) =>
             Console.WriteLine(">>> Disconnected from Sonar (GG closed? will keep retrying)");
 
-        // --- Granular changes (most consumers should use these) ---
+        // --- Granular, data-carrying events (most consumers should use these) ---
         sonar.Events.VolumeChanged += (_, e) =>
         {
             string mix = e.Mix?.ToString() ?? "Classic";
@@ -107,23 +142,27 @@ internal static class Program
         sonar.Events.ChatMixChanged += (_, e) =>
             Console.WriteLine($"[ChatMix] balance {e.Balance:+0.00;-0.00;0.00} (state: {e.State})");
 
-        // --- Invalidations (Sonar says "something changed" without details) ---
-        sonar.Events.RedirectionsInvalidated += (_, _) =>
-            Console.WriteLine("[Invalidated] redirection invalidation received from Sonar");
         sonar.Events.ClassicDeviceChanged += (_, e) =>
             Console.WriteLine($"[Redirections] {e.Channel} routed to {e.NewDeviceId}");
+
         sonar.Events.MixDeviceChanged += (_, e) =>
             Console.WriteLine($"[Redirections] {e.Mix} mix routed to {e.NewDeviceId}");
+
         sonar.Events.MixChannelToggled += (_, e) =>
             Console.WriteLine($"[Redirections] {e.Channel} on {e.Mix} mix: {(e.IsEnabled ? "enabled" : "disabled")}");
+
         sonar.Events.StreamMonitoringChanged += (_, e) =>
             Console.WriteLine($"[Monitoring] {(e.IsEnabled ? "hearing what the audience hears" : "back to personal mix")}");
 
-        sonar.Events.ConfigsInvalidated += (_, _) =>
-            Console.WriteLine("[Config] selected config changed");
-        
-        sonar.Events.ConfigSelectionChanged += (_, e) => 
+        sonar.Events.ConfigSelectionChanged += (_, e) =>
             Console.WriteLine($"[Config] {e.Channel}: {e.PreviousConfig?.Name ?? "?"} -> {e.NewConfigName}");
+
+        // --- Raw invalidation signals (diagnostics; prefer the granular events above) ---
+        sonar.Events.RedirectionsInvalidated += (_, _) =>
+            Console.WriteLine("  (raw: redirections invalidated)");
+
+        sonar.Events.ConfigsInvalidated += (_, _) =>
+            Console.WriteLine("  (raw: configs invalidated)");
 
         // --- Low-level / diagnostics ---
         sonar.Events.VolumeDataReceived += (_, e) =>
