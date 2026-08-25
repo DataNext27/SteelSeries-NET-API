@@ -16,6 +16,7 @@ internal static class SonarEventNames
     internal const string AudioSessionClosed = "SONAR_EVENT_AUDIO_SESSION_CLOSED_DATA";
     internal const string SelectedConfigUpdated = "SONAR_EVENT_SELECTED_CONFIG_UPDATED";
     internal const string StreamMonitoringLockStatusUpdate = "SONAR_EVENT_STREAM_MONITORING_LOCK_STATUS_UPDATE";
+    internal const string RoutingData = "SONAR_EVENT_ROUTING_DATA";
 
     // Known to exist (UI bundle catalog) but not yet wired to typed events:
     // EVENT_SONAR_STATUS, SONAR_EVENT_DEVICE_OUT_VOLUME_DATA, SONAR_EVENT_DEVICE_VOLUMES_UPDATE,

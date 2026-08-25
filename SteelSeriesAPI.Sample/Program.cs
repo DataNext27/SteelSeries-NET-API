@@ -119,6 +119,17 @@ internal static class Program
                 mix.EnabledChannels.Where(p => p.Value).Select(p => p.Key));
             Console.WriteLine($"  {mix.Mix,-8} mix -> {NameOf(mix.DeviceId)} (running: {mix.IsRunning}, enabled: [{enabledChannels}])");
         }
+
+        Console.WriteLine("Audio Routing:");
+        var routings = await sonar.AppRouting.GetRoutingsAsync();
+        foreach (var device in routings)
+        {
+            Console.WriteLine($"  {NameOf(device.DeviceId),-6}:");
+            foreach (var session in device.Sessions)
+            {
+                Console.WriteLine($"    {session.DisplayName,-2} ({session.ProcessId, -4}) -> {session.State}");
+            }
+        }
     }
 
     /// <summary>Subscribes to every event the library exposes, printing each occurrence.</summary>
@@ -161,6 +172,20 @@ internal static class Program
 
         sonar.Events.ConfigSelectionChanged += (_, e) =>
             Console.WriteLine($"[Config] {e.Channel}: {e.PreviousConfig?.Name ?? "?"} -> {e.NewConfigName}");
+        
+        sonar.Events.AudioSessionOpened += (_, e) =>
+        {
+            var app = e.Sessions.FirstOrDefault(s => !s.IsSystemSound);
+            if (app is not null)
+                Console.WriteLine($"[Session] {app.DisplayName} (pid {app.ProcessId}) opened on {e.Channel?.ToString() ?? e.Role}");
+        };
+
+        sonar.Events.AudioSessionClosed += (_, e) =>
+        {
+            var app = e.Sessions.FirstOrDefault(s => !s.IsSystemSound);
+            if (app is not null)
+                Console.WriteLine($"[Session] {app.DisplayName} closed on {e.Channel?.ToString() ?? e.Role}");
+        };
 
         // --- Raw invalidation signals (diagnostics; prefer the granular events above) ---
         sonar.Events.RedirectionsInvalidated += (_, _) =>
@@ -168,6 +193,9 @@ internal static class Program
 
         sonar.Events.ConfigsInvalidated += (_, _) =>
             Console.WriteLine("  (raw: configs invalidated)");
+
+        // sonar.Events.RoutingInvalidated += (_, _) =>
+        //     Console.WriteLine("  (raw: routing invalidated)");
 
         // --- Low-level / diagnostics ---
         sonar.Events.VolumeDataReceived += (_, e) =>

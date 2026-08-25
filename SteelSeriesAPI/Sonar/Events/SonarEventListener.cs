@@ -50,6 +50,25 @@ public sealed class SonarEventListener : IDisposable
     /// the affected channel and both configs.
     /// </summary>
     public event EventHandler? ConfigsInvalidated;
+    
+    /// <summary>
+    /// Raised when an application audio session appears on a device
+    /// (app started playing, or was routed to this channel).
+    /// </summary>
+    public event EventHandler<DeviceRouting>? AudioSessionOpened;
+
+    /// <summary>
+    /// Raised when an application audio session leaves a device
+    /// (app stopped playing, or was routed away from this channel).
+    /// </summary>
+    public event EventHandler<DeviceRouting>? AudioSessionClosed;
+
+    /// <summary>
+    /// Raised when Sonar signals that app routing changed, without details.
+    /// Query <see cref="Managers.IAppRoutingManager.GetRoutingsAsync"/> for the new state,
+    /// or rely on <see cref="AudioSessionOpened"/>/<see cref="AudioSessionClosed"/> which carry the data.
+    /// </summary>
+    public event EventHandler? RoutingInvalidated;
 
     /// <summary>Raised for any Sonar event not yet mapped to a typed event.</summary>
     public event EventHandler<SonarUnknownEvent>? UnknownEventReceived;
@@ -251,6 +270,20 @@ public sealed class SonarEventListener : IDisposable
                 case SonarEventNames.SelectedConfigUpdated:
                     RaiseSafely(() => ConfigsInvalidated?.Invoke(this, EventArgs.Empty));
                     ScheduleConfigRefresh();
+                    break;
+                
+                case SonarEventNames.AudioSessionOpened:
+                    if (AppRoutingManager.ParseRouting(data) is { } opened)
+                        RaiseSafely(() => AudioSessionOpened?.Invoke(this, opened));
+                    break;
+
+                case SonarEventNames.AudioSessionClosed:
+                    if (AppRoutingManager.ParseRouting(data) is { } closed)
+                        RaiseSafely(() => AudioSessionClosed?.Invoke(this, closed));
+                    break;
+
+                case SonarEventNames.RoutingData:
+                    RaiseSafely(() => RoutingInvalidated?.Invoke(this, EventArgs.Empty));
                     break;
 
                 default:

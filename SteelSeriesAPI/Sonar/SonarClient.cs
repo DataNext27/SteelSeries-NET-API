@@ -34,7 +34,10 @@ public sealed class SonarClient : IDisposable
 
     /// <summary>Retrieve and define Sonar audio configurations</summary>
     public IConfigManager Configs { get; }
-
+    
+    /// <summary>Manage routed apps</summary>
+    public IAppRoutingManager AppRouting { get; }
+    
     /// <summary>Creates a new Sonar client.</summary>
     /// <param name="logger">Optional logger for diagnostics. When null, the library stays silent.</param>
     public SonarClient(ILogger? logger = null)
@@ -50,6 +53,7 @@ public sealed class SonarClient : IDisposable
         Redirections = new RedirectionsManager(_httpClient);
         Devices = new AudioDeviceManager(_httpClient);
         Configs = new ConfigManager(_httpClient);
+        AppRouting = new AppRoutingManager(_httpClient);
     }
     
     /// <summary>

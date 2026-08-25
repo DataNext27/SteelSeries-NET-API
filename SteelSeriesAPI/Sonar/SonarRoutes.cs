@@ -44,6 +44,10 @@ internal static class SonarRoutes
 
     /// <summary>The selected config of each channel (one entry per virtualAudioDevice).</summary>
     internal const string SelectedConfigs = "configs/selected";
+    
+    /// <summary>App-to-device routing state, including the audio sessions of each device.</summary>
+    internal const string AudioDeviceRouting = "AudioDeviceRouting";
+    
 
 
     // Note: the Sonar API is inconsistent by design ("Volume"/"Mute" capitalized
@@ -82,6 +86,10 @@ internal static class SonarRoutes
     /// <summary>Selects a config by id. Route verified against the V1 library; re-verify on first use.</summary>
     internal static string SelectConfig(string configId) =>
         $"configs/{Uri.EscapeDataString(configId)}/select";
+    
+    /// <summary>Routes an application (by process id) to a device. Verified live on 2026-08-25.</summary>
+    internal static string SetAppRouting(AudioDataFlow dataFlow, string deviceId, int processId) =>
+        $"AudioDeviceRouting/{(dataFlow == AudioDataFlow.Render ? "render" : "capture")}/{Uri.EscapeDataString(deviceId)}/{processId}";
 
     private static string Format(double value) =>
         value.ToString("0.00", CultureInfo.InvariantCulture);
