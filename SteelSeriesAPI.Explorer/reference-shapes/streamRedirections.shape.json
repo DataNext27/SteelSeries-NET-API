@@ -1,0 +1,19 @@
+[
+  {
+    "deviceId": "string",
+    "isRunning": "boolean",
+    "status": [],
+    "streamRedirectionId": "string"
+  },
+  {
+    "deviceId": "string",
+    "isRunning": "boolean",
+    "status": [
+      {
+        "isEnabled": "boolean",
+        "role": "string"
+      }
+    ],
+    "streamRedirectionId": "string"
+  }
+]

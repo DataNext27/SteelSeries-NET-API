@@ -1,0 +1,5 @@
+{
+  "balance": "number",
+  "id": "string",
+  "state": "string"
+}

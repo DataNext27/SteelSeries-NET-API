@@ -1,0 +1,46 @@
+{
+  "devices": {
+    "aux": {
+      "classic": {
+        "muted": "boolean",
+        "volume": "number"
+      },
+      "stream": {}
+    },
+    "chatCapture": {
+      "classic": {
+        "muted": "boolean",
+        "volume": "number"
+      },
+      "stream": {}
+    },
+    "chatRender": {
+      "classic": {
+        "muted": "boolean",
+        "volume": "number"
+      },
+      "stream": {}
+    },
+    "game": {
+      "classic": {
+        "muted": "boolean",
+        "volume": "number"
+      },
+      "stream": {}
+    },
+    "media": {
+      "classic": {
+        "muted": "boolean",
+        "volume": "number"
+      },
+      "stream": {}
+    }
+  },
+  "masters": {
+    "classic": {
+      "muted": "boolean",
+      "volume": "number"
+    },
+    "stream": {}
+  }
+}
