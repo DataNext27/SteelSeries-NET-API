@@ -1,46 +1,40 @@
-﻿using SteelSeriesAPI.Sonar.Exceptions;
-using SteelSeriesAPI.Sonar.Interfaces.Managers;
-using SteelSeriesAPI.Sonar.Http;
-
-using System.Text.Json;
-using System.Globalization;
+﻿using System.Text.Json;
+using SteelSeriesAPI.Core;
+using SteelSeriesAPI.Sonar.Models;
 
 namespace SteelSeriesAPI.Sonar.Managers;
 
-internal class ChatMixManager : IChatMixManager
+/// <inheritdoc />
+internal sealed class ChatMixManager : IChatMixManager
 {
-    public double GetBalance()
-    {
-        JsonDocument chatMix = new Fetcher().Provide("chatMix");
+    private readonly ISonarTransport _transport;
 
-        return chatMix.RootElement.GetProperty("balance").GetDouble();
+    internal ChatMixManager(ISonarTransport transport) => _transport = transport;
+
+    /// <inheritdoc />
+    public async Task<ChatMixSetting> GetAsync(CancellationToken ct = default)
+    {
+        using var doc = await _transport.GetAsync(SonarRoutes.GetChatMix, ct);
+        var root = doc.RootElement;
+
+        double balance = root.TryGetProperty("balance", out var b) &&
+                         b.ValueKind == JsonValueKind.Number
+            ? b.GetDouble() : 0.0;
+
+        string? state = root.TryGetProperty("state", out var s) &&
+                        s.ValueKind == JsonValueKind.String
+            ? s.GetString() : null;
+
+        return new ChatMixSetting(balance, state);
     }
 
-    public bool GetState()
+    /// <inheritdoc />
+    public Task SetAsync(double balance, CancellationToken ct = default)
     {
-        JsonDocument chatMix = new Fetcher().Provide("chatMix");
-        string cState = chatMix.RootElement.GetProperty("state").ToString();
-        
-        if (cState == "enabled")
-        {
-            return true;
-        }
+        if (double.IsNaN(balance) || balance is < -1.0 or > 1.0)
+            throw new ArgumentOutOfRangeException(nameof(balance), balance,
+                "Chat mix balance must be between -1.0 and 1.0.");
 
-        return false;
-    }
-    
-    public void SetBalance(double balance)
-    {
-        if (!GetState())
-        {
-            throw new ChatMixDisabledException();
-        }
-
-        if (balance > 1 || balance < -1)
-        {
-            throw new ChatMixBalanceException();
-        }
-
-        new Fetcher().Put("chatMix?balance=" + balance.ToString("0.00", CultureInfo.InvariantCulture));
+        return _transport.PutAsync(SonarRoutes.SetChatMix(balance), ct);
     }
 }

@@ -1,0 +1,100 @@
+{
+  "devices": {
+    "aux": {
+      "classic": {
+        "muted": "boolean",
+        "volume": "number"
+      },
+      "stream": {
+        "monitoring": {
+          "muted": "boolean",
+          "volume": "number"
+        },
+        "streaming": {
+          "muted": "boolean",
+          "volume": "number"
+        }
+      }
+    },
+    "chatCapture": {
+      "classic": {
+        "muted": "boolean",
+        "volume": "number"
+      },
+      "stream": {
+        "monitoring": {
+          "muted": "boolean",
+          "volume": "number"
+        },
+        "streaming": {
+          "muted": "boolean",
+          "volume": "number"
+        }
+      }
+    },
+    "chatRender": {
+      "classic": {
+        "muted": "boolean",
+        "volume": "number"
+      },
+      "stream": {
+        "monitoring": {
+          "muted": "boolean",
+          "volume": "number"
+        },
+        "streaming": {
+          "muted": "boolean",
+          "volume": "number"
+        }
+      }
+    },
+    "game": {
+      "classic": {
+        "muted": "boolean",
+        "volume": "number"
+      },
+      "stream": {
+        "monitoring": {
+          "muted": "boolean",
+          "volume": "number"
+        },
+        "streaming": {
+          "muted": "boolean",
+          "volume": "number"
+        }
+      }
+    },
+    "media": {
+      "classic": {
+        "muted": "boolean",
+        "volume": "number"
+      },
+      "stream": {
+        "monitoring": {
+          "muted": "boolean",
+          "volume": "number"
+        },
+        "streaming": {
+          "muted": "boolean",
+          "volume": "number"
+        }
+      }
+    }
+  },
+  "masters": {
+    "classic": {
+      "muted": "boolean",
+      "volume": "number"
+    },
+    "stream": {
+      "monitoring": {
+        "muted": "boolean",
+        "volume": "number"
+      },
+      "streaming": {
+        "muted": "boolean",
+        "volume": "number"
+      }
+    }
+  }
+}

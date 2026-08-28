@@ -1,0 +1,767 @@
+[
+  {
+    "createdAt": "string",
+    "data": {
+      "acousticEchoCancelingState": "boolean",
+      "automaticNoiseGateState": {
+        "enabled": "boolean",
+        "value": "number"
+      },
+      "globalEnableState": "boolean",
+      "impactNoiseReductionState": {
+        "enabled": "boolean",
+        "value": "number"
+      },
+      "noiseCancelingState": {
+        "enabled": "boolean",
+        "value": "number"
+      },
+      "noiseGateState": {
+        "enabled": "boolean",
+        "value": "number"
+      },
+      "noiseReductionState": {
+        "enabled": "boolean",
+        "value": "number"
+      },
+      "parametricEQ": {
+        "enabled": "boolean",
+        "filter1": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter10": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter2": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter3": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter4": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter5": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter6": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter7": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter8": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter9": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        }
+      },
+      "volumeStabilizerState": {
+        "enabled": "boolean",
+        "value": "number"
+      }
+    },
+    "defaultData": {
+      "acousticEchoCancelingState": "boolean",
+      "automaticNoiseGateState": {
+        "enabled": "boolean",
+        "value": "number"
+      },
+      "globalEnableState": "boolean",
+      "impactNoiseReductionState": {
+        "enabled": "boolean",
+        "value": "number"
+      },
+      "noiseCancelingState": {
+        "enabled": "boolean",
+        "value": "number"
+      },
+      "noiseGateState": {
+        "enabled": "boolean",
+        "value": "number"
+      },
+      "noiseReductionState": {
+        "enabled": "boolean",
+        "value": "number"
+      },
+      "parametricEQ": {
+        "enabled": "boolean",
+        "filter1": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter10": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter2": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter3": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter4": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter5": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter6": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter7": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter8": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter9": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        }
+      },
+      "volumeStabilizerState": {
+        "enabled": "boolean",
+        "value": "number"
+      }
+    },
+    "favoritePosition": "number",
+    "id": "string",
+    "image": "string",
+    "isFavorite": "boolean",
+    "isPreset": "boolean",
+    "name": "string",
+    "releaseVersion": "null",
+    "schemaVersion": "number",
+    "updatedAt": "string",
+    "virtualAudioDevice": "string"
+  },
+  {
+    "createdAt": "string",
+    "data": {
+      "bassBoostState": {
+        "enabled": "boolean",
+        "value": "number"
+      },
+      "formFactor": "string",
+      "generalGain": "number",
+      "globalEnableState": "boolean",
+      "parametricEQ": {
+        "enabled": "boolean",
+        "filter1": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter10": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter2": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter3": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter4": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter5": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter6": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter7": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter8": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter9": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        }
+      },
+      "reverbGainDB": "number",
+      "smartVolume": {
+        "enabled": "boolean",
+        "loudness": "string",
+        "volumeLevel": "number"
+      },
+      "trebleBoostState": {
+        "enabled": "boolean",
+        "value": "number"
+      },
+      "virtualSurroundChannels": {
+        "center": {
+          "gain": "number",
+          "position": "number"
+        },
+        "frontLeft": {
+          "gain": "number",
+          "position": "number"
+        },
+        "frontRight": {
+          "gain": "number",
+          "position": "number"
+        },
+        "rearLeft": {
+          "gain": "number",
+          "position": "number"
+        },
+        "rearRight": {
+          "gain": "number",
+          "position": "number"
+        },
+        "sideLeft": {
+          "gain": "number",
+          "position": "number"
+        },
+        "sideRight": {
+          "gain": "number",
+          "position": "number"
+        },
+        "subWoofer": {
+          "gain": "number",
+          "position": "number"
+        }
+      },
+      "virtualSurroundState": "boolean",
+      "voiceClarityState": {
+        "enabled": "boolean",
+        "value": "number"
+      }
+    },
+    "defaultData": {
+      "bassBoostState": {
+        "enabled": "boolean",
+        "value": "number"
+      },
+      "formFactor": "string",
+      "generalGain": "number",
+      "globalEnableState": "boolean",
+      "parametricEQ": {
+        "enabled": "boolean",
+        "filter1": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter10": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter2": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter3": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter4": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter5": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter6": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter7": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter8": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter9": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        }
+      },
+      "reverbGainDB": "number",
+      "smartVolume": {
+        "enabled": "boolean",
+        "loudness": "string",
+        "volumeLevel": "number"
+      },
+      "trebleBoostState": {
+        "enabled": "boolean",
+        "value": "number"
+      },
+      "virtualSurroundChannels": {
+        "center": {
+          "gain": "number",
+          "position": "number"
+        },
+        "frontLeft": {
+          "gain": "number",
+          "position": "number"
+        },
+        "frontRight": {
+          "gain": "number",
+          "position": "number"
+        },
+        "rearLeft": {
+          "gain": "number",
+          "position": "number"
+        },
+        "rearRight": {
+          "gain": "number",
+          "position": "number"
+        },
+        "sideLeft": {
+          "gain": "number",
+          "position": "number"
+        },
+        "sideRight": {
+          "gain": "number",
+          "position": "number"
+        },
+        "subWoofer": {
+          "gain": "number",
+          "position": "number"
+        }
+      },
+      "virtualSurroundState": "boolean",
+      "voiceClarityState": {
+        "enabled": "boolean",
+        "value": "number"
+      }
+    },
+    "favoritePosition": "number",
+    "id": "string",
+    "image": "string",
+    "isFavorite": "boolean",
+    "isPreset": "boolean",
+    "name": "string",
+    "releaseVersion": "null",
+    "schemaVersion": "number",
+    "updatedAt": "string",
+    "virtualAudioDevice": "string"
+  },
+  {
+    "createdAt": "string",
+    "data": {
+      "bassBoostState": {
+        "enabled": "boolean",
+        "value": "number"
+      },
+      "formFactor": "string",
+      "generalGain": "number",
+      "globalEnableState": "boolean",
+      "parametricEQ": {
+        "enabled": "boolean",
+        "filter1": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter10": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter2": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter3": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter4": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter5": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter6": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter7": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter8": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter9": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        }
+      },
+      "reverbGainDB": "number",
+      "smartVolume": {
+        "enabled": "boolean",
+        "loudness": "string",
+        "volumeLevel": "number"
+      },
+      "trebleBoostState": {
+        "enabled": "boolean",
+        "value": "number"
+      },
+      "virtualSurroundChannels": {
+        "center": {
+          "gain": "number",
+          "position": "number"
+        },
+        "frontLeft": {
+          "gain": "number",
+          "position": "number"
+        },
+        "frontRight": {
+          "gain": "number",
+          "position": "number"
+        },
+        "rearLeft": {
+          "gain": "number",
+          "position": "number"
+        },
+        "rearRight": {
+          "gain": "number",
+          "position": "number"
+        },
+        "sideLeft": {
+          "gain": "number",
+          "position": "number"
+        },
+        "sideRight": {
+          "gain": "number",
+          "position": "number"
+        },
+        "subWoofer": {
+          "gain": "number",
+          "position": "number"
+        }
+      },
+      "virtualSurroundState": "boolean",
+      "voiceClarityState": {
+        "enabled": "boolean",
+        "value": "number"
+      }
+    },
+    "defaultData": {
+      "bassBoostState": {
+        "enabled": "boolean",
+        "value": "number"
+      },
+      "formFactor": "string",
+      "generalGain": "number",
+      "globalEnableState": "boolean",
+      "parametricEQ": {
+        "enabled": "boolean",
+        "filter1": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter10": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter2": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter3": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter4": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter5": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter6": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter7": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter8": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        },
+        "filter9": {
+          "enabled": "boolean",
+          "frequency": "number",
+          "gain": "number",
+          "qFactor": "number",
+          "type": "string"
+        }
+      },
+      "reverbGainDB": "number",
+      "smartVolume": {
+        "enabled": "boolean",
+        "loudness": "string",
+        "volumeLevel": "number"
+      },
+      "trebleBoostState": {
+        "enabled": "boolean",
+        "value": "number"
+      },
+      "virtualSurroundChannels": {
+        "center": {
+          "gain": "number",
+          "position": "number"
+        },
+        "frontLeft": {
+          "gain": "number",
+          "position": "number"
+        },
+        "frontRight": {
+          "gain": "number",
+          "position": "number"
+        },
+        "rearLeft": {
+          "gain": "number",
+          "position": "number"
+        },
+        "rearRight": {
+          "gain": "number",
+          "position": "number"
+        },
+        "sideLeft": {
+          "gain": "number",
+          "position": "number"
+        },
+        "sideRight": {
+          "gain": "number",
+          "position": "number"
+        },
+        "subWoofer": {
+          "gain": "number",
+          "position": "number"
+        }
+      },
+      "virtualSurroundState": "boolean",
+      "voiceClarityState": {
+        "enabled": "boolean",
+        "value": "number"
+      }
+    },
+    "favoritePosition": "number",
+    "id": "string",
+    "image": "string",
+    "isFavorite": "boolean",
+    "isPreset": "boolean",
+    "name": "string",
+    "releaseVersion": "string",
+    "schemaVersion": "number",
+    "updatedAt": "string",
+    "virtualAudioDevice": "string"
+  }
+]

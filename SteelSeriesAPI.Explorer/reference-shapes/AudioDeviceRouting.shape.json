@@ -1,0 +1,19 @@
+[
+  {
+    "audioSessions": [
+      {
+        "displayName": "string",
+        "id": "string",
+        "isRoutingErrorProne": "boolean",
+        "isSystemSound": "boolean",
+        "processId": "number",
+        "processName": "string",
+        "routingErrorDetected": "boolean",
+        "state": "string"
+      }
+    ],
+    "dataFlow": "string",
+    "deviceId": "string",
+    "role": "string"
+  }
+]

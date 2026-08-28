@@ -1,0 +1,13 @@
+[
+  {
+    "channels": "number",
+    "dataFlow": "string",
+    "defaultRole": "string",
+    "friendlyName": "string",
+    "fwUpdateRequired": "boolean",
+    "id": "string",
+    "isVad": "boolean",
+    "role": "string",
+    "state": "string"
+  }
+]

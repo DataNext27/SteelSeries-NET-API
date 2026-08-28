@@ -1,61 +1,27 @@
-namespace SteelSeriesAPI.Sonar.Enums;
+﻿namespace SteelSeriesAPI.Sonar.Enums;
 
+/// <summary>The operating mode of the Sonar mixer.</summary>
 public enum Mode
 {
-    CLASSIC,
-    STREAMER
+    /// <summary>Classic mode: a single output mix with one volume per channel.</summary>
+    Classic,
+
+    /// <summary>Streamer mode: two independent output mixes (personal and stream).</summary>
+    Streamer
 }
 
-public enum ModeMapChoice
-{
-    StreamerDict,
-    StreamDict
-}
-
+/// <summary>Mapping helpers between <see cref="Mode"/> values and Sonar API identifiers.</summary>
 public static class ModeExtensions
 {
-    private static readonly Dictionary<Mode, string> PrimaryModeMap = new Dictionary<Mode, string>
+    /// <summary>Gets the identifier used for this mode by the Sonar API.</summary>
+    public static string ToApiValue(this Mode mode) =>
+        mode == Mode.Streamer ? "stream" : "classic";
+
+    /// <summary>Resolves a Sonar API identifier back to a <see cref="Mode"/>, or null if unknown.</summary>
+    public static Mode? FromApiValue(string value) => value switch
     {
-        { Mode.CLASSIC, "classic" },
-        { Mode.STREAMER, "streamer" }
+        "classic" => Mode.Classic,
+        "stream" => Mode.Streamer,
+        _ => null
     };
-    
-    private static readonly Dictionary<Mode, string> SecondaryModeMap = new Dictionary<Mode, string>
-    {
-        { Mode.CLASSIC, "classic" },
-        { Mode.STREAMER, "stream" }
-    };
-
-    public static string ToDictKey(this Mode mode, ModeMapChoice context = ModeMapChoice.StreamerDict)
-    {
-        return context switch
-        {
-            ModeMapChoice.StreamerDict => PrimaryModeMap.ContainsKey(mode) ? PrimaryModeMap[mode] : null,
-            ModeMapChoice.StreamDict => SecondaryModeMap.ContainsKey(mode) ? SecondaryModeMap[mode] : null,
-            _ => null
-        };
-    }
-    
-    public static Mode? FromDictKey(string jsonKey, ModeMapChoice context = ModeMapChoice.StreamerDict)
-    {
-        var map = context switch
-        {
-            ModeMapChoice.StreamerDict => PrimaryModeMap,
-            ModeMapChoice.StreamDict => SecondaryModeMap,
-            _ => null
-        };
-
-        if (map != null)
-        {
-            foreach (var pair in map)
-            {
-                if (pair.Value == jsonKey)
-                {
-                    return pair.Key;
-                }
-            }
-        }
-
-        return null;
-    }
 }

@@ -1,70 +1,80 @@
-﻿using SteelSeriesAPI.Sonar.Interfaces.Managers;
+﻿using System.Text.Json;
+using SteelSeriesAPI.Core;
 using SteelSeriesAPI.Sonar.Enums;
-using SteelSeriesAPI.Sonar.Http;
-
-using System.Globalization;
-using System.Text.Json;
+using SteelSeriesAPI.Sonar.Models;
 
 namespace SteelSeriesAPI.Sonar.Managers;
 
-internal class VolumeSettingsManager : IVolumeSettingsManager
+/// <inheritdoc />
+internal sealed class VolumeSettingsManager : IVolumeSettingsManager
 {
-    // volume = 0,00000000 <-- 8 decimal max
-    public double GetVolume(Channel channel)
-    {
-        JsonDocument volumeSettings = new Fetcher().Provide("volumeSettings/classic/");
+    private readonly ISonarTransport _transport;
 
-        if (channel == Channel.MASTER)
-            return volumeSettings.RootElement.GetProperty("masters").GetProperty("classic").GetProperty("volume").GetDouble();
-        return volumeSettings.RootElement.GetProperty("devices").GetProperty(channel.ToDictKey()).GetProperty("classic").GetProperty("volume").GetDouble();
+    internal VolumeSettingsManager(ISonarTransport transport) => _transport = transport;
+
+    /// <inheritdoc />
+    public async Task<VolumeSetting> GetAsync(Channel channel, CancellationToken ct = default)
+    {
+        using var doc = await _transport.GetAsync(SonarRoutes.ClassicVolumes, ct);
+
+        // Master lives under "masters", other channels under "devices/{key}".
+        JsonElement node = channel == Channel.Master
+            ? doc.RootElement.Dig("masters", "classic")
+            : doc.RootElement.Dig("devices", channel.ToJsonKey(), "classic");
+
+        return ParseSetting(node);
     }
 
-    public double GetVolume(Channel channel, Mix mix)
+    /// <inheritdoc />
+    public async Task<VolumeSetting> GetAsync(Channel channel, Mix mix, CancellationToken ct = default)
     {
-        JsonDocument volumeSettings = new Fetcher().Provide("volumeSettings/streamer/");
+        using var doc = await _transport.GetAsync(SonarRoutes.StreamerVolumes, ct);
 
-        if (channel == Channel.MASTER)
-            return volumeSettings.RootElement.GetProperty("masters").GetProperty("stream").GetProperty(mix.ToDictKey()).GetProperty("volume").GetDouble();
-        return volumeSettings.RootElement.GetProperty("devices").GetProperty(channel.ToDictKey()).GetProperty("stream").GetProperty(mix.ToDictKey()).GetProperty("volume").GetDouble();
+        JsonElement node = channel == Channel.Master
+            ? doc.RootElement.Dig("masters", "stream", mix.ToJsonKey())
+            : doc.RootElement.Dig("devices", channel.ToJsonKey(), "stream", mix.ToJsonKey());
+
+        return ParseSetting(node);
     }
 
-    public bool GetMute(Channel channel)
+    /// <inheritdoc />
+    public Task SetVolumeAsync(Channel channel, double volume, CancellationToken ct = default)
     {
-        JsonDocument volumeSettings = new Fetcher().Provide("volumeSettings/classic/");
-
-        if (channel == Channel.MASTER)
-            return volumeSettings.RootElement.GetProperty("masters").GetProperty("classic").GetProperty("muted").GetBoolean();
-        return volumeSettings.RootElement.GetProperty("devices").GetProperty(channel.ToDictKey()).GetProperty("classic").GetProperty("muted").GetBoolean();
+        ValidateVolume(volume);
+        return _transport.PutAsync(SonarRoutes.SetClassicVolume(channel, volume), ct);
     }
 
-    public bool GetMute(Channel channel, Mix mix)
+    /// <inheritdoc />
+    public Task SetVolumeAsync(Channel channel, Mix mix, double volume, CancellationToken ct = default)
     {
-        JsonDocument volumeSettings = new Fetcher().Provide("volumeSettings/streamer/");
-
-        if (channel == Channel.MASTER)
-            return volumeSettings.RootElement.GetProperty("masters").GetProperty("stream").GetProperty(mix.ToDictKey()).GetProperty("muted").GetBoolean();
-        return volumeSettings.RootElement.GetProperty("devices").GetProperty(channel.ToDictKey()).GetProperty("stream").GetProperty(mix.ToDictKey()).GetProperty("muted").GetBoolean();
+        ValidateVolume(volume);
+        return _transport.PutAsync(SonarRoutes.SetStreamerVolume(mix, channel, volume), ct);
     }
 
-    public void SetVolume(double volume, Channel channel)
+    /// <inheritdoc />
+    public Task SetMuteAsync(Channel channel, bool muted, CancellationToken ct = default) =>
+        _transport.PutAsync(SonarRoutes.SetClassicMute(channel, muted), ct);
+
+    /// <inheritdoc />
+    public Task SetMuteAsync(Channel channel, Mix mix, bool muted, CancellationToken ct = default) =>
+        _transport.PutAsync(SonarRoutes.SetStreamerMute(mix, channel, muted), ct);
+
+    private static VolumeSetting ParseSetting(JsonElement node)
     {
-        string vol = volume.ToString("0.00", CultureInfo.InvariantCulture);
-        new Fetcher().Put("volumeSettings/classic/" + channel.ToDictKey(ChannelMapChoice.HttpDict) + "/Volume/" + vol);
+        double volume = node.TryGetProperty("volume", out var v) &&
+                        v.ValueKind == JsonValueKind.Number
+            ? v.GetDouble() : 0.0;
+
+        bool muted = node.TryGetProperty("muted", out var m) &&
+                     m.ValueKind == JsonValueKind.True;
+
+        return new VolumeSetting(volume, muted);
     }
 
-    public void SetVolume(double volume, Channel channel, Mix mix)
+    private static void ValidateVolume(double volume)
     {
-        string vol = volume.ToString("0.00", CultureInfo.InvariantCulture);
-        new Fetcher().Put("volumeSettings/streamer/" + mix.ToDictKey() + "/" + channel.ToDictKey(ChannelMapChoice.HttpDict) + "/volume/" + vol);
-    }
-
-    public void SetMute(bool mute, Channel channel)
-    {
-        new Fetcher().Put("volumeSettings/classic/" + channel.ToDictKey(ChannelMapChoice.HttpDict) + "/Mute/" + mute);
-    }
-
-    public void SetMute(bool mute, Channel channel, Mix mix)
-    {
-        new Fetcher().Put("volumeSettings/streamer/" + mix.ToDictKey() + "/" + channel.ToDictKey(ChannelMapChoice.HttpDict) + "/isMuted/" + mute);
+        if (double.IsNaN(volume) || volume is < 0.0 or > 1.0)
+            throw new ArgumentOutOfRangeException(nameof(volume), volume,
+                "Volume must be between 0.0 and 1.0.");
     }
 }

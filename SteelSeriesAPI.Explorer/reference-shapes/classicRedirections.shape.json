@@ -1,0 +1,7 @@
+[
+  {
+    "deviceId": "string",
+    "id": "string",
+    "isRunning": "boolean"
+  }
+]
