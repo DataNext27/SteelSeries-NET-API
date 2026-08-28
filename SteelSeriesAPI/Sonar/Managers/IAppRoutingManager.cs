@@ -1,4 +1,5 @@
-﻿using SteelSeriesAPI.Sonar.Enums;
+﻿using SteelSeriesAPI.Core;
+using SteelSeriesAPI.Sonar.Enums;
 using SteelSeriesAPI.Sonar.Models;
 
 namespace SteelSeriesAPI.Sonar.Managers;
