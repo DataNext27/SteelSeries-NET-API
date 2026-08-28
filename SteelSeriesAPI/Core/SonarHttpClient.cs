@@ -8,7 +8,7 @@ namespace SteelSeriesAPI.Core;
 /// Resilient HTTP client for the Sonar web server.
 /// Caches the server address and transparently rediscovers it when GG restarts.
 /// </summary>
-public class SonarHttpClient : IDisposable, ISonarTransport
+public sealed class SonarHttpClient : IDisposable, ISonarTransport
 {
     private readonly HttpClient _http;
     private readonly ServerDiscovery _discovery;
@@ -117,6 +117,5 @@ public class SonarHttpClient : IDisposable, ISonarTransport
     {
         _http.Dispose();
         _discoveryLock.Dispose();
-        GC.SuppressFinalize(this);
     }
 }

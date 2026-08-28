@@ -10,8 +10,8 @@ namespace SteelSeriesAPI.Sonar;
 internal static class SonarRoutes
 {
     /// <summary>Current mixer mode, returned as a bare JSON string ("classic" or "stream").</summary>
-    internal const string GetMode = "mode/";
-    
+    internal const string GetMode = "mode";
+
     /// <summary>Volume/mute state of all channels in classic mode.</summary>
     internal const string ClassicVolumes = "volumeSettings/classic/";
 
@@ -21,11 +21,11 @@ internal static class SonarRoutes
     /// Poll the route matching the current mode. Observed 2026-08-08.
     /// </summary>
     internal const string StreamerVolumes = "volumeSettings/streamer/";
-    
+
     /// <summary>Current chat mix state (balance and availability).</summary>
     /// <remarks>Moved to the /v1/ prefix by a 2026 GG update; the unprefixed route now returns 404.</remarks>
     internal const string GetChatMix = "v1/chatMix";
-    
+
     /// <summary>Classic-mode redirections: which device each channel is routed to.</summary>
     /// <remarks>Uses the short channel ids ("chat", "mic") - see ToClassicRedirectionKey.</remarks>
     internal const string ClassicRedirections = "classicRedirections";
@@ -35,27 +35,25 @@ internal static class SonarRoutes
 
     /// <summary>Whether stream monitoring ("hear what the audience hears") is enabled. Bare JSON boolean.</summary>
     internal const string StreamMonitoringEnabled = "streamRedirections/isStreamMonitoringEnabled";
-    
+
     /// <summary>All audio devices known to Sonar (physical and Sonar virtual devices).</summary>
     internal const string AudioDevices = "audioDevices";
-    
+
     /// <summary>All audio configs (user + presets). WARNING: very large payload (>1MB with EQ data). Never poll this route.</summary>
     internal const string Configs = "configs";
 
     /// <summary>The selected config of each channel (one entry per virtualAudioDevice).</summary>
     internal const string SelectedConfigs = "configs/selected";
-    
+
     /// <summary>App-to-device routing state, including the audio sessions of each device.</summary>
     internal const string AudioDeviceRouting = "AudioDeviceRouting";
-    
 
+    internal static string SetMode(Mode mode) => $"mode/{mode.ToApiValue()}";
 
     // Note: the Sonar API is inconsistent by design ("Volume"/"Mute" capitalized
     // in classic routes, "volume"/"isMuted" lowercase in streamer routes).
     // Verified against GG on 2026-08-04.
 
-    internal static string SetMode(Mode mode) => $"mode/{mode.ToApiValue()}";
-    
     internal static string SetClassicVolume(Channel channel, double volume) =>
         $"volumeSettings/classic/{channel.ToRouteKey()}/Volume/{Format(volume)}";
 
@@ -70,7 +68,7 @@ internal static class SonarRoutes
 
     internal static string SetChatMix(double balance) =>
         $"v1/chatMix?balance={Format(balance)}";
-    
+
     internal static string SetClassicRedirectionDevice(Channel channel, string deviceId) =>
         $"classicRedirections/{channel.ToClassicRedirectionKey()}/deviceId/{Uri.EscapeDataString(deviceId)}";
 
@@ -82,11 +80,11 @@ internal static class SonarRoutes
 
     internal static string SetStreamMonitoringEnabled(bool enabled) =>
         $"streamRedirections/isStreamMonitoringEnabled/{Bool(enabled)}";
-    
-    /// <summary>Selects a config by id. Route verified against the V1 library; re-verify on first use.</summary>
+
+    /// <summary>Selects a config by id. Verified live on 2026-08-25.</summary>
     internal static string SelectConfig(string configId) =>
         $"configs/{Uri.EscapeDataString(configId)}/select";
-    
+
     /// <summary>Routes an application (by process id) to a device. Verified live on 2026-08-25.</summary>
     internal static string SetAppRouting(AudioDataFlow dataFlow, string deviceId, int processId) =>
         $"AudioDeviceRouting/{(dataFlow == AudioDataFlow.Render ? "render" : "capture")}/{Uri.EscapeDataString(deviceId)}/{processId}";

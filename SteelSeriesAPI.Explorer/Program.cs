@@ -14,9 +14,12 @@ internal static class Program
         "mode",
         "volumeSettings/classic/",
         "volumeSettings/streamer/",
+        "v1/chatMix",
         "audioDevices",
         "classicRedirections",
         "streamRedirections",
+        "streamRedirections/isStreamMonitoringEnabled",
+        "AudioDeviceRouting",
         "configs"
     ];
 

@@ -16,26 +16,26 @@ public sealed class SonarClient : IDisposable
     
     /// <summary>Real-time event stream from Sonar. Call <see cref="SonarEventListener.Start"/> to begin listening.</summary>
     public SonarEventListener Events { get; }
-    
+
     /// <summary>Reads and switches the Sonar mixer mode.</summary>
     public IModeManager Mode { get; }
 
     /// <summary>Controls the volume and mute state of Sonar channels.</summary>
     public IVolumeSettingsManager VolumeSettings { get; }
-    
-    /// <summary>Controls the ChatMix balance</summary>
+
+    /// <summary>Reads and controls the chat mix (game/chat balance).</summary>
     public IChatMixManager ChatMix { get; }
-    
-    /// <summary>Controls the different Redirections.</summary>
+
+    /// <summary>Controls audio redirections: device routing, mix toggles, and stream monitoring.</summary>
     public IRedirectionsManager Redirections { get; }
 
-    /// <summary>Retrieve audio devices</summary>
+    /// <summary>Lists the audio devices known to Sonar, physical and virtual.</summary>
     public IAudioDeviceManager Devices { get; }
 
-    /// <summary>Retrieve and define Sonar audio configurations</summary>
+    /// <summary>Lists and selects Sonar audio configs (presets).</summary>
     public IConfigManager Configs { get; }
-    
-    /// <summary>Manage routed apps</summary>
+
+    /// <summary>Reads and controls which Sonar channel each application's audio is routed to.</summary>
     public IAppRoutingManager AppRouting { get; }
     
     /// <summary>Creates a new Sonar client.</summary>

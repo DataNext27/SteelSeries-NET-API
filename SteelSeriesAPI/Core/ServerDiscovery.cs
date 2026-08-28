@@ -8,7 +8,7 @@ namespace SteelSeriesAPI.Core;
 /// Discovers the Sonar web server address by reading coreProps.json
 /// and querying the GG /subApps endpoint.
 /// </summary>
-public class ServerDiscovery
+public sealed class ServerDiscovery
 {
     private readonly HttpClient _ggClient;
     private readonly string _corePropsPath;
