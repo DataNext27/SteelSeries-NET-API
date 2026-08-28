@@ -4,7 +4,6 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using SteelSeriesAPI.Core;
-using SteelSeriesAPI.Sonar.Enums;
 using SteelSeriesAPI.Sonar.Managers;
 using SteelSeriesAPI.Sonar.Models;
 
@@ -16,18 +15,41 @@ namespace SteelSeriesAPI.Sonar.Events;
 /// On every (re)connection, Sonar pushes its full current state, so subscribers resynchronize for free.
 /// </summary>
 /// <remarks>
-/// Events are raised from a background thread. Volume changes made from the Sonar UI sliders are
-/// NOT broadcast by Sonar (observed 2026-08-08): <see cref="VolumeDataReceived"/> only fires on
-/// connection and after major state changes such as a mode switch.
+/// Events are raised from background threads. Each event is fed by one of three mechanisms,
+/// invisible to subscribers:
+/// <list type="bullet">
+/// <item>WebSocket broadcast (real time): <see cref="ChatMixChanged"/>, <see cref="VolumeDataReceived"/>,
+/// <see cref="AudioSessionOpened"/>, <see cref="AudioSessionClosed"/>, the *Invalidated signals,
+/// and <see cref="Connected"/>/<see cref="Disconnected"/> (the connection itself).</item>
+/// <item>Polling (requires <see cref="PollingInterval"/>): <see cref="VolumeChanged"/> and
+/// <see cref="ModeChanged"/>. Sonar does not broadcast changes received through its own HTTP API,
+/// such as UI slider moves (observed 2026-08-08), hence the polling.</item>
+/// <item>Hybrid (WebSocket invalidation and polling, both feeding a fetch+diff):
+/// <see cref="ClassicDeviceChanged"/>, <see cref="MixDeviceChanged"/>, <see cref="MixChannelToggled"/>,
+/// <see cref="StreamMonitoringChanged"/> and <see cref="ConfigSelectionChanged"/>.</item>
+/// </list>
 /// </remarks>
-public sealed class SonarEventListener : IDisposable
+public sealed partial class SonarEventListener : IDisposable
 {
     private const string SocketPath = "/sock";
 
     private readonly SonarHttpClient _httpClient;
     private readonly ILogger _logger;
     private CancellationTokenSource? _cts;
+    private CancellationToken _lifetime;
     private Task? _runLoop;
+    private Task? _pollLoop;
+
+    /// <summary>
+    /// When set before <see cref="Start"/>, the listener periodically polls Sonar at this
+    /// interval to detect changes that Sonar does not broadcast over its WebSocket:
+    /// volume and mute levels, the mixer mode, redirection states (device routing,
+    /// mix toggles, stream monitoring) and config selections. Smaller values reduce
+    /// detection latency but increase local HTTP traffic; 300-500ms is a good balance
+    /// for interactive use. Null (the default) disables polling: only WebSocket-broadcast
+    /// events (chat mix, audio sessions, snapshots...) will be raised.
+    /// </summary>
+    public TimeSpan? PollingInterval { get; set; }
 
     /// <summary>Raised when the connection to Sonar is established or re-established.</summary>
     public event EventHandler? Connected;
@@ -38,19 +60,6 @@ public sealed class SonarEventListener : IDisposable
     /// <summary>Raised when Sonar broadcasts a chat mix change (slider, hardware wheel...).</summary>
     public event EventHandler<ChatMixSetting>? ChatMixChanged;
 
-    /// <summary>Raised when Sonar pushes a full volume snapshot (on connection and after major changes).</summary>
-    public event EventHandler<VolumeSnapshot>? VolumeDataReceived;
-
-    /// <summary>Raised when redirections changed. Sonar sends no details: re-query if needed.</summary>
-    public event EventHandler? RedirectionsInvalidated;
-
-    /// <summary>
-    /// Raised when Sonar broadcasts a config invalidation, without details.
-    /// Most consumers should prefer <see cref="ConfigSelectionChanged"/>, which carries
-    /// the affected channel and both configs.
-    /// </summary>
-    public event EventHandler? ConfigsInvalidated;
-    
     /// <summary>
     /// Raised when an application audio session appears on a device
     /// (app started playing, or was routed to this channel).
@@ -72,81 +81,41 @@ public sealed class SonarEventListener : IDisposable
 
     /// <summary>Raised for any Sonar event not yet mapped to a typed event.</summary>
     public event EventHandler<SonarUnknownEvent>? UnknownEventReceived;
-    
-    /// <summary>
-    /// When set before <see cref="Start"/>, the listener periodically polls Sonar at this
-    /// interval to detect changes that Sonar does not broadcast over its WebSocket:
-    /// volume and mute levels, the mixer mode, and redirection states (device routing,
-    /// mix toggles, stream monitoring). Smaller values reduce detection latency but
-    /// increase local HTTP traffic; 300-500ms is a good balance for interactive use.
-    /// Null (the default) disables polling: only WebSocket-broadcast events
-    /// (chat mix, devices, audio sessions...) will be raised.
-    /// </summary>
-    public TimeSpan? PollingInterval { get; set; }
-
-    /// <summary>Raised when polling detects a mixer mode change. Requires <see cref="PollingInterval"/>.</summary>
-    public event EventHandler<ModeChange>? ModeChanged;
-    
-    /// <summary>Raised when polling detects a volume or mute change. Requires <see cref="PollingInterval"/>.</summary>
-    public event EventHandler<VolumeChange>? VolumeChanged;
-    
-    /// <summary>Raised when a channel is routed to a different device in classic mode.</summary>
-    public event EventHandler<ClassicDeviceChange>? ClassicDeviceChanged;
-
-    /// <summary>Raised when a streamer-mode mix is routed to a different output device.</summary>
-    public event EventHandler<MixDeviceChange>? MixDeviceChanged;
-
-    /// <summary>Raised when a channel is enabled or disabled on a streamer-mode mix.</summary>
-    public event EventHandler<MixChannelToggle>? MixChannelToggled;
-
-    /// <summary>Raised when stream monitoring ("hear what the audience hears") is toggled.</summary>
-    public event EventHandler<StreamMonitoringChange>? StreamMonitoringChanged;
-    
-    /// <summary>Raised when the selected config of a channel changes.</summary>
-        public event EventHandler<ConfigSelectionChange>? ConfigSelectionChanged;
-
-    private Task? _pollLoop;
-    
-    private readonly RedirectionsManager _redirections;
-    private RedirectionsSnapshot? _redirectionsBaseline;
-    private int _redirectionRefreshVersion;
-    private CancellationToken _lifetime;
-    
-    /// <summary>The full redirection state used as a diffing baseline.</summary>
-    internal sealed record RedirectionsSnapshot(
-        IReadOnlyList<ClassicRedirection> Classic,
-        StreamRedirections Stream,
-        bool MonitoringEnabled);
-    
-    private readonly ConfigManager _configs;
-    private IReadOnlyDictionary<Channel, SonarConfig>? _selectedConfigsBaseline;
-    private int _configRefreshVersion;
-    private readonly SemaphoreSlim _configsRefreshLock = new(1, 1);
 
     internal SonarEventListener(SonarHttpClient httpClient, ILogger? logger = null)
     {
         _httpClient = httpClient;
         _logger = logger ?? NullLogger.Instance;
-        
+
         _redirections = new RedirectionsManager(httpClient);
         _configs = new ConfigManager(httpClient);
+
+        _redirectionsRefresher = new DebouncedRefresher("Redirections", RefreshRedirectionsAsync, _logger);
+        _configsRefresher = new DebouncedRefresher("Configs", RefreshSelectedConfigsAsync, _logger);
     }
 
-    /// <summary>Starts listening in the background. Safe to call once; use <see cref="StopAsync"/> to stop.</summary>
+    /// <summary>
+    /// Starts listening in the background. Call <see cref="StopAsync"/> to stop;
+    /// the listener can then be started again.
+    /// </summary>
     public void Start()
     {
         if (_runLoop is not null)
             throw new InvalidOperationException("The event listener is already running.");
 
+        // Reset the diffing baselines: after a stop/start cycle, the world may have changed.
+        _redirectionsBaseline = null;
+        _selectedConfigsBaseline = null;
+
         _cts = new CancellationTokenSource();
         _lifetime = _cts.Token;
         _runLoop = Task.Run(() => RunAsync(_cts.Token));
-        
+
         if (PollingInterval is { } interval)
             _pollLoop = Task.Run(() => RunPollingAsync(interval, _cts.Token));
     }
 
-    /// <summary>Stops listening and waits for the background loop to complete.</summary>
+    /// <summary>Stops listening and waits for the background loops to complete.</summary>
     public async Task StopAsync()
     {
         if (_cts is null || _runLoop is null) return;
@@ -165,9 +134,8 @@ public sealed class SonarEventListener : IDisposable
     private async Task RunAsync(CancellationToken ct)
     {
         TimeSpan backoff = TimeSpan.FromSeconds(1);
-
         bool wasConnected = false;
-        
+
         while (!ct.IsCancellationRequested)
         {
             try
@@ -180,15 +148,15 @@ public sealed class SonarEventListener : IDisposable
 
                 _logger.LogDebug("Connected to Sonar event stream at {Uri}", wsUri);
                 backoff = TimeSpan.FromSeconds(1); // reset on success
-                
+
                 wasConnected = true;
                 RaiseSafely(() => Connected?.Invoke(this, EventArgs.Empty));
-                
-                // Seed the redirections baseline right away, so the very first user change
+
+                // Seed the diffing baselines right away, so the very first user change
                 // after startup produces granular events instead of just creating the baseline.
-                ScheduleRedirectionRefresh();
-                ScheduleConfigRefresh();
-                
+                _redirectionsRefresher.Schedule(ct);
+                _configsRefresher.Schedule(ct);
+
                 await ReceiveLoopAsync(ws, ct);
             }
             catch (OperationCanceledException) when (ct.IsCancellationRequested)
@@ -263,14 +231,14 @@ public sealed class SonarEventListener : IDisposable
                 case SonarEventNames.RedirectionStatusUpdate:
                 case SonarEventNames.StreamMonitoringLockStatusUpdate:
                     RaiseSafely(() => RedirectionsInvalidated?.Invoke(this, EventArgs.Empty));
-                    ScheduleRedirectionRefresh();
+                    _redirectionsRefresher.Schedule(_lifetime);
                     break;
 
                 case SonarEventNames.SelectedConfigUpdated:
                     RaiseSafely(() => ConfigsInvalidated?.Invoke(this, EventArgs.Empty));
-                    ScheduleConfigRefresh();
+                    _configsRefresher.Schedule(_lifetime);
                     break;
-                
+
                 case SonarEventNames.AudioSessionOpened:
                     if (AppRoutingManager.ParseRouting(data) is { } opened)
                         RaiseSafely(() => AudioSessionOpened?.Invoke(this, opened));
@@ -312,321 +280,9 @@ public sealed class SonarEventListener : IDisposable
                          b.ValueKind == JsonValueKind.Number
             ? b.GetDouble() : 0.0;
 
-        string? state = data.ValueKind == JsonValueKind.Object &&
-                        data.TryGetProperty("state", out var s) &&
-                        s.ValueKind == JsonValueKind.String
-            ? s.GetString() : null;
+        string? state = data.GetStringOrNull("state");
 
         return new ChatMixSetting(balance, state);
-    }
-
-    /// <summary>Parses a SONAR_EVENT_VOLUME_DATA payload. Same shape as GET volumeSettings/streamer/.</summary>
-    internal static VolumeSnapshot ParseVolumeSnapshot(JsonElement data)
-    {
-        var channels = new Dictionary<Channel, ChannelVolumes>();
-
-        if (data.ValueKind == JsonValueKind.Object &&
-            data.TryGetProperty("masters", out var masters))
-        {
-            channels[Channel.Master] = ParseChannelVolumes(masters);
-        }
-
-        if (data.ValueKind == JsonValueKind.Object &&
-            data.TryGetProperty("devices", out var devices) &&
-            devices.ValueKind == JsonValueKind.Object)
-        {
-            foreach (var device in devices.EnumerateObject())
-            {
-                Channel? channel = ChannelExtensions.FromJsonKey(device.Name);
-                if (channel is null) continue; // unknown channel added by a future GG update: skip, don't crash
-
-                channels[channel.Value] = ParseChannelVolumes(device.Value);
-            }
-        }
-
-        return new VolumeSnapshot(channels);
-    }
-
-    private static ChannelVolumes ParseChannelVolumes(JsonElement node)
-    {
-        VolumeSetting? classic = null, personal = null, stream = null;
-
-        if (node.ValueKind == JsonValueKind.Object)
-        {
-            if (node.TryGetProperty("classic", out var c) && c.ValueKind == JsonValueKind.Object)
-                classic = ParseSetting(c);
-
-            if (node.TryGetProperty("stream", out var st) && st.ValueKind == JsonValueKind.Object)
-            {
-                if (st.TryGetProperty(Mix.Personal.ToJsonKey(), out var p) && p.ValueKind == JsonValueKind.Object)
-                    personal = ParseSetting(p);
-                if (st.TryGetProperty(Mix.Stream.ToJsonKey(), out var sm) && sm.ValueKind == JsonValueKind.Object)
-                    stream = ParseSetting(sm);
-            }
-        }
-
-        return new ChannelVolumes(classic, personal, stream);
-    }
-
-    private static VolumeSetting ParseSetting(JsonElement node)
-    {
-        double volume = node.TryGetProperty("volume", out var v) &&
-                        v.ValueKind == JsonValueKind.Number ? v.GetDouble() : 0.0;
-        bool muted = node.TryGetProperty("muted", out var m) &&
-                     m.ValueKind == JsonValueKind.True;
-        return new VolumeSetting(volume, muted);
-    }
-    
-    private readonly SemaphoreSlim _redirectionsRefreshLock = new(1, 1);
-
-    /// <summary>
-    /// Schedules a redirection refresh 250ms from now. Invalidations arrive in bursts:
-    /// each call supersedes the previous one, so only the last of a burst actually fetches.
-    /// </summary>
-    private void ScheduleRedirectionRefresh()
-    {
-        int version = Interlocked.Increment(ref _redirectionRefreshVersion);
-        CancellationToken ct = _lifetime;
-        _logger.LogDebug("Redirection refresh #{Version} scheduled", version);
-
-        _ = Task.Run(async () =>
-        {
-            try
-            {
-                await Task.Delay(250, ct);
-                if (version != _redirectionRefreshVersion)
-                {
-                    _logger.LogDebug("Redirection refresh #{Version} superseded", version);
-                    return;
-                }
-
-                await RefreshRedirectionsAsync(ct);
-            }
-            catch (OperationCanceledException) when (ct.IsCancellationRequested)
-            {
-                // Listener stopping: expected, stay silent.
-            }
-            catch (Exception ex)
-            {
-                // Includes HTTP timeouts (TaskCanceledException with a non-cancelled token).
-                _logger.LogWarning(ex, "Redirection refresh #{Version} failed", version);
-            }
-        }, ct);
-    }
-
-    /// <summary>Fetches the full redirection state, diffs it against the baseline, and raises granular events.</summary>
-    private async Task RefreshRedirectionsAsync(CancellationToken ct)
-    {
-        await _redirectionsRefreshLock.WaitAsync(ct);
-        try
-        {
-            var snapshot = new RedirectionsSnapshot(
-                await _redirections.GetClassicRedirectionsAsync(ct),
-                await _redirections.GetStreamRedirectionsAsync(ct),
-                await _redirections.GetStreamMonitoringEnabledAsync(ct));
-
-            if (_redirectionsBaseline is { } baseline)
-            {
-                RedirectionDiff diff = DiffRedirections(baseline, snapshot);
-
-                if (!diff.IsEmpty)
-                {
-                    _logger.LogDebug(
-                        "Redirection changes detected: {Classic} classic, {MixDev} mix devices, {Toggles} toggles, monitoring changed: {Mon}",
-                        diff.ClassicDeviceChanges.Count, diff.MixDeviceChanges.Count,
-                        diff.MixChannelToggles.Count, diff.MonitoringChange is not null);
-                }
-
-                foreach (var change in diff.ClassicDeviceChanges)
-                    RaiseSafely(() => ClassicDeviceChanged?.Invoke(this, change));
-                foreach (var change in diff.MixDeviceChanges)
-                    RaiseSafely(() => MixDeviceChanged?.Invoke(this, change));
-                foreach (var change in diff.MixChannelToggles)
-                    RaiseSafely(() => MixChannelToggled?.Invoke(this, change));
-                if (diff.MonitoringChange is { } monitoring)
-                    RaiseSafely(() => StreamMonitoringChanged?.Invoke(this, monitoring));
-            }
-            else
-            {
-                _logger.LogDebug("Redirection baseline seeded");
-            }
-
-            _redirectionsBaseline = snapshot;
-        }
-        finally
-        {
-            _redirectionsRefreshLock.Release();
-        }
-    }
-    
-    private void ScheduleConfigRefresh()
-    {
-        int version = Interlocked.Increment(ref _configRefreshVersion);
-        CancellationToken ct = _lifetime;
-
-        _ = Task.Run(async () =>
-        {
-            try
-            {
-                await Task.Delay(250, ct);
-                if (version != _configRefreshVersion) return;
-                await RefreshSelectedConfigsAsync(ct);
-            }
-            catch (OperationCanceledException) when (ct.IsCancellationRequested) { }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Config selection refresh failed");
-            }
-        }, ct);
-    }
-
-    private async Task RefreshSelectedConfigsAsync(CancellationToken ct)
-    {
-        await _configsRefreshLock.WaitAsync(ct);
-        try
-        {
-            var selected = await _configs.GetSelectedAsync(ct);
-
-            if (_selectedConfigsBaseline is { } baseline)
-            {
-                foreach ((Channel channel, SonarConfig config) in selected)
-                {
-                    SonarConfig? previous = baseline.GetValueOrDefault(channel);
-                    if (previous?.Id != config.Id)
-                        RaiseSafely(() => ConfigSelectionChanged?.Invoke(this,
-                            new ConfigSelectionChange(channel, previous, config)));
-                }
-            }
-
-            _selectedConfigsBaseline = selected;
-        }
-        finally
-        {
-            _configsRefreshLock.Release();
-        }
-    }
-    
-    /// <summary>
-    /// Polls the mode and the matching volume route, raising granular events on differences.
-    /// Each volumeSettings route only reliably reflects its own mode's values (observed
-    /// 2026-08-08: the other mode's section returns stale data), hence the mode-aware routing.
-    /// </summary>
-    private async Task RunPollingAsync(TimeSpan interval, CancellationToken ct)
-    {
-        var modeManager = new ModeManager(_httpClient);
-        VolumeSnapshot? baseline = null;
-        Mode? baselineMode = null;
-
-        while (!ct.IsCancellationRequested)
-        {
-            try { await Task.Delay(interval, ct); }
-            catch (OperationCanceledException) { break; }
-
-            try
-            {
-                Mode mode = await modeManager.GetAsync(ct);
-
-                string route = mode == Mode.Streamer
-                    ? SonarRoutes.StreamerVolumes
-                    : SonarRoutes.ClassicVolumes;
-
-                using var doc = await _httpClient.GetAsync(route, ct);
-                var snapshot = ParseVolumeSnapshot(doc.RootElement);
-
-                if (baselineMode is not null && baselineMode != mode)
-                {
-                    Mode previous = baselineMode.Value;
-                    RaiseSafely(() => ModeChanged?.Invoke(this, new ModeChange(previous, mode)));
-                }
-
-                // Only diff against a baseline captured in the same mode: comparing across
-                // modes would produce spurious events from the stale sections.
-                if (baseline is not null && baselineMode == mode)
-                {
-                    foreach (VolumeChange change in Diff(baseline, snapshot, mode))
-                        RaiseSafely(() => VolumeChanged?.Invoke(this, change));
-                }
-
-                baseline = snapshot;
-                baselineMode = mode;
-                
-                // Redirections: UI-initiated toggles are not broadcast by Sonar (same rule as
-                // volume sliders), so we refresh them on the polling cadence too. The lock
-                // makes this safe alongside invalidation-triggered refreshes.
-                await RefreshRedirectionsAsync(ct);
-                await RefreshSelectedConfigsAsync(ct);
-            }
-            catch (OperationCanceledException) when (ct.IsCancellationRequested) { break; }
-            catch (Exception ex)
-            {
-                _logger.LogDebug(ex, "Volume polling tick failed");
-            }
-        }
-    }
-
-    /// <summary>
-    /// Computes the volume changes between two snapshots, comparing only the values
-    /// that are reliable in the given mode.
-    /// </summary>
-    internal static IEnumerable<VolumeChange> Diff(VolumeSnapshot previous, VolumeSnapshot current, Mode mode)
-    {
-        foreach ((Channel channel, ChannelVolumes cur) in current.Channels)
-        {
-            if (!previous.Channels.TryGetValue(channel, out var prev)) continue;
-
-            if (mode == Mode.Classic)
-            {
-                if (Changed(prev.Classic, cur.Classic))
-                    yield return new VolumeChange(channel, null, prev.Classic!, cur.Classic!);
-            }
-            else
-            {
-                if (Changed(prev.Personal, cur.Personal))
-                    yield return new VolumeChange(channel, Mix.Personal, prev.Personal!, cur.Personal!);
-                if (Changed(prev.Stream, cur.Stream))
-                    yield return new VolumeChange(channel, Mix.Stream, prev.Stream!, cur.Stream!);
-            }
-        }
-
-        static bool Changed(VolumeSetting? previous, VolumeSetting? current) =>
-            previous is not null && current is not null && previous != current;
-    }
-    
-    /// <summary>Computes what changed between two redirection snapshots.</summary>
-    internal static RedirectionDiff DiffRedirections(RedirectionsSnapshot previous, RedirectionsSnapshot current)
-    {
-        var classicChanges = new List<ClassicDeviceChange>();
-        foreach (var cur in current.Classic)
-        {
-            var prev = previous.Classic.FirstOrDefault(r => r.Channel == cur.Channel);
-            if (prev is not null && prev.DeviceId != cur.DeviceId)
-                classicChanges.Add(new ClassicDeviceChange(cur.Channel, prev.DeviceId, cur.DeviceId));
-        }
-
-        var mixDeviceChanges = new List<MixDeviceChange>();
-        var mixToggles = new List<MixChannelToggle>();
-        DiffMix(previous.Stream.Personal, current.Stream.Personal);
-        DiffMix(previous.Stream.Stream, current.Stream.Stream);
-
-        void DiffMix(MixRedirection? prev, MixRedirection? cur)
-        {
-            if (prev is null || cur is null) return;
-
-            if (prev.DeviceId != cur.DeviceId)
-                mixDeviceChanges.Add(new MixDeviceChange(cur.Mix, prev.DeviceId, cur.DeviceId));
-
-            foreach ((Channel channel, bool enabled) in cur.EnabledChannels)
-            {
-                if (prev.EnabledChannels.TryGetValue(channel, out bool wasEnabled) && wasEnabled != enabled)
-                    mixToggles.Add(new MixChannelToggle(cur.Mix, channel, enabled));
-            }
-        }
-
-        StreamMonitoringChange? monitoring = previous.MonitoringEnabled != current.MonitoringEnabled
-            ? new StreamMonitoringChange(current.MonitoringEnabled)
-            : null;
-
-        return new RedirectionDiff(classicChanges, mixDeviceChanges, mixToggles, monitoring);
     }
 
     /// <summary>Stops the listener without waiting. Prefer <see cref="StopAsync"/> for a graceful stop.</summary>
@@ -634,7 +290,7 @@ public sealed class SonarEventListener : IDisposable
     {
         _cts?.Cancel();
         _cts?.Dispose();
-        _redirectionsRefreshLock.Dispose();
-        _configsRefreshLock.Dispose();
+        _redirectionsRefresher.Dispose();
+        _configsRefresher.Dispose();
     }
 }
