@@ -54,6 +54,11 @@ internal static class Program
         Mode mode = await sonar.Mode.GetAsync();
         Console.WriteLine($"Mode: {mode}");
 
+        // --- Audio devices (also used to resolve ids to names below) ---
+        var devices = await sonar.Devices.GetAllAsync();
+        var deviceNames = devices.ToDictionary(d => d.Id, d => d.Name);
+        string NameOf(string deviceId) => deviceNames.GetValueOrDefault(deviceId, deviceId);
+
         // --- Volumes (query what is reliable in the current mode) ---
         Channel[] channels = [Channel.Master, Channel.Game, Channel.Chat, Channel.Media, Channel.Aux, Channel.Mic];
 
@@ -87,11 +92,6 @@ internal static class Program
         foreach ((Channel channel, var config) in selected.OrderBy(p => p.Key))
             Console.WriteLine($"  {channel,-6} -> {config.Name}{(config.IsPreset ? " (preset)" : "")}");
 
-        // --- Audio devices (also used to resolve ids to names below) ---
-        var devices = await sonar.Devices.GetAllAsync();
-        var deviceNames = devices.ToDictionary(d => d.Id, d => d.Name);
-        string NameOf(string deviceId) => deviceNames.GetValueOrDefault(deviceId, deviceId);
-        
         // --- Classic redirections ---
         var classicRedirections = await sonar.Redirections.GetClassicRedirectionsAsync();
         Console.WriteLine("Classic redirections:");
@@ -110,26 +110,30 @@ internal static class Program
 
             bool monitoring = await sonar.Redirections.GetStreamMonitoringEnabledAsync();
             Console.WriteLine($"Stream monitoring (hear the audience mix): {monitoring}");
-        }
 
-        void PrintMix(MixRedirection? mix)
-        {
-            if (mix is null) return;
-            string enabledChannels = string.Join(", ",
-                mix.EnabledChannels.Where(p => p.Value).Select(p => p.Key));
-            Console.WriteLine($"  {mix.Mix,-8} mix -> {NameOf(mix.DeviceId)} (running: {mix.IsRunning}, enabled: [{enabledChannels}])");
-        }
-
-        Console.WriteLine("Audio Routing:");
-        var routings = await sonar.AppRouting.GetRoutingsAsync();
-        foreach (var device in routings)
-        {
-            Console.WriteLine($"  {NameOf(device.DeviceId),-6}:");
-            foreach (var session in device.Sessions)
+            void PrintMix(MixRedirection? mix)
             {
-                Console.WriteLine($"    {session.DisplayName,-2} ({session.ProcessId, -4}) -> {session.State}");
+                if (mix is null) return;
+                string enabledChannels = string.Join(", ",
+                    mix.EnabledChannels.Where(p => p.Value).Select(p => p.Key));
+                Console.WriteLine($"  {mix.Mix,-8} mix -> {NameOf(mix.DeviceId)} (running: {mix.IsRunning}, enabled: [{enabledChannels}])");
             }
         }
+
+        // --- App routing: which applications play on which channel ---
+        var routings = await sonar.AppRouting.GetRoutingsAsync();
+        Console.WriteLine("App routing (active sessions):");
+        bool anySession = false;
+        foreach (var routing in routings.Where(r => r.Channel is not null && r.DataFlow == AudioDataFlow.Render))
+        {
+            foreach (var session in routing.Sessions.Where(s => !s.IsSystemSound && s.IsActive))
+            {
+                Console.WriteLine($"  {routing.Channel,-6} -> {session.DisplayName} (pid {session.ProcessId})");
+                anySession = true;
+            }
+        }
+        if (!anySession)
+            Console.WriteLine("  (no application is currently playing audio)");
     }
 
     /// <summary>Subscribes to every event the library exposes, printing each occurrence.</summary>
@@ -172,7 +176,7 @@ internal static class Program
 
         sonar.Events.ConfigSelectionChanged += (_, e) =>
             Console.WriteLine($"[Config] {e.Channel}: {e.PreviousConfig?.Name ?? "?"} -> {e.NewConfigName}");
-        
+
         sonar.Events.AudioSessionOpened += (_, e) =>
         {
             var app = e.Sessions.FirstOrDefault(s => !s.IsSystemSound);
@@ -194,8 +198,8 @@ internal static class Program
         sonar.Events.ConfigsInvalidated += (_, _) =>
             Console.WriteLine("  (raw: configs invalidated)");
 
-        // sonar.Events.RoutingInvalidated += (_, _) =>
-        //     Console.WriteLine("  (raw: routing invalidated)");
+        sonar.Events.RoutingInvalidated += (_, _) =>
+            Console.WriteLine("  (raw: app routing invalidated)");
 
         // --- Low-level / diagnostics ---
         sonar.Events.VolumeDataReceived += (_, e) =>
