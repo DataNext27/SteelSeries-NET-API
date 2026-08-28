@@ -111,9 +111,9 @@ skipped, never fatal), and ships tooling to catch SteelSeries-side changes early
 
 ## For contributors
 
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - layers, event mechanisms, and the
+- [ARCHITECTURE.md](docs/ARCHITECTURE.md) - layers, event mechanisms, and the
   hard-earned lessons about the Sonar API
-- [CONTRIBUTING.md](CONTRIBUTING.md) - setup, the manager mold, and the
+- [CONTRIBUTING.md](docs/CONTRIBUTING.md) - setup, the manager mold, and the
   post-GG-update checklist
 - `SteelSeriesAPI.Explorer` - the exploration tool this library was built with:
   probe routes, dump payloads, `check` API structures against references, `verify`
