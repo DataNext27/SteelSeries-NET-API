@@ -4,6 +4,7 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using SteelSeriesAPI.Core;
+using SteelSeriesAPI.Sonar.Enums;
 using SteelSeriesAPI.Sonar.Managers;
 using SteelSeriesAPI.Sonar.Models;
 
@@ -78,6 +79,9 @@ public sealed partial class SonarEventListener : IDisposable
     /// or rely on <see cref="AudioSessionOpened"/>/<see cref="AudioSessionClosed"/> which carry the data.
     /// </summary>
     public event EventHandler? RoutingInvalidated;
+
+    /// <summary>Raised when a physical audio device appears, disappears, or changes state.</summary>
+    public event EventHandler<AudioDeviceStatusChange>? AudioDeviceStatusChanged;
 
     /// <summary>Raised for any Sonar event not yet mapped to a typed event.</summary>
     public event EventHandler<SonarUnknownEvent>? UnknownEventReceived;
@@ -253,6 +257,19 @@ public sealed partial class SonarEventListener : IDisposable
                     RaiseSafely(() => RoutingInvalidated?.Invoke(this, EventArgs.Empty));
                     break;
 
+                case SonarEventNames.DeviceStatusUpdate:
+                    if (ParseDeviceStatus(data) is { } status)
+                        RaiseSafely(() => AudioDeviceStatusChanged?.Invoke(this, status));
+                    break;
+
+                case SonarEventNames.FallbackUpdated:
+                    // Sonar's internal per-channel failover bookkeeping. Recognized but deliberately
+                    // not modeled: it fires dozens of times per device hot-plug and carries nothing
+                    // consumers need beyond what AudioDeviceStatusChanged already says. Kept out of
+                    // UnknownEventReceived so that event stays meaningful.
+                    _logger.LogTrace("Ignoring {Event}", SonarEventNames.FallbackUpdated);
+                    break;
+
                 default:
                     RaiseSafely(() => UnknownEventReceived?.Invoke(this,
                         new SonarUnknownEvent(eventName ?? "", json)));
@@ -270,6 +287,31 @@ public sealed partial class SonarEventListener : IDisposable
     {
         try { raise(); }
         catch (Exception ex) { _logger.LogWarning(ex, "A Sonar event subscriber threw an exception"); }
+    }
+
+    /// <summary>Parses a SONAR_EVENT_DEVICE_STATUS_UPDATE payload (one message per device endpoint).</summary>
+    internal static AudioDeviceStatusChange? ParseDeviceStatus(JsonElement data)
+    {
+        if (data.ValueKind != JsonValueKind.Object) return null;
+
+        string? id = data.GetStringOrNull("id");
+        if (string.IsNullOrEmpty(id)) return null;
+
+        AudioDataFlow flow = string.Equals(data.GetStringOrNull("dataFlow"), "capture", StringComparison.OrdinalIgnoreCase)
+            ? AudioDataFlow.Capture
+            : AudioDataFlow.Render;
+
+        string rawState = data.GetStringOrNull("state") ?? "";
+        AudioDeviceState state = rawState.ToLowerInvariant() switch
+        {
+            "active" => AudioDeviceState.Active,
+            "disabled" => AudioDeviceState.Disabled,
+            "notpresent" => AudioDeviceState.NotPresent,
+            "unplugged" => AudioDeviceState.Unplugged,
+            _ => AudioDeviceState.Unknown,
+        };
+
+        return new AudioDeviceStatusChange(id, data.GetStringOrNull("friendlyName") ?? "", flow, state, rawState);
     }
 
     /// <summary>Parses an EVENT_SONAR_CHATMIX_DATA payload. Same shape as GET v1/chatMix.</summary>

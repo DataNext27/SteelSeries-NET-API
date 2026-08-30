@@ -269,4 +269,59 @@ public class SonarEventListenerTests
         Assert.Null(SonarEventListener.DiffRedirections(withoutMic, withMic).MicDeviceChange);
         Assert.Null(SonarEventListener.DiffRedirections(withMic, withoutMic).MicDeviceChange);
     }
+
+    // ----------------------------------------------------------------
+    // ParseDeviceStatus (payloads captured live on 2026-08-30)
+    // ----------------------------------------------------------------
+
+    [Fact]
+    public void ParseDeviceStatus_PlugPayload_ParsesActiveCaptureDevice()
+    {
+        const string payload = """
+            {"friendlyName":"Microphone sur casque (Arctis GameBuds)",
+             "id":"{0.0.1.00000000}.{5b920972-2d18-46b1-be1e-b5b077cfdaec}",
+             "dataFlow":"capture","role":"none","channels":1,"defaultRole":"console",
+             "fwUpdateRequired":false,"state":"active","isVad":false}
+            """;
+
+        var change = SonarEventListener.ParseDeviceStatus(Json(payload));
+
+        Assert.NotNull(change);
+        Assert.Equal("{0.0.1.00000000}.{5b920972-2d18-46b1-be1e-b5b077cfdaec}", change!.DeviceId);
+        Assert.Equal("Microphone sur casque (Arctis GameBuds)", change.Name);
+        Assert.Equal(AudioDataFlow.Capture, change.DataFlow);
+        Assert.Equal(AudioDeviceState.Active, change.State);
+        Assert.True(change.IsPresent);
+    }
+
+    [Fact]
+    public void ParseDeviceStatus_UnplugPayload_ParsesNotPresentRenderDevice()
+    {
+        const string payload = """
+            {"friendlyName":"Casque (Arctis GameBuds)",
+             "id":"{0.0.0.00000000}.{99f706a5-ca44-4b19-8317-e244e8bb3ca5}",
+             "dataFlow":"render","role":"none","channels":2,"defaultRole":"console",
+             "fwUpdateRequired":false,"state":"notpresent","isVad":false}
+            """;
+
+        var change = SonarEventListener.ParseDeviceStatus(Json(payload));
+
+        Assert.NotNull(change);
+        Assert.Equal(AudioDataFlow.Render, change!.DataFlow);
+        Assert.Equal(AudioDeviceState.NotPresent, change.State);
+        Assert.False(change.IsPresent);
+    }
+
+    [Fact]
+    public void ParseDeviceStatus_UnknownStateOrMissingId_DegradesGracefully()
+    {
+        var odd = SonarEventListener.ParseDeviceStatus(
+            Json("""{"id":"{x}","friendlyName":"HoloDeck","dataFlow":"render","state":"quantum"}"""));
+        Assert.NotNull(odd);
+        Assert.Equal(AudioDeviceState.Unknown, odd!.State);
+        Assert.Equal("quantum", odd.RawState);
+
+        Assert.Null(SonarEventListener.ParseDeviceStatus(Json("""{"state":"active"}""")));
+        Assert.Null(SonarEventListener.ParseDeviceStatus(Json("null")));
+    }
 }
