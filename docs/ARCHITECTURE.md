@@ -55,18 +55,18 @@ configs, app routing). The pattern is always the same:
 `SonarEventListener` raises typed .NET events fed by three mechanisms. Subscribers
 never know (or care) which mechanism produced an event.
 
-| Event | Mechanism |
-|---|---|
-| `Connected` / `Disconnected` | WebSocket connection lifecycle |
-| `ChatMixChanged` | WebSocket broadcast (real time) |
-| `VolumeDataReceived` | WebSocket broadcast (connection, mode switch, OS/hardware changes) |
-| `AudioSessionOpened` / `AudioSessionClosed` | WebSocket broadcast |
-| `*Invalidated` (redirections, configs, routing) | WebSocket broadcast (raw, no data) |
-| `UnknownEventReceived` | WebSocket broadcast (catch-all) |
-| `VolumeChanged` | Polling (mode-aware diff) |
-| `ModeChanged` | Polling |
-| `ClassicDeviceChanged`, `MixDeviceChanged`, `MixChannelToggled`, `StreamMonitoringChanged` | Hybrid: invalidation + polling → fetch + diff |
-| `ConfigSelectionChanged` | Hybrid: invalidation + polling → fetch + diff |
+| Event                                                                                                          | Mechanism |
+|----------------------------------------------------------------------------------------------------------------|---|
+| `Connected` / `Disconnected`                                                                                   | WebSocket connection lifecycle |
+| `ChatMixChanged`                                                                                               | WebSocket broadcast (real time) |
+| `VolumeDataReceived`                                                                                           | WebSocket broadcast (connection, mode switch, OS/hardware changes) |
+| `AudioSessionOpened` / `AudioSessionClosed`                                                                    | WebSocket broadcast |
+| `*Invalidated` (redirections, configs, routing)                                                                | WebSocket broadcast (raw, no data) |
+| `UnknownEventReceived`                                                                                         | WebSocket broadcast (catch-all) |
+| `VolumeChanged`                                                                                                | Polling (mode-aware diff) |
+| `ModeChanged`                                                                                                  | Polling |
+| `ClassicDeviceChanged`, `MixDeviceChanged`, `MixChannelToggled`, `StreamMonitoringChanged`, `MicDeviceChanged` | Hybrid: invalidation + polling → fetch + diff |
+| `ConfigSelectionChanged`                                                                                       | Hybrid: invalidation + polling → fetch + diff |
 
 **Why three mechanisms?** Because Sonar's WebSocket (`/sock`) only broadcasts what
 does *not* come through its own HTTP API. UI slider moves, mix toggles, and config
