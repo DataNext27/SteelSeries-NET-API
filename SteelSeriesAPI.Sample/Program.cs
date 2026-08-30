@@ -167,6 +167,9 @@ internal static class Program
 
         sonar.Events.MixDeviceChanged += (_, e) =>
             Console.WriteLine($"[Redirections] {e.Mix} mix routed to {e.NewDeviceId}");
+        
+        sonar.Events.MicDeviceChanged += (_, e) =>
+            Console.WriteLine($"[Redirections] Mic passthrough routed to {e.NewDeviceId}");
 
         sonar.Events.MixChannelToggled += (_, e) =>
             Console.WriteLine($"[Redirections] {e.Channel} on {e.Mix} mix: {(e.IsEnabled ? "enabled" : "disabled")}");

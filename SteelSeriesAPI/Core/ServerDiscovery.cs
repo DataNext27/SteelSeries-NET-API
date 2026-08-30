@@ -57,7 +57,7 @@ public sealed class ServerDiscovery
         string json;
         try
         {
-            json = await _ggClient.GetStringAsync($"https://{ggAddress}/subApps", ct);
+            json = await _ggClient.GetStringAsync($"https://{ggAddress}/subApps", ct).ConfigureAwait(false);
         }
         catch (HttpRequestException ex)
         {

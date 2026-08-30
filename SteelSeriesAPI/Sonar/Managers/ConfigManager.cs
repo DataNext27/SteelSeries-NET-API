@@ -15,28 +15,28 @@ internal sealed class ConfigManager : IConfigManager
     /// <inheritdoc />
     public async Task<IReadOnlyList<SonarConfig>> GetAllAsync(CancellationToken ct = default)
     {
-        using var doc = await _transport.GetAsync(SonarRoutes.Configs, ct);
+        using var doc = await _transport.GetAsync(SonarRoutes.Configs, ct).ConfigureAwait(false);
         return ParseConfigList(doc.RootElement);
     }
 
     /// <inheritdoc />
     public async Task<IReadOnlyList<SonarConfig>> GetAllAsync(Channel channel, CancellationToken ct = default)
     {
-        var all = await GetAllAsync(ct);
+        var all = await GetAllAsync(ct).ConfigureAwait(false);
         return all.Where(c => c.Channel == channel).ToList();
     }
 
     /// <inheritdoc />
     public async Task<IReadOnlyDictionary<Channel, SonarConfig>> GetSelectedAsync(CancellationToken ct = default)
     {
-        using var doc = await _transport.GetAsync(SonarRoutes.SelectedConfigs, ct);
+        using var doc = await _transport.GetAsync(SonarRoutes.SelectedConfigs, ct).ConfigureAwait(false);
         return ParseConfigList(doc.RootElement).ToDictionary(c => c.Channel);
     }
 
     /// <inheritdoc />
     public async Task<SonarConfig?> GetSelectedAsync(Channel channel, CancellationToken ct = default)
     {
-        var selected = await GetSelectedAsync(ct);
+        var selected = await GetSelectedAsync(ct).ConfigureAwait(false);
         return selected.GetValueOrDefault(channel);
     }
 

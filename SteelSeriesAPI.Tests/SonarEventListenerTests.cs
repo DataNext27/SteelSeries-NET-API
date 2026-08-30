@@ -231,4 +231,42 @@ public class SonarEventListenerTests
 
         Assert.Empty(SonarEventListener.Diff(previous, current, Mode.Classic));
     }
+
+    // ----------------------------------------------------------------
+    // Redirections diff
+    // ----------------------------------------------------------------
+
+    [Fact]
+    public void DiffRedirections_MicDeviceChange_IsDetected()
+    {
+        var previous = new SonarEventListener.RedirectionsSnapshot(
+            [],
+            new StreamRedirections(null, null, new MicRedirection("{cap-1}", true)),
+            MonitoringEnabled: false);
+        var current = previous with
+        {
+            Stream = new StreamRedirections(null, null, new MicRedirection("{cap-2}", true)),
+        };
+
+        var diff = SonarEventListener.DiffRedirections(previous, current);
+
+        Assert.NotNull(diff.MicDeviceChange);
+        Assert.Equal("{cap-1}", diff.MicDeviceChange!.PreviousDeviceId);
+        Assert.Equal("{cap-2}", diff.MicDeviceChange.NewDeviceId);
+        Assert.False(diff.IsEmpty);
+    }
+
+    [Fact]
+    public void DiffRedirections_MicAbsentOrUnchanged_YieldsNoMicChange()
+    {
+        var withMic = new SonarEventListener.RedirectionsSnapshot(
+            [],
+            new StreamRedirections(null, null, new MicRedirection("{cap-1}", true)),
+            MonitoringEnabled: false);
+        var withoutMic = withMic with { Stream = new StreamRedirections(null, null, null) };
+
+        Assert.Null(SonarEventListener.DiffRedirections(withMic, withMic).MicDeviceChange);
+        Assert.Null(SonarEventListener.DiffRedirections(withoutMic, withMic).MicDeviceChange);
+        Assert.Null(SonarEventListener.DiffRedirections(withMic, withoutMic).MicDeviceChange);
+    }
 }

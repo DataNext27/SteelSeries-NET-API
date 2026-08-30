@@ -350,6 +350,25 @@ internal static class Program
             await sonar.Redirections.SetMixChannelEnabledAsync(Mix.Personal, Channel.Media, before);
         });
 
+        await Step("Streamer mic device round-trip", async () =>
+        {
+            var state = await sonar.Redirections.GetStreamRedirectionsAsync();
+            var mic = state.Mic ?? throw new SkipException("mic redirection absent from response");
+
+            var captures = (await sonar.Devices.GetAllAsync(AudioDataFlow.Capture))
+                .Where(d => !d.IsSonarVirtual).ToList();
+            var other = captures.FirstOrDefault(d => d.Id != mic.DeviceId)
+                ?? throw new SkipException("only one capture device available");
+
+            await sonar.Redirections.SetMicDeviceAsync(other.Id);
+            await Task.Delay(150);
+            var after = await sonar.Redirections.GetStreamRedirectionsAsync();
+            if (after.Mic?.DeviceId != other.Id)
+                throw new Exception($"read back {after.Mic?.DeviceId}, expected {other.Id}");
+
+            await sonar.Redirections.SetMicDeviceAsync(mic.DeviceId);
+        });
+
         await Step($"Restore initial mode ({initialMode})", () => sonar.Mode.SetAsync(initialMode));
 
         Console.WriteLine($"\n{pass} passed, {fail} failed, {skip} skipped." +

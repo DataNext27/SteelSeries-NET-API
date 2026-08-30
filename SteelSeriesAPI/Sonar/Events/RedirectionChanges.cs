@@ -25,15 +25,21 @@ public sealed record MixChannelToggle(Mix Mix, Channel Channel, bool IsEnabled);
 /// <param name="IsEnabled">Whether stream monitoring is enabled now.</param>
 public sealed record StreamMonitoringChange(bool IsEnabled);
 
+/// <summary>The streamer-mode mic passthrough was routed to a different capture device.</summary>
+/// <param name="PreviousDeviceId">The device the mic was captured from before.</param>
+/// <param name="NewDeviceId">The device the mic is captured from now.</param>
+public sealed record MicDeviceChange(string PreviousDeviceId, string NewDeviceId);
+
 /// <summary>Everything that changed between two redirection snapshots.</summary>
 public sealed record RedirectionDiff(
     IReadOnlyList<ClassicDeviceChange> ClassicDeviceChanges,
     IReadOnlyList<MixDeviceChange> MixDeviceChanges,
     IReadOnlyList<MixChannelToggle> MixChannelToggles,
-    StreamMonitoringChange? MonitoringChange)
+    StreamMonitoringChange? MonitoringChange,
+    MicDeviceChange? MicDeviceChange)
 {
     /// <summary>True when nothing actually changed between the two snapshots.</summary>
     public bool IsEmpty =>
         ClassicDeviceChanges.Count == 0 && MixDeviceChanges.Count == 0 &&
-        MixChannelToggles.Count == 0 && MonitoringChange is null;
+        MixChannelToggles.Count == 0 && MonitoringChange is null && MicDeviceChange is null;
 }

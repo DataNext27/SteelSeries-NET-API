@@ -14,7 +14,7 @@ internal sealed class ChatMixManager : IChatMixManager
     /// <inheritdoc />
     public async Task<ChatMixSetting> GetAsync(CancellationToken ct = default)
     {
-        using var doc = await _transport.GetAsync(SonarRoutes.GetChatMix, ct);
+        using var doc = await _transport.GetAsync(SonarRoutes.GetChatMix, ct).ConfigureAwait(false);
         var root = doc.RootElement;
 
         double balance = root.TryGetProperty("balance", out var b) &&

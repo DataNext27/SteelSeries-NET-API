@@ -15,7 +15,8 @@ public sealed partial class SonarEventListener
     /// <summary>
     /// Raised when Sonar broadcasts a redirection invalidation, without details.
     /// Most consumers should prefer the granular events: <see cref="ClassicDeviceChanged"/>,
-    /// <see cref="MixDeviceChanged"/>, <see cref="MixChannelToggled"/> and <see cref="StreamMonitoringChanged"/>.
+    /// <see cref="MixDeviceChanged"/>, <see cref="MixChannelToggled"/>, <see cref="StreamMonitoringChanged"/>
+    /// and <see cref="MicDeviceChanged"/>.
     /// </summary>
     public event EventHandler? RedirectionsInvalidated;
 
@@ -31,6 +32,9 @@ public sealed partial class SonarEventListener
     /// <summary>Raised when stream monitoring ("hear what the audience hears") is toggled.</summary>
     public event EventHandler<StreamMonitoringChange>? StreamMonitoringChanged;
 
+    /// <summary>Raised when the streamer-mode mic passthrough is captured from a different device.</summary>
+    public event EventHandler<MicDeviceChange>? MicDeviceChanged;
+
     /// <summary>The full redirection state used as a diffing baseline.</summary>
     internal sealed record RedirectionsSnapshot(
         IReadOnlyList<ClassicRedirection> Classic,
@@ -41,9 +45,9 @@ public sealed partial class SonarEventListener
     private async Task RefreshRedirectionsAsync(CancellationToken ct)
     {
         var snapshot = new RedirectionsSnapshot(
-            await _redirections.GetClassicRedirectionsAsync(ct),
-            await _redirections.GetStreamRedirectionsAsync(ct),
-            await _redirections.GetStreamMonitoringEnabledAsync(ct));
+            await _redirections.GetClassicRedirectionsAsync(ct).ConfigureAwait(false),
+            await _redirections.GetStreamRedirectionsAsync(ct).ConfigureAwait(false),
+            await _redirections.GetStreamMonitoringEnabledAsync(ct).ConfigureAwait(false));
 
         if (_redirectionsBaseline is { } baseline)
         {
@@ -52,9 +56,9 @@ public sealed partial class SonarEventListener
             if (!diff.IsEmpty)
             {
                 _logger.LogDebug(
-                    "Redirection changes detected: {Classic} classic, {MixDev} mix devices, {Toggles} toggles, monitoring changed: {Mon}",
+                    "Redirection changes detected: {Classic} classic, {MixDev} mix devices, {Toggles} toggles, monitoring changed: {Mon}, mic changed: {Mic}",
                     diff.ClassicDeviceChanges.Count, diff.MixDeviceChanges.Count,
-                    diff.MixChannelToggles.Count, diff.MonitoringChange is not null);
+                    diff.MixChannelToggles.Count, diff.MonitoringChange is not null, diff.MicDeviceChange is not null);
             }
 
             foreach (var change in diff.ClassicDeviceChanges)
@@ -65,6 +69,8 @@ public sealed partial class SonarEventListener
                 RaiseSafely(() => MixChannelToggled?.Invoke(this, change));
             if (diff.MonitoringChange is { } monitoring)
                 RaiseSafely(() => StreamMonitoringChanged?.Invoke(this, monitoring));
+            if (diff.MicDeviceChange is { } micChange)
+                RaiseSafely(() => MicDeviceChanged?.Invoke(this, micChange));
         }
         else
         {
@@ -108,6 +114,11 @@ public sealed partial class SonarEventListener
             ? new StreamMonitoringChange(current.MonitoringEnabled)
             : null;
 
-        return new RedirectionDiff(classicChanges, mixDeviceChanges, mixToggles, monitoring);
+        MicDeviceChange? micChange =
+            previous.Stream.Mic is { } prevMic && current.Stream.Mic is { } curMic && prevMic.DeviceId != curMic.DeviceId
+                ? new MicDeviceChange(prevMic.DeviceId, curMic.DeviceId)
+                : null;
+
+        return new RedirectionDiff(classicChanges, mixDeviceChanges, mixToggles, monitoring, micChange);
     }
 }

@@ -15,7 +15,7 @@ internal sealed class RedirectionsManager : IRedirectionsManager
     /// <inheritdoc />
     public async Task<IReadOnlyList<ClassicRedirection>> GetClassicRedirectionsAsync(CancellationToken ct = default)
     {
-        using var doc = await _transport.GetAsync(SonarRoutes.ClassicRedirections, ct);
+        using var doc = await _transport.GetAsync(SonarRoutes.ClassicRedirections, ct).ConfigureAwait(false);
         return ParseClassicRedirections(doc.RootElement);
     }
 
@@ -29,7 +29,7 @@ internal sealed class RedirectionsManager : IRedirectionsManager
     /// <inheritdoc />
     public async Task<StreamRedirections> GetStreamRedirectionsAsync(CancellationToken ct = default)
     {
-        using var doc = await _transport.GetAsync(SonarRoutes.StreamRedirections, ct);
+        using var doc = await _transport.GetAsync(SonarRoutes.StreamRedirections, ct).ConfigureAwait(false);
         return ParseStreamRedirections(doc.RootElement);
     }
 
@@ -38,6 +38,13 @@ internal sealed class RedirectionsManager : IRedirectionsManager
     {
         ValidateDeviceId(deviceId);
         return _transport.PutAsync(SonarRoutes.SetStreamRedirectionDevice(mix, deviceId), ct);
+    }
+
+    /// <inheritdoc />
+    public Task SetMicDeviceAsync(string deviceId, CancellationToken ct = default)
+    {
+        ValidateDeviceId(deviceId);
+        return _transport.PutAsync(SonarRoutes.SetStreamRedirectionMicDevice(deviceId), ct);
     }
 
     /// <inheritdoc />
@@ -52,7 +59,7 @@ internal sealed class RedirectionsManager : IRedirectionsManager
     /// <inheritdoc />
     public async Task<bool> GetStreamMonitoringEnabledAsync(CancellationToken ct = default)
     {
-        using var doc = await _transport.GetAsync(SonarRoutes.StreamMonitoringEnabled, ct);
+        using var doc = await _transport.GetAsync(SonarRoutes.StreamMonitoringEnabled, ct).ConfigureAwait(false);
         return doc.RootElement.ValueKind == JsonValueKind.True;
     }
 

@@ -15,7 +15,7 @@ internal sealed class AudioDeviceManager : IAudioDeviceManager
     /// <inheritdoc />
     public async Task<IReadOnlyList<AudioDevice>> GetAllAsync(CancellationToken ct = default)
     {
-        using var doc = await _transport.GetAsync(SonarRoutes.AudioDevices, ct);
+        using var doc = await _transport.GetAsync(SonarRoutes.AudioDevices, ct).ConfigureAwait(false);
         return ParseDevices(doc.RootElement);
     }
 
@@ -23,7 +23,7 @@ internal sealed class AudioDeviceManager : IAudioDeviceManager
     public async Task<IReadOnlyList<AudioDevice>> GetAllAsync(
         AudioDataFlow dataFlow, bool includeSonarVirtual = false, CancellationToken ct = default)
     {
-        var all = await GetAllAsync(ct);
+        var all = await GetAllAsync(ct).ConfigureAwait(false);
         return all
             .Where(d => d.DataFlow == dataFlow && (includeSonarVirtual || !d.IsSonarVirtual))
             .ToList();

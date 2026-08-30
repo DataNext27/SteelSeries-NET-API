@@ -75,6 +75,10 @@ internal static class SonarRoutes
     internal static string SetStreamRedirectionDevice(Mix mix, string deviceId) =>
         $"streamRedirections/{mix.ToRouteKey()}/deviceId/{Uri.EscapeDataString(deviceId)}";
 
+    // The mic passthrough is a streamRedirection entry with id "mic", same route shape as the mixes.
+    internal static string SetStreamRedirectionMicDevice(string deviceId) =>
+        $"streamRedirections/mic/deviceId/{Uri.EscapeDataString(deviceId)}";
+
     internal static string SetMixChannelEnabled(Mix mix, Channel channel, bool enabled) =>
         $"streamRedirections/{mix.ToRouteKey()}/redirections/{channel.ToJsonKey()}/isEnabled/{Bool(enabled)}";
 

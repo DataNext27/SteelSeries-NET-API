@@ -23,6 +23,13 @@ public interface IRedirectionsManager
     /// <summary>Routes a streamer-mode mix to a different output device.</summary>
     Task SetMixDeviceAsync(Mix mix, string deviceId, CancellationToken ct = default);
 
+    /// <summary>
+    /// Routes the streamer-mode mic passthrough to a different capture device.
+    /// </summary>
+    /// <param name="deviceId">The id of the capture device to capture the mic from.</param>
+    /// <param name="ct">A token to cancel the operation.</param>
+    Task SetMicDeviceAsync(string deviceId, CancellationToken ct = default);
+
     /// <summary>Enables or disables a channel on a streamer-mode mix (the per-channel mix toggles).</summary>
     Task SetMixChannelEnabledAsync(Mix mix, Channel channel, bool enabled, CancellationToken ct = default);
 

@@ -124,6 +124,19 @@ public class RedirectionsManagerTests
     }
 
     [Fact]
+    public async Task SetMicDeviceAsync_UsesTheMicStreamRedirectionRoute()
+    {
+        var transport = new FakeTransport();
+        var manager = new RedirectionsManager(transport);
+
+        await manager.SetMicDeviceAsync("{0.0.1}.{abc}");
+
+        string route = Assert.Single(transport.PutRoutes);
+        Assert.StartsWith("streamRedirections/mic/deviceId/", route);
+        Assert.DoesNotContain("{", route); // braces escaped
+    }
+
+    [Fact]
     public async Task SetClassicDeviceAsync_UsesShortVocabularyAndEscapesDeviceId()
     {
         var transport = new FakeTransport();
