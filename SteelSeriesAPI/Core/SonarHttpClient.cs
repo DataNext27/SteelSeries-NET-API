@@ -32,9 +32,12 @@ public sealed class SonarHttpClient : IDisposable, ISonarTransport
     /// <param name="ct">A token to cancel the operation.</param>
     public async Task<JsonDocument> GetAsync(string route, CancellationToken ct = default)
     {
-        using var response = await SendAsync(HttpMethod.Get, route, ct);
-        await using var stream = await response.Content.ReadAsStreamAsync(ct);
-        return await JsonDocument.ParseAsync(stream, cancellationToken: ct);
+        using var response = await SendAsync(HttpMethod.Get, route, ct).ConfigureAwait(false);
+        var stream = await response.Content.ReadAsStreamAsync(ct).ConfigureAwait(false);
+        await using (stream.ConfigureAwait(false))
+        {
+            return await JsonDocument.ParseAsync(stream, cancellationToken: ct).ConfigureAwait(false);
+        }
     }
 
 
@@ -43,19 +46,19 @@ public sealed class SonarHttpClient : IDisposable, ISonarTransport
     /// <param name="ct">A token to cancel the operation.</param>
     public async Task PutAsync(string route, CancellationToken ct = default)
     {
-        using var _ = await SendAsync(HttpMethod.Put, route, ct);
+        using var _ = await SendAsync(HttpMethod.Put, route, ct).ConfigureAwait(false);
     }
 
     private async Task<HttpResponseMessage> SendAsync(
         HttpMethod method, string route, CancellationToken ct, bool isRetry = false)
     {
-        Uri baseAddress = await GetBaseAddressAsync(ct);
+        Uri baseAddress = await GetBaseAddressAsync(ct).ConfigureAwait(false);
         var request = new HttpRequestMessage(method, new Uri(baseAddress, route));
 
         HttpResponseMessage response;
         try
         {
-            response = await _http.SendAsync(request, ct);
+            response = await _http.SendAsync(request, ct).ConfigureAwait(false);
         }
         catch (HttpRequestException ex) when (!isRetry)
         {
@@ -63,19 +66,19 @@ public sealed class SonarHttpClient : IDisposable, ISonarTransport
             // GG may have restarted on a new port. Rediscover once, retry once.
             _logger.LogInformation(ex, "Request to {Route} failed, rediscovering Sonar address", route);
             InvalidateAddress();
-            return await SendAsync(method, route, ct, isRetry: true);
+            return await SendAsync(method, route, ct, isRetry: true).ConfigureAwait(false);
         }
         catch (TaskCanceledException ex) when (!ct.IsCancellationRequested && !isRetry)
         {
             // Timeout (not a caller cancellation): treat as a transport failure.
             _logger.LogInformation(ex, "Request to {Route} timed out, rediscovering Sonar address", route);
             InvalidateAddress();
-            return await SendAsync(method, route, ct, isRetry: true);
+            return await SendAsync(method, route, ct, isRetry: true).ConfigureAwait(false);
         }
 
         if (!response.IsSuccessStatusCode)
         {
-            string body = await response.Content.ReadAsStringAsync(ct);
+            string body = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
 
             if (body.Contains("Cannot be called in current mode", StringComparison.OrdinalIgnoreCase))
                 throw new SonarWrongModeException(route);
@@ -90,11 +93,11 @@ public sealed class SonarHttpClient : IDisposable, ISonarTransport
     {
         if (_baseAddress is not null) return _baseAddress;
 
-        await _discoveryLock.WaitAsync(ct);
+        await _discoveryLock.WaitAsync(ct).ConfigureAwait(false);
         try
         {
             // Another caller may have resolved it while we waited.
-            return _baseAddress ??= await _discovery.DiscoverSonarAddressAsync(ct);
+            return _baseAddress ??= await _discovery.DiscoverSonarAddressAsync(ct).ConfigureAwait(false);
         }
         finally
         {

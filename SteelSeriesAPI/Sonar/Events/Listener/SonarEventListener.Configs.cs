@@ -24,7 +24,7 @@ public sealed partial class SonarEventListener
     /// <summary>Fetches the selected configs, diffs them against the baseline, and raises granular events.</summary>
     private async Task RefreshSelectedConfigsAsync(CancellationToken ct)
     {
-        var selected = await _configs.GetSelectedAsync(ct);
+        var selected = await _configs.GetSelectedAsync(ct).ConfigureAwait(false);
 
         if (_selectedConfigsBaseline is { } baseline)
         {

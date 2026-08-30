@@ -38,18 +38,18 @@ public sealed partial class SonarEventListener
 
         while (!ct.IsCancellationRequested)
         {
-            try { await Task.Delay(interval, ct); }
+            try { await Task.Delay(interval, ct).ConfigureAwait(false); }
             catch (OperationCanceledException) { break; }
 
             try
             {
-                Mode mode = await modeManager.GetAsync(ct);
+                Mode mode = await modeManager.GetAsync(ct).ConfigureAwait(false);
 
                 string route = mode == Mode.Streamer
                     ? SonarRoutes.StreamerVolumes
                     : SonarRoutes.ClassicVolumes;
 
-                using var doc = await _httpClient.GetAsync(route, ct);
+                using var doc = await _httpClient.GetAsync(route, ct).ConfigureAwait(false);
                 var snapshot = ParseVolumeSnapshot(doc.RootElement);
 
                 if (baselineMode is not null && baselineMode != mode)
@@ -69,8 +69,8 @@ public sealed partial class SonarEventListener
                 baseline = snapshot;
                 baselineMode = mode;
 
-                await _redirectionsRefresher.RunNowAsync(ct);
-                await _configsRefresher.RunNowAsync(ct);
+                await _redirectionsRefresher.RunNowAsync(ct).ConfigureAwait(false);
+                await _configsRefresher.RunNowAsync(ct).ConfigureAwait(false);
             }
             catch (OperationCanceledException) when (ct.IsCancellationRequested) { break; }
             catch (Exception ex)

@@ -41,14 +41,14 @@ internal sealed class DebouncedRefresher : IDisposable
         {
             try
             {
-                await Task.Delay(DebounceDelay, ct);
+                await Task.Delay(DebounceDelay, ct).ConfigureAwait(false);
                 if (version != _version)
                 {
                     _logger.LogDebug("{Name} refresh #{Version} superseded", _name, version);
                     return;
                 }
 
-                await RunNowAsync(ct);
+                await RunNowAsync(ct).ConfigureAwait(false);
             }
             catch (OperationCanceledException) when (ct.IsCancellationRequested)
             {
@@ -65,8 +65,8 @@ internal sealed class DebouncedRefresher : IDisposable
     /// <summary>Runs the refresh immediately, serialized with any scheduled refresh.</summary>
     internal async Task RunNowAsync(CancellationToken ct)
     {
-        await _lock.WaitAsync(ct);
-        try { await _refresh(ct); }
+        await _lock.WaitAsync(ct).ConfigureAwait(false);
+        try { await _refresh(ct).ConfigureAwait(false); }
         finally { _lock.Release(); }
     }
 

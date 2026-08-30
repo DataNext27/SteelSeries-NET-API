@@ -120,8 +120,8 @@ public sealed partial class SonarEventListener : IDisposable
     {
         if (_cts is null || _runLoop is null) return;
 
-        await _cts.CancelAsync();
-        try { await Task.WhenAll(_runLoop, _pollLoop ?? Task.CompletedTask); }
+        await _cts.CancelAsync().ConfigureAwait(false);
+        try { await Task.WhenAll(_runLoop, _pollLoop ?? Task.CompletedTask).ConfigureAwait(false); }
         catch (OperationCanceledException) { /* expected */ }
 
         _cts.Dispose();
@@ -140,11 +140,11 @@ public sealed partial class SonarEventListener : IDisposable
         {
             try
             {
-                Uri http = await _httpClient.GetServerAddressAsync(ct);
+                Uri http = await _httpClient.GetServerAddressAsync(ct).ConfigureAwait(false);
                 Uri wsUri = new UriBuilder(http) { Scheme = "ws", Path = SocketPath }.Uri;
 
                 using var ws = new ClientWebSocket();
-                await ws.ConnectAsync(wsUri, ct);
+                await ws.ConnectAsync(wsUri, ct).ConfigureAwait(false);
 
                 _logger.LogDebug("Connected to Sonar event stream at {Uri}", wsUri);
                 backoff = TimeSpan.FromSeconds(1); // reset on success
@@ -157,7 +157,7 @@ public sealed partial class SonarEventListener : IDisposable
                 _redirectionsRefresher.Schedule(ct);
                 _configsRefresher.Schedule(ct);
 
-                await ReceiveLoopAsync(ws, ct);
+                await ReceiveLoopAsync(ws, ct).ConfigureAwait(false);
             }
             catch (OperationCanceledException) when (ct.IsCancellationRequested)
             {
@@ -177,7 +177,7 @@ public sealed partial class SonarEventListener : IDisposable
             // GG may have restarted on a new port: force a fresh discovery on next attempt.
             _httpClient.InvalidateAddress();
 
-            try { await Task.Delay(backoff, ct); }
+            try { await Task.Delay(backoff, ct).ConfigureAwait(false); }
             catch (OperationCanceledException) { break; }
 
             backoff = TimeSpan.FromSeconds(Math.Min(backoff.TotalSeconds * 2, 30));
@@ -192,7 +192,7 @@ public sealed partial class SonarEventListener : IDisposable
 
         while (ws.State == WebSocketState.Open && !ct.IsCancellationRequested)
         {
-            var result = await ws.ReceiveAsync(buffer, ct);
+            var result = await ws.ReceiveAsync(buffer, ct).ConfigureAwait(false);
             if (result.MessageType == WebSocketMessageType.Close) return;
 
             message.Write(buffer, 0, result.Count);

@@ -15,7 +15,7 @@ internal sealed class VolumeSettingsManager : IVolumeSettingsManager
     /// <inheritdoc />
     public async Task<VolumeSetting> GetAsync(Channel channel, CancellationToken ct = default)
     {
-        using var doc = await _transport.GetAsync(SonarRoutes.ClassicVolumes, ct);
+        using var doc = await _transport.GetAsync(SonarRoutes.ClassicVolumes, ct).ConfigureAwait(false);
 
         // Master lives under "masters", other channels under "devices/{key}".
         JsonElement node = channel == Channel.Master
@@ -28,7 +28,7 @@ internal sealed class VolumeSettingsManager : IVolumeSettingsManager
     /// <inheritdoc />
     public async Task<VolumeSetting> GetAsync(Channel channel, Mix mix, CancellationToken ct = default)
     {
-        using var doc = await _transport.GetAsync(SonarRoutes.StreamerVolumes, ct);
+        using var doc = await _transport.GetAsync(SonarRoutes.StreamerVolumes, ct).ConfigureAwait(false);
 
         JsonElement node = channel == Channel.Master
             ? doc.RootElement.Dig("masters", "stream", mix.ToJsonKey())

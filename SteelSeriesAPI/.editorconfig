@@ -1,0 +1,6 @@
+# Library-only analyzer rules (does not apply to Sample/Explorer/Tests).
+
+[*.cs]
+# CA2007: a library must not capture the caller's synchronization context when awaiting.
+# Every await in this project must use ConfigureAwait(false).
+dotnet_diagnostic.CA2007.severity = error
