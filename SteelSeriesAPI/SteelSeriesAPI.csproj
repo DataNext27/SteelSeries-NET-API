@@ -11,7 +11,7 @@
 
     <PropertyGroup Label="NuGet package">
         <PackageId>Steelseries-NET-API</PackageId>
-        <Version>2.0.0-alpha.3</Version>
+        <Version>2.0.0</Version>
         <Authors>DataNext</Authors>
         <Title>SteelSeries-NET-API</Title>
         <Description>Unofficial .NET library to control SteelSeries GG Sonar: volumes, mutes, mixer mode, chat mix, audio configs, device redirections, app routing, and real-time change events. No admin rights required. Not affiliated with SteelSeries.</Description>

@@ -1,7 +1,7 @@
 # SteelSeries-NET-API
 
 [![NuGet Downloads](https://img.shields.io/nuget/dt/Steelseries-NET-API?style=for-the-badge&label=Nuget%20Downloads&color=%23004880)](https://www.nuget.org/packages/Steelseries-NET-API)
-[![NuGet Version](https://img.shields.io/nuget/vpre/Steelseries-NET-API?style=for-the-badge&label=Version)](https://www.nuget.org/packages/Steelseries-NET-API)
+[![NuGet Version](https://img.shields.io/nuget/v/Steelseries-NET-API?style=for-the-badge&label=Version)](https://www.nuget.org/packages/Steelseries-NET-API)
 [![GitHub License](https://img.shields.io/github/license/DataNext27/SteelSeries-NET-API?style=for-the-badge&color=red)](https://github.com/DataNext27/SteelSeries-NET-API/blob/main/LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-8.0_%7C_10.0-512cd4?style=for-the-badge)](https://dotnet.microsoft.com/download)
 [![Ko-fi](https://img.shields.io/badge/Support_me_on-Ko--fi-FF6433?style=for-the-badge&logo=ko-fi)](https://ko-fi.com/M4M2VL6WW)
