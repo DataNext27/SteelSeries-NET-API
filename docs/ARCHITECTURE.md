@@ -66,6 +66,7 @@ never know (or care) which mechanism produced an event.
 | `VolumeChanged`                                                                                                | Polling (mode-aware diff) |
 | `ModeChanged`                                                                                                  | Polling |
 | `ClassicDeviceChanged`, `MixDeviceChanged`, `MixChannelToggled`, `StreamMonitoringChanged`, `MicDeviceChanged` | Hybrid: invalidation + polling → fetch + diff |
+| `AudioDeviceStatusChanged` | Pure WebSocket: one `DEVICE_STATUS_UPDATE` per device endpoint |
 | `ConfigSelectionChanged`                                                                                       | Hybrid: invalidation + polling → fetch + diff |
 
 **Why three mechanisms?** Because Sonar's WebSocket (`/sock`) only broadcasts what
@@ -73,6 +74,11 @@ does *not* come through its own HTTP API. UI slider moves, mix toggles, and conf
 selections are HTTP writes from the GG UI, so the server never re-broadcasts them.
 Polling fills that gap. The hybrid pattern (invalidation → debounced fetch → diff →
 granular events) turns Sonar's empty `data: null` signals into rich events.
+
+`SONAR_EVENT_FALLBACK_UPDATED` (Sonar's per-channel failover bookkeeping) is recognized
+but deliberately not modeled: it fires dozens of times per device hot-plug and adds
+nothing over `AudioDeviceStatusChanged`. It is silenced so `UnknownEventReceived`
+stays meaningful.
 
 Key internals:
 

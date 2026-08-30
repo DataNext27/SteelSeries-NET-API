@@ -23,7 +23,8 @@ It is also available in the [Releases](https://github.com/mpaperno/SteelSeries-N
     config of each channel
   - **Redirections** - route each channel to a device, toggle channels on the
     streamer mixes, control stream monitoring ("hear what the audience hears")
-  - **Audio devices** - list physical and Sonar virtual devices
+  - **Audio devices** - list physical and Sonar virtual devices, get notified
+    when one is plugged in or removed
   - **App routing** - see which application plays on which channel, and move them
   - **Events** - typed .NET events for all of the above, including changes made from
     the Sonar UI, hardware wheels, or Windows volume keys. Automatic reconnection
